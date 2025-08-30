@@ -237,9 +237,43 @@ class AdminDashboard {
             this.generateCustomReport(startDate, endDate);
         };
 
+        // Updated management function to work properly
         window.manageUsers = (type) => {
+            // Validate user type
+            const validTypes = ['students', 'faculty', 'security'];
+            if (!validTypes.includes(type)) {
+                console.error('Invalid user type:', type);
+                return;
+            }
+            
+            // Navigate to management page
             window.location.href = `manage_users.php?type=${type}`;
         };
+
+        // Add click handlers for management cards if they exist
+        const managementCards = document.querySelectorAll('.management-card');
+        managementCards.forEach(card => {
+            if (!card.hasAttribute('data-click-bound')) {
+                card.addEventListener('click', function(e) {
+                    // Determine user type from the card content or data attribute
+                    const cardText = this.textContent.toLowerCase();
+                    let userType = '';
+                    
+                    if (cardText.includes('student')) {
+                        userType = 'students';
+                    } else if (cardText.includes('faculty')) {
+                        userType = 'faculty';
+                    } else if (cardText.includes('security')) {
+                        userType = 'security';
+                    }
+                    
+                    if (userType) {
+                        window.manageUsers(userType);
+                    }
+                });
+                card.setAttribute('data-click-bound', 'true');
+            }
+        });
     }
 
     generateCustomReport(startDate, endDate) {
