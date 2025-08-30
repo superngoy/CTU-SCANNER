@@ -2,19 +2,14 @@
 require_once __DIR__ . '/../config/database.php';
 
 class CTUScanner {
-    private $conn;
+    public $conn; // Make this public so analytics.php can access it
     
     public function __construct() {
         $database = new Database();
-        // Try different method names since getConnection() doesn't exist
-        if (method_exists($database, 'connect')) {
-            $this->conn = $database->connect();
-        } elseif (method_exists($database, 'getConnection')) {
-            $this->conn = $database->getConnection();
-        } elseif (method_exists($database, 'connection')) {
-            $this->conn = $database->connection();
-        } else {
-            throw new Exception('Cannot find database connection method');
+        $this->conn = $database->connect();
+        
+        if (!$this->conn) {
+            throw new Exception('Database connection failed');
         }
     }
     
@@ -142,22 +137,26 @@ class CTUScanner {
             // Total entries today
             $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date = ?");
             $stmt->execute([$date]);
-            $stats['total_entries'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['total_entries'] = (int)$result['total'];
             
             // Total exits today
             $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM exitlogs WHERE Date = ?");
             $stmt->execute([$date]);
-            $stats['total_exits'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['total_exits'] = (int)$result['total'];
             
             // Students entries
             $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date = ? AND PersonType = 'student'");
             $stmt->execute([$date]);
-            $stats['student_entries'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['student_entries'] = (int)$result['total'];
             
             // Faculty entries
             $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date = ? AND PersonType = 'faculty'");
             $stmt->execute([$date]);
-            $stats['faculty_entries'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['faculty_entries'] = (int)$result['total'];
             
             error_log("getDailyStats for $date: " . json_encode($stats));
             return $stats;
@@ -172,7 +171,7 @@ class CTUScanner {
         }
     }
     
-    // Get Peak Hours
+    // Get Peak Hours - Fixed to return proper format
     public function getPeakHours($date = null) {
         if (!$date) $date = date('Y-m-d');
         
@@ -182,10 +181,21 @@ class CTUScanner {
                 FROM entrylogs 
                 WHERE Date = ? 
                 GROUP BY HOUR(Timestamp) 
-                ORDER BY count DESC
+                ORDER BY hour ASC
             ");
             $stmt->execute([$date]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Convert to proper integer format
+            $formattedResults = [];
+            foreach ($results as $row) {
+                $formattedResults[] = [
+                    'hour' => (int)$row['hour'],
+                    'count' => (int)$row['count']
+                ];
+            }
+            
+            return $formattedResults;
         } catch(PDOException $e) {
             error_log("getPeakHours error: " . $e->getMessage());
             return [];
@@ -199,20 +209,34 @@ class Auth {
     
     public function __construct() {
         $database = new Database();
-        // Try different method names
-        if (method_exists($database, 'connect')) {
-            $this->conn = $database->connect();
-        } elseif (method_exists($database, 'getConnection')) {
-            $this->conn = $database->getConnection();
-        } elseif (method_exists($database, 'connection')) {
-            $this->conn = $database->connection();
-        } else {
-            throw new Exception('Cannot find database connection method');
+        $this->conn = $database->connect();
+        
+        if (!$this->conn) {
+            throw new Exception('Database connection failed');
         }
     }
     
     public function isLoggedIn($type) {
         return isset($_SESSION[$type . '_id']);
+    }
+    
+    public function loginAdmin($email, $password) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM admin WHERE email = ? AND isActive = 1");
+            $stmt->execute([$email]);
+            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($admin && password_verify($password, $admin['password'])) {
+                $_SESSION['admin_id'] = $admin['AdminID'];
+                $_SESSION['admin_name'] = $admin['AdminFName'] . ' ' . $admin['AdminLName'];
+                $_SESSION['user_type'] = 'admin';
+                return true;
+            }
+            return false;
+        } catch(PDOException $e) {
+            error_log("loginAdmin error: " . $e->getMessage());
+            return false;
+        }
     }
     
     public function loginSecurity($securityId, $password) {
@@ -231,6 +255,18 @@ class Auth {
         } catch(PDOException $e) {
             error_log("loginSecurity error: " . $e->getMessage());
             return false;
+        }
+    }
+    
+    public function logout() {
+        session_destroy();
+        return true;
+    }
+    
+    public function requireAuth($userType = null) {
+        if (!$this->isLoggedIn($userType)) {
+            header('Location: login.php');
+            exit();
         }
     }
 }

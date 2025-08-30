@@ -20,7 +20,7 @@ class AdminDashboard {
                     labels: ['6AM', '7AM', '8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM'],
                     datasets: [{
                         label: 'Entries',
-                        data: [],
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Initialize with zeros
                         backgroundColor: 'rgba(52, 152, 219, 0.6)',
                         borderColor: 'rgba(52, 152, 219, 1)',
                         borderWidth: 2
@@ -52,7 +52,7 @@ class AdminDashboard {
                 data: {
                     labels: ['COTE', 'COED'],
                     datasets: [{
-                        data: [],
+                        data: [0, 0], // Initialize with zeros
                         backgroundColor: [
                             'rgba(231, 76, 60, 0.7)',
                             'rgba(46, 204, 113, 0.7)'
@@ -86,7 +86,7 @@ class AdminDashboard {
                     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Entries',
-                        data: [],
+                        data: [0, 0, 0, 0, 0, 0, 0], // Initialize with zeros
                         borderColor: 'rgba(155, 89, 182, 1)',
                         backgroundColor: 'rgba(155, 89, 182, 0.1)',
                         borderWidth: 3,
@@ -114,16 +114,27 @@ class AdminDashboard {
     }
 
     loadAnalytics() {
-        // Load peak hours data
+        console.log('Loading analytics...');
+        
+        // Load peak hours data from PHP variable
         if (typeof peakHoursData !== 'undefined' && this.charts.peakHours) {
+            console.log('Peak hours data:', peakHoursData);
             const hourlyData = new Array(13).fill(0);
+            
+            // Map the data to the correct hour indices (6AM to 6PM)
             peakHoursData.forEach(item => {
-                if (item.hour >= 6 && item.hour <= 18) {
-                    hourlyData[item.hour - 6] = item.count;
+                const hour = parseInt(item.hour);
+                const count = parseInt(item.count);
+                if (hour >= 6 && hour <= 18) {
+                    hourlyData[hour - 6] = count;
                 }
             });
+            
             this.charts.peakHours.data.datasets[0].data = hourlyData;
             this.charts.peakHours.update();
+            console.log('Peak hours chart updated with data:', hourlyData);
+        } else {
+            console.log('Peak hours data not available or chart not initialized');
         }
 
         // Load department data
@@ -134,15 +145,23 @@ class AdminDashboard {
     }
 
     loadDepartmentData() {
+        console.log('Loading department data...');
         fetch('analytics.php?action=department')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Department data received:', data);
             if (this.charts.department) {
                 this.charts.department.data.datasets[0].data = [
                     data.COTE || 0,
                     data.COED || 0
                 ];
                 this.charts.department.update();
+                console.log('Department chart updated');
             }
         })
         .catch(error => {
@@ -151,18 +170,40 @@ class AdminDashboard {
     }
 
     loadWeeklyTrendData() {
+        console.log('Loading weekly trend data...');
         fetch('analytics.php?action=weekly')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Weekly data received:', data);
             if (this.charts.weekly) {
                 const weeklyData = new Array(7).fill(0);
+                
+                // Map MySQL DAYOFWEEK (1=Sunday, 2=Monday, ..., 7=Saturday) to our array (0=Monday, ..., 6=Sunday)
                 data.forEach(item => {
-                    if (item.day >= 1 && item.day <= 7) {
-                        weeklyData[item.day - 1] = item.count;
+                    const mysqlDay = parseInt(item.day);
+                    const count = parseInt(item.count);
+                    
+                    // Convert MySQL DAYOFWEEK to our Monday-first array index
+                    let arrayIndex;
+                    if (mysqlDay === 1) { // Sunday
+                        arrayIndex = 6;
+                    } else { // Monday-Saturday
+                        arrayIndex = mysqlDay - 2;
+                    }
+                    
+                    if (arrayIndex >= 0 && arrayIndex <= 6) {
+                        weeklyData[arrayIndex] = count;
                     }
                 });
+                
                 this.charts.weekly.data.datasets[0].data = weeklyData;
                 this.charts.weekly.update();
+                console.log('Weekly chart updated with data:', weeklyData);
             }
         })
         .catch(error => {
@@ -202,6 +243,8 @@ class AdminDashboard {
     }
 
     generateCustomReport(startDate, endDate) {
+        console.log(`Generating custom report for ${startDate} to ${endDate}`);
+        
         fetch('analytics.php', {
             method: 'POST',
             headers: {
@@ -209,12 +252,23 @@ class AdminDashboard {
             },
             body: `action=custom_report&start_date=${startDate}&end_date=${endDate}`
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Custom report data:', data);
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
             this.displayCustomReport(data);
         })
         .catch(error => {
             console.error('Error generating custom report:', error);
+            alert('Error generating report. Please try again.');
         });
     }
 
@@ -222,6 +276,7 @@ class AdminDashboard {
         // Create a modal to display the report
         const modal = document.createElement('div');
         modal.className = 'modal fade';
+        modal.id = 'customReportModal';
         modal.innerHTML = `
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -234,7 +289,7 @@ class AdminDashboard {
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h3 class="text-primary">${data.total_entries}</h3>
+                                        <h3 class="text-primary">${data.total_entries || 0}</h3>
                                         <p>Total Entries</p>
                                     </div>
                                 </div>
@@ -242,7 +297,7 @@ class AdminDashboard {
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h3 class="text-warning">${data.total_exits}</h3>
+                                        <h3 class="text-warning">${data.total_exits || 0}</h3>
                                         <p>Total Exits</p>
                                     </div>
                                 </div>
@@ -252,7 +307,7 @@ class AdminDashboard {
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h3 class="text-success">${data.student_entries}</h3>
+                                        <h3 class="text-success">${data.student_entries || 0}</h3>
                                         <p>Student Entries</p>
                                     </div>
                                 </div>
@@ -260,7 +315,7 @@ class AdminDashboard {
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h3 class="text-info">${data.faculty_entries}</h3>
+                                        <h3 class="text-info">${data.faculty_entries || 0}</h3>
                                         <p>Faculty Entries</p>
                                     </div>
                                 </div>
@@ -284,5 +339,6 @@ class AdminDashboard {
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing admin dashboard...');
     new AdminDashboard();
 });
