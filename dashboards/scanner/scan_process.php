@@ -11,12 +11,10 @@ if ($_POST['action'] === 'scan') {
     $person = $scanner->verifyQRCode($qr_data);
     
     if ($person) {
-        // Determine if it's entry or exit based on scanner type
-        $stmt = $scanner->conn->prepare("SELECT typeofScanner FROM scanner WHERE ScannerID = ?");
-        $stmt->execute([$scanner_id]);
-        $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Use the new public method instead of accessing $conn directly
+        $scanner_info = $scanner->getScannerType($scanner_id);
         
-        if ($scanner_info['typeofScanner'] === 'entrance') {
+        if ($scanner_info && $scanner_info['typeofScanner'] === 'entrance') {
             $result = $scanner->logEntry($person[$person['type'] === 'student' ? 'StudentID' : 'FacultyID'], $person['type'], $scanner_id);
             $action = 'Entry';
         } else {

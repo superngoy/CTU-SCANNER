@@ -94,6 +94,11 @@ class CTUScanner {
         }
     }
     
+    public function getScannerType($scanner_id) {
+    $stmt = $this->conn->prepare("SELECT typeofScanner FROM scanner WHERE ScannerID = ?");
+    $stmt->execute([$scanner_id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
     // Analytics Functions
     public function getDailyStats($date = null) {
         if (!$date) $date = date('Y-m-d');
