@@ -119,12 +119,26 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     <h5 class="modal-title">Edit <?php echo ucfirst(rtrim($userType, 's')); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted">Edit functionality will be implemented in a future update.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+                <form id="editUserForm">
+                    <div class="modal-body">
+                        <div class="text-center mb-3" id="editLoadingIndicator" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading user data...
+                        </div>
+                        <div id="editModalFormFields">
+                            <!-- Form fields will be populated by JavaScript -->
+                        </div>
+                        <input type="hidden" id="editUserId" name="user_id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <span class="edit-submit-text">Update <?php echo ucfirst(rtrim($userType, 's')); ?></span>
+                            <span class="edit-submit-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Updating...
+                            </span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -142,6 +156,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             
             // Setup form submission
             document.getElementById('addUserForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('editUserForm').addEventListener('submit', handleEditFormSubmit);
         });
 
         function setupTableHeaders() {
@@ -557,7 +572,290 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
 
         function editUser(userId) {
             const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            const loadingIndicator = document.getElementById('editLoadingIndicator');
+            const formFields = document.getElementById('editModalFormFields');
+            const userIdField = document.getElementById('editUserId');
+            
+            // Show loading
+            loadingIndicator.style.display = 'block';
+            formFields.style.display = 'none';
+            userIdField.value = userId;
+            
             modal.show();
+            
+            // Fetch user data
+            fetch(`manage_users_api.php?action=get_user&type=${userType}&user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showAlert('danger', data.error);
+                        modal.hide();
+                        return;
+                    }
+                    
+                    // Populate edit form
+                    populateEditForm(data);
+                    
+                    // Hide loading and show form
+                    loadingIndicator.style.display = 'none';
+                    formFields.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    showAlert('danger', 'Error loading user data');
+                    modal.hide();
+                });
+        }
+
+        function populateEditForm(userData) {
+            const formFields = document.getElementById('editModalFormFields');
+            let formHTML = '';
+
+            if (userType === 'students') {
+                formHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="student_id" value="${userData.StudentID}" readonly style="background-color: #f8f9fa;">
+                                <label>Student ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="COTE" ${userData.Department === 'COTE' ? 'selected' : ''}>COTE</option>
+                                    <option value="COED" ${userData.Department === 'COED' ? 'selected' : ''}>COED</option>
+                                </select>
+                                <label>Department</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="first_name" value="${userData.StudentFName || ''}" required>
+                                <label>First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="middle_name" value="${userData.StudentMName || ''}">
+                                <label>Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="last_name" value="${userData.StudentLName || ''}" required>
+                                <label>Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="course" value="${userData.Course || ''}" required>
+                                <label>Course</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="year_level" required>
+                                    <option value="">Select Year</option>
+                                    <option value="1" ${userData.YearLvl == 1 ? 'selected' : ''}>1st Year</option>
+                                    <option value="2" ${userData.YearLvl == 2 ? 'selected' : ''}>2nd Year</option>
+                                    <option value="3" ${userData.YearLvl == 3 ? 'selected' : ''}>3rd Year</option>
+                                    <option value="4" ${userData.YearLvl == 4 ? 'selected' : ''}>4th Year</option>
+                                </select>
+                                <label>Year Level</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="section" value="${userData.Section || ''}" required>
+                                <label>Section</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${userData.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${userData.Gender === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${userData.Gender === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthdate" value="${userData.BirthDate || ''}" required>
+                                <label>Birth Date</label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (userType === 'faculty') {
+                formHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="faculty_id" value="${userData.FacultyID}" readonly style="background-color: #f8f9fa;">
+                                <label>Faculty ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="COTE" ${userData.Department === 'COTE' ? 'selected' : ''}>COTE</option>
+                                    <option value="COED" ${userData.Department === 'COED' ? 'selected' : ''}>COED</option>
+                                </select>
+                                <label>Department</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="first_name" value="${userData.FacultyFName || ''}" required>
+                                <label>First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="middle_name" value="${userData.FacultyMName || ''}">
+                                <label>Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="last_name" value="${userData.FacultyLName || ''}" required>
+                                <label>Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${userData.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${userData.Gender === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${userData.Gender === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthdate" value="${userData.Birthdate || ''}" required>
+                                <label>Birth Date</label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (userType === 'security') {
+                formHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="security_id" value="${userData.SecurityID}" readonly style="background-color: #f8f9fa;">
+                                <label>Security ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="time_sched" value="${userData.TimeSched || ''}" required>
+                                <label>Time Schedule</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="first_name" value="${userData.SecurityFName || ''}" required>
+                                <label>First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="middle_name" value="${userData.SecurityMName || ''}">
+                                <label>Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="last_name" value="${userData.SecurityLName || ''}" required>
+                                <label>Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${userData.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${userData.Gender === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${userData.Gender === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthdate" value="${userData.BirthDate || ''}" required>
+                                <label>Birth Date</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" name="password" minlength="6" placeholder="Leave empty to keep current password">
+                                <label>New Password (leave empty to keep current)</label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            formFields.innerHTML = formHTML;
+        }
+
+        function handleEditFormSubmit(e) {
+            e.preventDefault();
+            
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const submitText = submitButton.querySelector('.edit-submit-text');
+            const submitLoading = submitButton.querySelector('.edit-submit-loading');
+            
+            // Show loading state
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'inline';
+            submitButton.disabled = true;
+            
+            const formData = new FormData(e.target);
+            formData.append('action', 'update_user');
+            formData.append('type', userType);
+            
+            fetch('manage_users_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    modal.hide();
+                    
+                    // Reload data
+                    loadUsers();
+                    
+                    // Show success message
+                    showAlert('success', data.message);
+                } else {
+                    showAlert('danger', data.message || 'An error occurred');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating user:', error);
+                showAlert('danger', 'Network error. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
+                submitButton.disabled = false;
+            });
         }
 
         function toggleStatus(userId, newStatus) {
