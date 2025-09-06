@@ -57,9 +57,12 @@ class CTUScanner {
         }
     }
     
-    // Get Recent Entries - FIXED
+    // Get Recent Entries - FIXED FOR LIMIT ISSUE
     public function getRecentEntries($limit = 50) {
         try {
+            // Convert limit to integer to prevent SQL injection and syntax errors
+            $limit = (int)$limit;
+            
             $sql = "SELECT 
                         e.PersonID,
                         e.PersonType as PersonCategory,
@@ -78,10 +81,10 @@ class CTUScanner {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     ORDER BY e.Timestamp DESC 
-                    LIMIT ?";
+                    LIMIT " . $limit;
             
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$limit]);
+            $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             error_log("getRecentEntries found " . count($results) . " entries");
@@ -92,9 +95,12 @@ class CTUScanner {
         }
     }
     
-    // Get Recent Exits - FIXED
+    // Get Recent Exits - FIXED FOR LIMIT ISSUE
     public function getRecentExits($limit = 50) {
         try {
+            // Convert limit to integer to prevent SQL injection and syntax errors
+            $limit = (int)$limit;
+            
             $sql = "SELECT 
                         e.PersonID,
                         e.PersonType as PersonCategory,
@@ -113,10 +119,10 @@ class CTUScanner {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     ORDER BY e.Timestamp DESC 
-                    LIMIT ?";
+                    LIMIT " . $limit;
             
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$limit]);
+            $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             error_log("getRecentExits found " . count($results) . " exits");

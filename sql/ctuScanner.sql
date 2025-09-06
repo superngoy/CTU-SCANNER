@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 30, 2025 at 10:21 AM
+-- Generation Time: Sep 05, 2025 at 04:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -79,7 +79,41 @@ INSERT INTO `entrylogs` (`EntryID`, `PersonID`, `PersonType`, `Date`, `Timestamp
 (12, 'FAC-002', 'faculty', '2025-08-30', '2025-08-30 07:44:29', 'SC001'),
 (13, '2024-001', 'student', '2025-08-30', '2025-08-30 08:18:37', 'SC001'),
 (14, '2024-001', 'student', '2025-08-30', '2025-08-30 08:18:42', 'SC001'),
-(15, '2024-001', 'student', '2025-08-30', '2025-08-30 08:19:16', 'SC001');
+(15, '2024-001', 'student', '2025-08-30', '2025-08-30 08:19:16', 'SC001'),
+(16, '8221182', 'student', '2025-08-30', '2025-08-30 08:41:57', 'SC001'),
+(17, '8221182', 'student', '2025-08-30', '2025-08-30 09:27:14', 'SC001'),
+(18, '8221183', 'student', '2025-08-30', '2025-08-30 09:28:45', 'SC001'),
+(19, '8221182', 'student', '2025-08-31', '2025-08-31 08:41:10', 'SC001'),
+(20, '8221182', 'student', '2025-08-31', '2025-08-31 08:44:39', 'SC001'),
+(21, '8221183', 'student', '2025-08-31', '2025-08-31 08:45:13', 'SC001'),
+(22, '8221182', 'student', '2025-08-31', '2025-08-31 09:00:42', 'SC001'),
+(23, '8221182', 'student', '2025-08-31', '2025-08-31 09:01:04', 'SC001'),
+(24, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:09', 'SC001'),
+(25, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:22', 'SC001'),
+(26, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:25', 'SC001'),
+(27, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:29', 'SC001'),
+(28, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:32', 'SC001'),
+(29, '8221182', 'student', '2025-08-31', '2025-08-31 09:09:35', 'SC001'),
+(30, '8221183', 'student', '2025-08-31', '2025-08-31 09:09:42', 'SC001'),
+(31, '8221183', 'student', '2025-08-31', '2025-08-31 09:10:08', 'SC001'),
+(32, '8221182', 'student', '2025-08-31', '2025-08-31 09:10:21', 'SC001'),
+(33, '8221182', 'student', '2025-08-31', '2025-08-31 09:10:36', 'SC001'),
+(34, '8221182', 'student', '2025-08-31', '2025-08-31 09:10:48', 'SC001'),
+(35, '8221182', 'student', '2025-08-31', '2025-08-31 09:10:54', 'SC001'),
+(36, '8221182', 'student', '2025-08-31', '2025-08-31 09:12:25', 'SC001'),
+(37, '8221182', 'student', '2025-08-31', '2025-08-31 09:12:53', 'SC001'),
+(38, '8221183', 'student', '2025-08-31', '2025-08-31 09:12:59', 'SC001'),
+(39, '8221183', 'student', '2025-08-31', '2025-08-31 09:13:15', 'SC001'),
+(40, '8221182', 'student', '2025-08-31', '2025-08-31 09:13:18', 'SC001'),
+(41, '8221182', 'student', '2025-08-31', '2025-08-31 09:13:40', 'SC001'),
+(42, '8221183', 'student', '2025-08-31', '2025-08-31 09:14:57', 'SC001'),
+(43, '8221183', 'student', '2025-08-31', '2025-08-31 09:20:42', 'SC001'),
+(44, '8221182', 'student', '2025-08-31', '2025-08-31 09:46:38', 'SC001'),
+(45, '8221183', 'student', '2025-08-31', '2025-08-31 09:47:24', 'SC001'),
+(46, '8221183', 'student', '2025-08-31', '2025-08-31 09:47:35', 'SC001'),
+(47, '8221183', 'student', '2025-08-31', '2025-08-31 09:51:33', 'SC001'),
+(48, '8221182', 'student', '2025-08-31', '2025-08-31 09:51:39', 'SC001'),
+(49, '8221182', 'student', '2025-08-31', '2025-08-31 09:51:53', 'SC001');
 
 -- --------------------------------------------------------
 
@@ -102,7 +136,15 @@ CREATE TABLE `exitlogs` (
 
 INSERT INTO `exitlogs` (`ExitID`, `PersonID`, `PersonType`, `Date`, `Timestamp`, `ScannerID`) VALUES
 (1, '2024-001', 'student', '2025-08-30', '2025-08-30 07:07:16', 'SC002'),
-(2, '8221183', 'student', '2025-08-30', '2025-08-30 07:13:59', 'SC002');
+(2, '8221183', 'student', '2025-08-30', '2025-08-30 07:13:59', 'SC002'),
+(3, '8221182', 'student', '2025-08-30', '2025-08-30 08:42:27', 'SC002'),
+(4, 'FAC-002', 'faculty', '2025-08-30', '2025-08-30 08:42:33', 'SC002'),
+(5, '8221183', 'student', '2025-08-30', '2025-08-30 08:42:36', 'SC002'),
+(6, '8221183', 'student', '2025-08-30', '2025-08-30 08:42:49', 'SC002'),
+(7, '8221183', 'student', '2025-08-30', '2025-08-30 09:27:50', 'SC002'),
+(8, '2024-001', 'student', '2025-08-30', '2025-08-30 09:28:01', 'SC002'),
+(9, '8221183', 'student', '2025-08-31', '2025-08-31 09:15:08', 'SC002'),
+(10, '8221183', 'student', '2025-08-31', '2025-08-31 09:20:31', 'SC002');
 
 -- --------------------------------------------------------
 
@@ -128,8 +170,8 @@ CREATE TABLE `faculty` (
 --
 
 INSERT INTO `faculty` (`FacultyID`, `FacultyFName`, `FacultyMName`, `FacultyLName`, `Gender`, `Birthdate`, `Department`, `isActive`, `image`, `created_at`) VALUES
-('FAC-001', 'Dr. Ana', 'Lopez', 'Rodriguez', 'Female', '1980-08-25', 'COTE', 1, NULL, '2025-08-30 01:39:52'),
-('FAC-002', 'Prof. Carlos', 'Miguel', 'Torres', 'Male', '1975-11-30', 'COED', 1, NULL, '2025-08-30 01:39:52');
+('FAC-002', 'Prof. Kenneth Roi', '', 'Novabos', 'Male', '1975-11-30', 'COTE', 1, NULL, '2025-08-30 01:39:52'),
+('FAC-003', 'Dr. Iris', 'Layon', 'Gulbe', 'Female', '1975-11-30', 'COTE', 1, NULL, '2025-08-30 09:54:09');
 
 -- --------------------------------------------------------
 
@@ -180,7 +222,7 @@ CREATE TABLE `security` (
 --
 
 INSERT INTO `security` (`SecurityID`, `SecurityFName`, `SecurityMName`, `SecurityLName`, `Gender`, `BirthDate`, `TimeSched`, `isActive`, `image`, `password`, `created_at`) VALUES
-('SEC-001', 'Guard', 'One', 'Security', 'Male', '1985-01-15', '6AM-6PM', 1, NULL, '$2y$10$4DDwNyNmIJRPzhkcGWEDzO3f0ZFX7IYiVoHg1mECRdjIBEjqBkURW', '2025-08-30 01:39:52');
+('SEC-001', 'Guard. Leonides', '', 'Ambotlang', 'Male', '1985-01-15', '6AM-6PM', 1, NULL, '$2y$10$4DDwNyNmIJRPzhkcGWEDzO3f0ZFX7IYiVoHg1mECRdjIBEjqBkURW', '2025-08-30 01:39:52');
 
 -- --------------------------------------------------------
 
@@ -209,10 +251,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`StudentID`, `StudentFName`, `StudentMName`, `StudentLName`, `Gender`, `BirthDate`, `Course`, `YearLvl`, `Section`, `Department`, `isActive`, `image`, `created_at`) VALUES
-('2024-001', 'Juan', 'Cruz', 'Santos', 'Male', '2000-05-15', 'Computer Engineering', 3, 'A', 'COTE', 1, NULL, '2025-08-30 01:39:52'),
-('2024-002', 'Maria', 'Dela', 'Cruz', 'Female', '2001-03-20', 'Information Technology', 2, 'B', 'COTE', 1, NULL, '2025-08-30 01:39:52'),
-('2024-003', 'Pedro', 'Garcia', 'Reyes', 'Male', '1999-12-10', 'Education', 4, 'A', 'COED', 1, NULL, '2025-08-30 01:39:52'),
-('8221181', 'Judy Ann', '', 'Diaga', 'Female', '1999-12-10', 'Information Technology', 4, 'B', 'COTE', 1, NULL, '2025-08-30 07:12:50'),
+('123', 'Gwapooo', '', 'Kaayo', 'Male', '2004-11-24', 'BSIT', 2, 'E', 'COED', 1, NULL, '2025-08-30 09:23:56'),
 ('8221182', 'Angelica Joy', '', 'Coyoca', 'Female', '2004-01-04', 'Information Technology', 4, 'B', 'COTE', 1, NULL, '2025-08-30 07:12:50'),
 ('8221183', 'Deonan Leo', 'Despacio', 'Baslan', 'Male', '2002-10-11', 'Information Technology', 4, 'B', 'COTE', 1, NULL, '2025-08-30 07:12:50');
 
@@ -273,13 +312,13 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `entrylogs`
 --
 ALTER TABLE `entrylogs`
-  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `exitlogs`
 --
 ALTER TABLE `exitlogs`
-  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
