@@ -16,7 +16,10 @@
             --secondary-yellow: #FFE100;
             --tertiary-gold: #FFC900;
             --light-beige: #EBE389;
-            --gradient-bg: linear-gradient(135deg, #6a5acd 0%, #4169e1 50%, #1e90ff 100%);
+            --ctu-red: #8B0000;
+            --ctu-gold: #DAA520;
+            --gradient-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #3e7cb1 50%, #5ba0d0 75%, #7fc4ef 100%);
+            --scanner-glow: rgba(255, 155, 0, 0.4);
         }
 
         * {
@@ -37,6 +40,46 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            position: relative;
+        }
+
+        /* CTU Logo Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(80vw, 80vh, 600px);
+            height: min(80vw, 80vh, 600px);
+            background-image: url('/assets/images/logo.png'); /* Path for CTU logo */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.08;
+            z-index: -1;
+            pointer-events: none;
+            filter: grayscale(1) brightness(1.2);
+            animation: logoFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0.08;
+            }
+            25% { 
+                transform: translate(-52%, -48%) scale(1.02) rotate(0.5deg);
+                opacity: 0.06;
+            }
+            50% { 
+                transform: translate(-48%, -52%) scale(1.01) rotate(-0.3deg);
+                opacity: 0.1;
+            }
+            75% { 
+                transform: translate(-51%, -49%) scale(1.03) rotate(0.2deg);
+                opacity: 0.07;
+            }
         }
 
         .scanner-container {
@@ -45,83 +88,148 @@
             display: flex;
             flex-direction: column;
             padding: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         .scanner-header {
             text-align: center;
             margin-bottom: 15px;
             flex-shrink: 0;
+            position: relative;
         }
 
         .logo {
-            width: 50px;
-            height: 50px;
-            background: var(--primary-orange);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
             border-radius: 50%;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 8px 25px rgba(255, 155, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: logoShine 3s ease-in-out infinite;
+        }
+
+        @keyframes logoShine {
+            0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .scanner-header h1 {
             color: white;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            letter-spacing: 0.5px;
         }
 
         .scanner-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: 500;
         }
 
         .scanner-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             min-height: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
-            padding: 15px 20px;
-            border-radius: 20px 20px 0 0;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--tertiary-gold) 50%, var(--secondary-yellow) 100%);
+            padding: 20px 25px;
+            border-radius: 25px 25px 0 0;
             color: white;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: headerShine 4s ease-in-out infinite;
+        }
+
+        @keyframes headerShine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
         }
 
         .card-header h4 {
             margin: 0;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .scanner-controls select {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 0.9rem;
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
             width: 100%;
-            margin-top: 8px;
+            margin-top: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scanner-controls select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
         }
 
         .scanner-controls select option {
             background: #333;
             color: white;
+            padding: 10px;
         }
 
         .card-body {
-            padding: 20px;
+            padding: 30px 25px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -130,30 +238,22 @@
             min-height: 0;
         }
 
-        .scanning-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 20;
-            color: var(--secondary-yellow);
-            font-size: 2rem;
-            animation: pulse 2s infinite;
-            pointer-events: none;
-            text-shadow: 0 0 10px rgba(255, 225, 0, 0.5);
-        }
-
         .qr-reader {
             width: 100%;
-            max-width: 350px;
-            height: 280px;
-            border: 3px solid var(--primary-orange);
-            border-radius: 15px;
+            max-width: 380px;
+            height: 300px;
+            border: 4px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, var(--primary-orange), var(--tertiary-gold), var(--secondary-yellow)) border-box;
+            border-radius: 20px;
             overflow: hidden;
             position: relative;
-            background: #000;
+            background-color: #000;
             touch-action: manipulation;
             flex-shrink: 0;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.2),
+                inset 0 0 0 1px rgba(255, 155, 0, 0.1);
         }
 
         .qr-reader video {
@@ -161,126 +261,286 @@
             height: 100% !important;
             object-fit: cover;
             background: #000;
+            border-radius: 16px;
         }
 
+        /* Enhanced Scanner Frame */
         .scanner-frame {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 180px;
-            height: 180px;
-            border: 2px solid var(--secondary-yellow);
-            border-radius: 10px;
+            width: 200px;
+            height: 200px;
+            border: none;
+            border-radius: 15px;
             z-index: 10;
             pointer-events: none;
-            box-shadow: 0 0 20px rgba(255, 225, 0, 0.3);
+            background: transparent;
         }
 
+        /* Animated Corner Brackets */
         .scanner-frame::before,
         .scanner-frame::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--secondary-yellow);
+            width: 30px;
+            height: 30px;
+            border: 4px solid var(--secondary-yellow);
+            border-radius: 4px;
+            animation: cornerPulse 2s ease-in-out infinite;
         }
 
         .scanner-frame::before {
-            top: -3px;
-            left: -3px;
+            top: -4px;
+            left: -4px;
             border-right: none;
             border-bottom: none;
+            box-shadow: -2px -2px 10px rgba(255, 225, 0, 0.3);
         }
 
         .scanner-frame::after {
-            bottom: -3px;
-            right: -3px;
+            bottom: -4px;
+            right: -4px;
             border-left: none;
             border-top: none;
+            box-shadow: 2px 2px 10px rgba(255, 225, 0, 0.3);
+        }
+
+        /* Additional corner brackets */
+        .scanner-frame-extra::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 30px;
+            height: 30px;
+            border: 4px solid var(--secondary-yellow);
+            border-left: none;
+            border-bottom: none;
+            border-radius: 4px;
+            animation: cornerPulse 2s ease-in-out infinite 0.5s;
+            box-shadow: 2px -2px 10px rgba(255, 225, 0, 0.3);
+        }
+
+        .scanner-frame-extra::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: -4px;
+            width: 30px;
+            height: 30px;
+            border: 4px solid var(--secondary-yellow);
+            border-right: none;
+            border-top: none;
+            border-radius: 4px;
+            animation: cornerPulse 2s ease-in-out infinite 0.5s;
+            box-shadow: -2px 2px 10px rgba(255, 225, 0, 0.3);
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { 
+                opacity: 0.7;
+                transform: scale(1);
+                filter: brightness(1) drop-shadow(0 0 8px rgba(255, 225, 0, 0.6));
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.08);
+                filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 225, 0, 0.8));
+            }
+        }
+
+        /* Scanning Line Animation - More prominent */
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary-yellow), var(--secondary-yellow), transparent);
+            border-radius: 3px;
+            animation: scanLine 3s ease-in-out infinite;
+            box-shadow: 0 0 15px var(--secondary-yellow), 0 0 30px rgba(255, 225, 0, 0.5);
+            opacity: 0.9;
+        }
+
+        @keyframes scanLine {
+            0% { 
+                top: 8%; 
+                opacity: 0;
+                transform: translateX(-50%) scaleX(0.5);
+            }
+            15% { 
+                opacity: 0.9;
+                transform: translateX(-50%) scaleX(1);
+            }
+            85% { 
+                opacity: 0.9;
+                transform: translateX(-50%) scaleX(1);
+            }
+            100% { 
+                top: 92%; 
+                opacity: 0;
+                transform: translateX(-50%) scaleX(0.5);
+            }
+        }
+
+        /* Grid Overlay - More subtle */
+        .scanner-grid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            background-image: 
+                linear-gradient(rgba(255, 225, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 225, 0, 0.08) 1px, transparent 1px);
+            background-size: 22px 22px;
+            border-radius: 15px;
+            opacity: 0.4;
+            animation: gridFade 4s ease-in-out infinite;
+        }
+
+        @keyframes gridFade {
+            0%, 100% { 
+                opacity: 0.15; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: translate(-50%, -50%) scale(1.01);
+            }
+        }
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background-image: 
+                linear-gradient(rgba(255, 225, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 225, 0, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 15px;
+            opacity: 0.3;
+            animation: gridFade 3s ease-in-out infinite;
+        }
+
+        @keyframes gridFade {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.3; }
         }
 
         .scanner-status {
-            margin-top: 15px;
+            margin-top: 20px;
             text-align: center;
             flex-shrink: 0;
             width: 100%;
         }
 
         .alert {
-            border-radius: 10px;
+            border-radius: 15px;
             border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            font-size: 0.9rem;
-            padding: 12px 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9), rgba(32, 201, 151, 0.9));
             color: white;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         }
 
         .alert-danger {
-            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(231, 76, 60, 0.9));
             color: white;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
         }
 
         .alert-warning {
-            background: linear-gradient(135deg, #ffc107, #ff9800);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 152, 0, 0.9));
             color: #333;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
         }
 
         .alert-info {
-            background: linear-gradient(135deg, #17a2b8, #007bff);
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.9), rgba(0, 123, 255, 0.9));
             color: white;
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
         }
 
         .spinner-border {
             color: var(--primary-orange) !important;
-            width: 2rem;
-            height: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-width: 3px;
         }
 
-        /* Camera permission button styles */
+        /* Enhanced Permission Button */
         .permission-btn {
-            background: var(--primary-orange);
+            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 155, 0, 0.3);
-            margin: 10px 5px;
+            box-shadow: 0 6px 20px rgba(255, 155, 0, 0.4);
+            margin: 12px 8px;
+            border: 2px solid transparent;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .permission-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .permission-btn:hover::before {
+            left: 100%;
         }
 
         .permission-btn:hover {
-            background: #e6890a;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 155, 0, 0.4);
+            background: linear-gradient(135deg, #e6890a, #e6b800);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 155, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .permission-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
-        /* Recent Scans Float Window */
+        /* Recent Scans Float Window - Enhanced */
         .recent-scans-float {
             position: fixed;
             top: 15px;
             right: 15px;
-            width: 300px;
-            max-height: 50vh;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
+            width: 320px;
+            max-height: 55vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(15px);
             z-index: 1000;
-            transition: all 0.3s ease;
-            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(110%);
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .recent-scans-float.open {
@@ -289,30 +549,31 @@
 
         .float-header {
             background: linear-gradient(135deg, var(--tertiary-gold), var(--secondary-yellow));
-            padding: 12px 15px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #333;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .float-header h6 {
             margin: 0;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 1rem;
         }
 
         .close-btn, .toggle-btn {
             background: none;
             border: none;
             color: #333;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            min-width: 36px;
-            min-height: 36px;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            min-height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -320,34 +581,50 @@
 
         .close-btn:hover, .toggle-btn:hover {
             background: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
         }
 
         .toggle-btn {
             position: fixed;
-            top: 70px;
+            top: 75px;
             right: 15px;
-            background: var(--primary-orange);
+            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
             color: white;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             z-index: 999;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(255, 155, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-btn:hover {
+            background: linear-gradient(135deg, #e6890a, #e6b800);
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 155, 0, 0.4);
         }
 
         .float-body {
-            padding: 12px 15px;
-            max-height: calc(50vh - 60px);
+            padding: 15px 20px;
+            max-height: calc(55vh - 70px);
             overflow-y: auto;
         }
 
         .scan-item {
-            background: #f8f9fa;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border-left: 3px solid var(--primary-orange);
-            font-size: 0.85rem;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 15px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-orange);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 155, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .scan-item:hover {
+            transform: translateX(2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .scan-item:last-child {
@@ -357,55 +634,114 @@
         .scan-time {
             font-size: 0.8rem;
             color: #6c757d;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            font-weight: 500;
         }
 
         .scan-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #333;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
         }
 
         .scan-role {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #6c757d;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
+            font-weight: 500;
         }
 
         .scan-data {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--primary-orange);
-            font-size: 0.8rem;
-            margin-bottom: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
         }
 
         .scan-location {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #28a745;
+            font-weight: 500;
         }
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
+            body::before {
+                width: min(85vw, 85vh, 500px);
+                height: min(85vw, 85vh, 500px);
+                opacity: 0.06;
+            }
+
             .scanner-container {
                 padding: 8px;
             }
 
             .scanner-header h1 {
-                font-size: 1.3rem;
+                font-size: 1.6rem;
             }
 
             .scanner-header p {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .logo {
-                width: 45px;
-                height: 45px;
+                width: 55px;
+                height: 55px;
             }
 
             .qr-reader {
                 max-width: 100%;
+                height: 280px;
+            }
+
+            .scanner-frame {
+                width: 180px;
+                height: 180px;
+            }
+
+            .recent-scans-float {
+                width: calc(100vw - 20px);
+                right: 10px;
+                left: 10px;
+                max-height: 45vh;
+            }
+
+            .toggle-btn {
+                width: 50px;
+                height: 50px;
+                right: 12px;
+                top: 70px;
+            }
+
+            .permission-btn {
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+
+            .card-header {
+                padding: 18px 20px;
+            }
+
+            .card-body {
+                padding: 20px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body::before {
+                width: min(90vw, 90vh, 400px);
+                height: min(90vw, 90vh, 400px);
+                opacity: 0.05;
+            }
+
+            .scanner-container {
+                padding: 5px;
+            }
+
+            .qr-reader {
                 height: 260px;
+                border-width: 3px;
             }
 
             .scanner-frame {
@@ -413,67 +749,26 @@
                 height: 160px;
             }
 
-            .recent-scans-float {
-                width: calc(100vw - 20px);
-                right: 10px;
-                left: 10px;
-                max-height: 40vh;
-            }
-
-            .toggle-btn {
-                width: 45px;
-                height: 45px;
-                right: 12px;
-                top: 65px;
-            }
-
-            .permission-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-
-            .card-header {
-                padding: 12px 15px;
-            }
-
-            .card-body {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .scanner-container {
-                padding: 5px;
-            }
-
-            .qr-reader {
-                height: 240px;
-                border-width: 2px;
-            }
-
-            .scanner-frame {
-                width: 140px;
-                height: 140px;
-            }
-
-            .scanning-indicator {
-                font-size: 1.5rem;
-            }
-
             .card-header h4 {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
         }
 
         /* Landscape mode optimizations */
         @media (max-height: 600px) and (orientation: landscape) {
+            body::before {
+                width: min(40vh, 300px);
+                height: min(40vh, 300px);
+                opacity: 0.04;
+            }
+
             .scanner-container {
                 flex-direction: row;
                 padding: 8px;
             }
 
             .scanner-header {
-                flex: 0 0 200px;
+                flex: 0 0 220px;
                 margin-right: 15px;
                 margin-bottom: 0;
                 display: flex;
@@ -482,17 +777,17 @@
             }
 
             .scanner-header h1 {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
 
             .scanner-header p {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
 
             .logo {
-                width: 40px;
-                height: 40px;
-                margin-bottom: 8px;
+                width: 45px;
+                height: 45px;
+                margin-bottom: 10px;
             }
 
             .scanner-card {
@@ -501,38 +796,41 @@
             }
 
             .qr-reader {
-                height: 200px;
-                max-width: 280px;
+                height: 220px;
+                max-width: 300px;
             }
 
             .scanner-frame {
-                width: 120px;
-                height: 120px;
+                width: 140px;
+                height: 140px;
             }
         }
 
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.8); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.8); }
-        }
-
+        /* Enhanced Animations */
         @keyframes scanSuccess {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 155, 0, 0.5); }
-            100% { transform: scale(1); }
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 20px 50px rgba(255, 155, 0, 0.4);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            }
         }
 
         .scan-success {
-            animation: scanSuccess 0.3s ease;
+            animation: scanSuccess 0.4s ease;
         }
 
         /* PWA enhancements */
         @media (display-mode: standalone) {
             .scanner-container {
-                padding-top: env(safe-area-inset-top, 20px);
-                padding-bottom: env(safe-area-inset-bottom, 10px);
+                padding-top: max(env(safe-area-inset-top, 20px), 20px);
+                padding-bottom: max(env(safe-area-inset-bottom, 10px), 10px);
             }
         }
 
@@ -540,13 +838,34 @@
         * {
             touch-action: manipulation;
         }
+
+        /* Status indicator improvements */
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 15;
+            animation: statusFade 2s ease-in-out infinite;
+        }
+
+        @keyframes statusFade {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
     <div class="scanner-container">
         <div class="scanner-header">
             <div class="logo">
-                <i class="fas fa-graduation-cap text-white" style="font-size: 20px;"></i>
+                <i class="fas fa-graduation-cap text-white" style="font-size: 24px;"></i>
             </div>
             <h1>CTU Access Control</h1>
             <p>Scan QR Code to Enter/Exit</p>
@@ -569,6 +888,13 @@
             <div class="card-body">
                 <div class="qr-reader" id="reader">
                     <div class="scanner-frame"></div>
+                    <div class="scanner-frame-corner-tr"></div>
+                    <div class="scanner-frame-corner-bl"></div>
+                    <div class="scanning-line"></div>
+                    <div class="scanner-grid"></div>
+                    <div class="status-indicator" style="display: none;">
+                        <i class="fas fa-camera me-1"></i>Ready
+                    </div>
                 </div>
                 
                 <div class="scanner-status">
@@ -777,10 +1103,14 @@
                 
                 console.log('Scanner started successfully');
                 document.getElementById('scannerStatus').style.display = 'none';
-                isScanning = true;
                 
-                // Add scanning indicator
-                addScanningIndicator();
+                // Show ready indicator
+                const statusIndicator = document.querySelector('.status-indicator');
+                if (statusIndicator) {
+                    statusIndicator.style.display = 'block';
+                }
+                
+                isScanning = true;
                 
                 // Add haptic feedback if available
                 if (window.navigator.vibrate) {
@@ -846,6 +1176,25 @@
             }
         }
 
+        function showHTTPSError() {
+            const statusDiv = document.getElementById('scannerStatus');
+            statusDiv.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>HTTPS Required for Mobile Camera</strong><br>
+                    <small>Mobile cameras require secure connection (HTTPS)</small><br>
+                    <div class="mt-3">
+                        <button class="permission-btn" onclick="tryHTTPS()">
+                            <i class="fas fa-lock me-1"></i> Try HTTPS
+                        </button>
+                        <button class="permission-btn" onclick="tryDesktop()">
+                            <i class="fas fa-desktop me-1"></i> Use Desktop
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
         function showPermissionError() {
             const statusDiv = document.getElementById('scannerStatus');
             statusDiv.innerHTML = `
@@ -861,9 +1210,9 @@
                     <div class="mt-3">
                         <small style="text-align: left; display: block; line-height: 1.4;">
                             <strong>Solutions:</strong><br>
-                            • Access via HTTPS (https://your-domain)<br>
-                            • Use desktop/laptop browser<br>
-                            • Setup SSL certificate for mobile access
+                            • Click camera icon in address bar<br>
+                            • Refresh page and allow camera<br>
+                            • Check browser camera settings
                         </small>
                     </div>
                 </div>
@@ -925,16 +1274,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        function addScanningIndicator() {
-            const reader = document.getElementById('reader');
-            if (!reader.querySelector('.scanning-indicator')) {
-                const indicator = document.createElement('div');
-                indicator.className = 'scanning-indicator';
-                indicator.innerHTML = '<i class="fas fa-crosshairs"></i>';
-                reader.appendChild(indicator);
-            }
         }
 
         function addCameraSelector(cameras) {
@@ -1003,7 +1342,7 @@
             reader.classList.add('scan-success');
             setTimeout(() => {
                 reader.classList.remove('scan-success');
-            }, 300);
+            }, 400);
 
             // Haptic feedback for successful scan
             if (window.navigator.vibrate) {
@@ -1315,4 +1654,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
