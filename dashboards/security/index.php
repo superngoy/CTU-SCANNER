@@ -19,73 +19,287 @@ require_once '../../config/database.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --info-color: #3498db;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .navbar-brand img {
+            height: 45px;
+            width: auto;
+            margin-right: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-text {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
         .activity-item {
             transition: all 0.3s ease;
             border-left: 4px solid transparent;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
         }
+        
         .activity-item:hover {
-            background-color: #f8f9fa;
-            border-left-color: #007bff;
+            background: rgba(255,255,255,0.9);
+            border-left-color: var(--secondary-color);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
         .stat-card {
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             color: white;
             margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+        }
+        
         .stat-card .stat-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             opacity: 0.8;
             float: right;
+            position: relative;
+            z-index: 2;
         }
+        
         .stat-card h3 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
         }
+        
+        .stat-card p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .bg-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+        .bg-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .bg-info { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .bg-secondary { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, rgba(44,62,80,0.05) 0%, rgba(39,174,96,0.05) 100%);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+        
+        .card-header h4 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .card-header h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
         .activity-feed {
             max-height: 600px;
             overflow-y: auto;
+            padding-right: 5px;
         }
+        
+        .activity-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .activity-feed::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }
+        
+        .activity-feed::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+        
         .status-indicator {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1000;
         }
+        
+        .alert-sm {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: 500;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .activity-person {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .activity-id {
+            font-size: 0.9rem;
+            color: #666;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        
+        .activity-time {
+            font-size: 0.85rem;
+            color: #888;
+            float: right;
+        }
+        
+        .activity-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .activity-type.student {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+        
+        .activity-type.faculty {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+        
+        .container-fluid {
+            max-width: 1400px;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-card h3 {
+                font-size: 2rem;
+            }
+            
+            .navbar-brand img {
+                height: 35px;
+                margin-right: 10px;
+            }
+            
+            .card-header {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Status indicator for connection -->
-    <div id="statusIndicator" class="status-indicator">
-        <div class="alert alert-success alert-sm d-none" id="connectedStatus">
-            <i class="fas fa-wifi me-1"></i>Connected
-        </div>
-        <div class="alert alert-warning alert-sm d-none" id="connectingStatus">
-            <i class="fas fa-spinner fa-spin me-1"></i>Connecting...
-        </div>
-        <div class="alert alert-danger alert-sm d-none" id="disconnectedStatus">
-            <i class="fas fa-exclamation-triangle me-1"></i>Connection Error
-        </div>
-    </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-shield-alt me-2"></i>CTU Security Dashboard
+                <img src="/assets/images/logo.png" alt="CTU Logo">
+                <div>
+                    <div>CTU Security Dashboard</div>
+                    <small style="font-size: 0.7rem; opacity: 0.8;">Real-time Monitoring System</small>
+                </div>
             </a>
             <div class="navbar-nav ms-auto">
                 <span class="navbar-text me-3">
-                    <i class="fas fa-user me-1"></i>Security: <?php echo htmlspecialchars($_SESSION['security_name'] ?? $_SESSION['security_id']); ?>
+                    <i class="fas fa-user-shield me-2"></i>Security: <?php echo htmlspecialchars($_SESSION['security_name'] ?? $_SESSION['security_id']); ?>
                 </span>
-                <a class="nav-link" href="logout.php">
+                <a class="nav-link" href="logout.php" style="color: rgba(255,255,255,0.9);">
                     <i class="fas fa-sign-out-alt me-1"></i>Logout
                 </a>
             </div>
@@ -99,18 +313,20 @@ require_once '../../config/database.php';
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">
-                            <i class="fas fa-tachometer-alt me-2"></i>Real-time Monitoring
+                            <i class="fas fa-tachometer-alt me-2"></i>Real-time Campus Monitoring
                         </h4>
-                        <div>
-                            <small class="text-muted me-2">Last updated: <span id="lastUpdated">Never</span></small>
+                        <div class="d-flex align-items-center">
+                            <small class="text-muted me-3">
+                                <i class="fas fa-clock me-1"></i>Last updated: <span id="lastUpdated">Never</span>
+                            </small>
                             <button class="btn btn-sm btn-outline-primary" onclick="dashboard.loadInitialData()">
-                                <i class="fas fa-sync"></i> Refresh All
+                                <i class="fas fa-sync-alt"></i> Refresh All
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-3 col-sm-6">
                                 <div class="stat-card bg-success">
                                     <div class="stat-icon"><i class="fas fa-sign-in-alt"></i></div>
                                     <div class="stat-info">
@@ -119,7 +335,7 @@ require_once '../../config/database.php';
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 col-sm-6">
                                 <div class="stat-card bg-warning">
                                     <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
                                     <div class="stat-info">
@@ -128,7 +344,7 @@ require_once '../../config/database.php';
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 col-sm-6">
                                 <div class="stat-card bg-info">
                                     <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                                     <div class="stat-info">
@@ -137,7 +353,7 @@ require_once '../../config/database.php';
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 col-sm-6">
                                 <div class="stat-card bg-secondary">
                                     <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                                     <div class="stat-info">
@@ -161,13 +377,16 @@ require_once '../../config/database.php';
                             <i class="fas fa-arrow-right text-success me-2"></i>Recent Entries
                         </h5>
                         <button class="btn btn-sm btn-outline-primary" onclick="refreshEntries()">
-                            <i class="fas fa-sync"></i>
+                            <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                     </div>
                     <div class="card-body p-0">
                         <div id="recentEntries" class="activity-feed p-3">
-                            <div class="text-center text-muted py-3">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Loading entries...
+                            <div class="text-center text-muted py-5">
+                                <div class="spinner-border text-secondary mb-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div>Loading recent entries...</div>
                             </div>
                         </div>
                     </div>
@@ -181,13 +400,16 @@ require_once '../../config/database.php';
                             <i class="fas fa-arrow-left text-warning me-2"></i>Recent Exits
                         </h5>
                         <button class="btn btn-sm btn-outline-primary" onclick="refreshExits()">
-                            <i class="fas fa-sync"></i>
+                            <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                     </div>
                     <div class="card-body p-0">
                         <div id="recentExits" class="activity-feed p-3">
-                            <div class="text-center text-muted py-3">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Loading exits...
+                            <div class="text-center text-muted py-5">
+                                <div class="spinner-border text-secondary mb-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div>Loading recent exits...</div>
                             </div>
                         </div>
                     </div>
@@ -200,9 +422,59 @@ require_once '../../config/database.php';
     <script src="../../assets/js/security.js"></script>
     
     <script>
+        // Enhanced activity rendering with better styling
+        function renderActivity(items, container, type) {
+            const container_el = document.getElementById(container);
+            if (!items || items.length === 0) {
+                container_el.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-3 opacity-50"></i>
+                        <div>No ${type} recorded yet</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const html = items.map(item => {
+                const firstName = item.StudentFName || item.FacultyFName || 'Unknown';
+                const lastName = item.StudentLName || item.FacultyLName || '';
+                const fullName = `${firstName} ${lastName}`.trim();
+                const timestamp = new Date(item.Timestamp);
+                const timeStr = timestamp.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                return `
+                    <div class="activity-item fade-in">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="activity-person">${fullName}</div>
+                                <div class="mt-1">
+                                    <span class="activity-type ${item.PersonCategory}">${item.PersonCategory}</span>
+                                    <span class="activity-id">${item.PersonID}</span>
+                                </div>
+                            </div>
+                            <div class="activity-time">
+                                <i class="fas fa-clock me-1"></i>${timeStr}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container_el.innerHTML = html;
+        }
+
         // Update last updated time
         function updateLastUpdatedTime() {
-            const now = new Date().toLocaleTimeString();
+            const now = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
             const element = document.getElementById('lastUpdated');
             if (element) {
                 element.textContent = now;
@@ -217,26 +489,45 @@ require_once '../../config/database.php';
             document.getElementById(type + 'Status').classList.remove('d-none');
         }
 
-        // Override the dashboard methods to include status updates
+        // Enhanced dashboard initialization
         document.addEventListener('DOMContentLoaded', () => {
             // Show connecting status initially
             showStatus('connecting');
             
-            // Show connected status after successful load
-            setTimeout(() => {
-                showStatus('connected');
-                updateLastUpdatedTime();
-            }, 1000);
-            
-            // Update last updated time on successful requests
-            const originalUpdateStats = window.dashboard?.updateStats;
-            if (originalUpdateStats) {
-                window.dashboard.updateStats = function() {
-                    originalUpdateStats.call(this);
+            // Initialize dashboard
+            if (typeof dashboard !== 'undefined') {
+                dashboard.loadInitialData();
+                
+                // Show connected status after successful load
+                setTimeout(() => {
+                    showStatus('connected');
                     updateLastUpdatedTime();
-                };
+                }, 1500);
+                
+                // Set up auto-refresh
+                setInterval(() => {
+                    dashboard.loadInitialData();
+                    updateLastUpdatedTime();
+                }, 30000); // Refresh every 30 seconds
             }
         });
+
+        // Override existing functions if they exist
+        if (typeof refreshEntries === 'undefined') {
+            window.refreshEntries = function() {
+                if (typeof dashboard !== 'undefined') {
+                    dashboard.loadRecentEntries();
+                }
+            };
+        }
+
+        if (typeof refreshExits === 'undefined') {
+            window.refreshExits = function() {
+                if (typeof dashboard !== 'undefined') {
+                    dashboard.loadRecentExits();
+                }
+            };
+        }
     </script>
 </body>
 </html>
