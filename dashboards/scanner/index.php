@@ -864,8 +864,8 @@
 <body>
     <div class="scanner-container">
         <div class="scanner-header">
-            <div class="logo">
-                <i class="fas fa-graduation-cap text-white" style="font-size: 24px;"></i>
+             <div class="logo">
+                <img src="/assets/images/logo.png" alt="CTU Logo" style="width: 60px; height: 60px; object-fit: contain;">
             </div>
             <h1>CTU Access Control</h1>
             <p>Scan QR Code to Enter/Exit</p>
