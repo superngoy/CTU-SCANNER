@@ -1315,32 +1315,4 @@
         });
     </script>
 </body>
-</html> line-height: 1.4;">
-                            <strong>Mobile Steps:</strong><br>
-                            1. Tap "Enable Camera" button<br>
-                            2. Select "Allow" when prompted<br>
-                            3. If blocked, tap the camera icon in address bar<br>
-                            4. Make sure you're using HTTPS (secure connection)
-                        </small>
-                    </div>
-                </div>
-            `;
-        }
-
-        function showHTTPSError() {
-            const statusDiv = document.getElementById('scannerStatus');
-            statusDiv.innerHTML = `
-                <div class="alert alert-warning">
-                    <i class="fas fa-shield-alt me-2"></i>
-                    <strong>Secure Connection Required</strong><br>
-                    <small>Camera access requires HTTPS on mobile devices.</small><br>
-                    <div class="mt-3">
-                        <button class="permission-btn" onclick="tryHTTPS()">
-                            <i class="fas fa-lock me-1"></i> Switch to HTTPS
-                        </button>
-                        <button class="permission-btn" onclick="tryDesktop()" style="background: var(--tertiary-gold); color: #333;">
-                            <i class="fas fa-desktop me-1"></i> Use Desktop
-                        </button>
-                    </div>
-                    <div class="mt-3">
-                        <small style="text-align: left; display: block;
+</html> 
