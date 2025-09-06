@@ -120,7 +120,7 @@ setcookie('admin_preferences', '', time() - 3600, '/');
             box-shadow: var(--shadow-heavy);
             overflow: hidden;
             max-width: 550px;
-            width: 100%;
+            width: 95%;
             margin: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
             position: relative;
