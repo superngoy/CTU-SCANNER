@@ -17,23 +17,43 @@ $peakHours = $scanner->getPeakHours();
     <style>
         :root {
             --sidebar-width: 280px;
+            --sidebar-collapsed-width: 70px;
             --header-height: 70px;
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            /* Updated Color Palette */
+            --primary-color: #D8AC41;
+            --danger-color: #E00000;
+            --warning-color: #FF9600;
+            --secondary-color: #DB362D;
+            
+            /* Gradients with new colors */
+            --primary-gradient: linear-gradient(135deg, #D8AC41 0%, #FF9600 100%);
+            --secondary-gradient: linear-gradient(135deg, #DB362D 0%, #E00000 100%);
+            --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            --warning-gradient: linear-gradient(135deg, #FF9600 0%, #D8AC41 100%);
+            --danger-gradient: linear-gradient(135deg, #E00000 0%, #DB362D 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             min-height: 100vh;
-            margin: 0;
             padding-left: var(--sidebar-width);
-            transition: all 0.3s ease;
+            transition: padding-left 0.2s ease;
+            overflow-x: hidden;
         }
 
-        /* Sidebar Styles */
+        body.sidebar-collapsed {
+            padding-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Enhanced Sidebar Styles */
         .sidebar {
             position: fixed;
             left: 0;
@@ -41,24 +61,52 @@ $peakHours = $scanner->getPeakHours();
             width: var(--sidebar-width);
             height: 100vh;
             background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-            z-index: 1000;
-            transition: all 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+            z-index: 1050;
+            transition: all 0.2s ease;
             overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
         }
 
         .sidebar-header {
             padding: 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            padding: 20px 10px;
         }
 
         .sidebar-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             margin-bottom: 10px;
-            border: 3px solid rgba(255,255,255,0.2);
+            border: 2px solid var(--primary-color);
+            transition: all 0.2s ease;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-title, .sidebar-subtitle {
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .sidebar-title,
+        .sidebar.collapsed .sidebar-subtitle {
+            opacity: 0;
+            transform: scale(0);
         }
 
         .sidebar-title {
@@ -74,24 +122,55 @@ $peakHours = $scanner->getPeakHours();
             margin-top: 5px;
         }
 
+        /* Toggle Button */
+        .sidebar-toggle {
+            position: absolute;
+            top: 25px;
+            right: -15px;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--warning-color);
+            transform: scale(1.1);
+        }
+
         .sidebar-nav {
-            padding: 20px 0;
+            padding: 15px 0;
         }
 
         .nav-item {
-            margin: 5px 15px;
+            margin: 3px 8px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
+            padding: 12px 16px;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            transition: all 0.15s ease;
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 12px;
         }
 
         .nav-link::before {
@@ -102,8 +181,8 @@ $peakHours = $scanner->getPeakHours();
             width: 0;
             height: 100%;
             background: var(--primary-gradient);
-            transition: all 0.3s ease;
-            border-radius: 12px;
+            transition: width 0.15s ease;
+            border-radius: 10px;
         }
 
         .nav-link:hover::before {
@@ -112,27 +191,80 @@ $peakHours = $scanner->getPeakHours();
 
         .nav-link:hover {
             color: #fff;
-            transform: translateX(5px);
+            transform: translateX(3px);
+        }
+
+        .sidebar.collapsed .nav-link:hover {
+            transform: translateX(0) scale(1.05);
         }
 
         .nav-link i {
-            width: 24px;
+            width: 20px;
             margin-right: 12px;
             font-size: 16px;
             position: relative;
             z-index: 1;
+            transition: margin 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
         }
 
         .nav-link span {
             position: relative;
             z-index: 1;
             font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            opacity: 0;
+            transform: scale(0);
+            width: 0;
         }
 
         .nav-link.active {
             background: var(--primary-gradient);
             color: #fff;
-            transform: translateX(5px);
+            transform: translateX(3px);
+        }
+
+        .sidebar.collapsed .nav-link.active {
+            transform: translateX(0) scale(1.05);
+        }
+
+        /* Tooltip for collapsed sidebar */
+        .nav-link-tooltip {
+            position: absolute;
+            left: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.15s ease;
+            z-index: 1000;
+        }
+
+        .nav-link-tooltip::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: #333;
+        }
+
+        .sidebar.collapsed .nav-link:hover .nav-link-tooltip {
+            opacity: 1;
+            left: 75px;
         }
 
         /* Top Header */
@@ -143,18 +275,23 @@ $peakHours = $scanner->getPeakHours();
             right: 0;
             height: var(--header-height);
             background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255,255,255,0.2);
-            z-index: 999;
+            z-index: 1040;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 25px;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            transition: left 0.2s ease;
+        }
+
+        body.sidebar-collapsed .top-header {
+            left: var(--sidebar-collapsed-width);
         }
 
         .header-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: #333;
             margin: 0;
@@ -163,7 +300,7 @@ $peakHours = $scanner->getPeakHours();
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .notification-btn {
@@ -174,56 +311,61 @@ $peakHours = $scanner->getPeakHours();
             font-size: 18px;
             padding: 10px;
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.15s ease;
         }
 
         .notification-btn:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            background: rgba(216, 172, 65, 0.1);
+            color: var(--primary-color);
+            transform: scale(1.1);
         }
 
         .notification-badge {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 6px;
+            right: 6px;
             width: 8px;
             height: 8px;
-            background: #ff4757;
+            background: var(--danger-color);
             border-radius: 50%;
+            animation: pulse 1.5s infinite;
         }
 
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             padding: 8px 15px;
-            border-radius: 25px;
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            border-radius: 20px;
+            background: rgba(216, 172, 65, 0.1);
+            color: var(--primary-color);
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.15s ease;
+            font-size: 14px;
         }
 
         .user-profile:hover {
-            background: rgba(102, 126, 234, 0.2);
+            background: rgba(216, 172, 65, 0.2);
             transform: scale(1.05);
+            color: var(--primary-color);
         }
 
         /* Main Content */
         .main-content {
             margin-top: var(--header-height);
-            padding: 30px;
+            padding: 20px;
             min-height: calc(100vh - var(--header-height));
+            transition: all 0.2s ease;
         }
 
         /* Enhanced Cards */
         .enhanced-card {
             background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
             overflow: hidden;
             position: relative;
         }
@@ -234,24 +376,23 @@ $peakHours = $scanner->getPeakHours();
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: var(--primary-gradient);
         }
 
         .enhanced-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
         .stat-card {
-            background: var(--primary-gradient);
-            color: white;
-            border-radius: 16px;
-            padding: 25px;
+            border-radius: 14px;
+            padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.15s ease;
             position: relative;
             overflow: hidden;
+            color: white;
         }
 
         .stat-card::before {
@@ -263,7 +404,7 @@ $peakHours = $scanner->getPeakHours();
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             transform: scale(0);
-            transition: transform 0.6s ease;
+            transition: transform 0.3s ease;
         }
 
         .stat-card:hover::before {
@@ -271,22 +412,24 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .stat-card:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-5px) scale(1.02);
         }
 
+        .stat-card.bg-primary { background: var(--primary-gradient); }
         .stat-card.bg-success { background: var(--success-gradient); }
         .stat-card.bg-warning { background: var(--warning-gradient); }
         .stat-card.bg-info { background: var(--secondary-gradient); }
+        .stat-card.bg-danger { background: var(--danger-gradient); }
 
         .stat-icon {
-            font-size: 36px;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin-bottom: 12px;
             position: relative;
             z-index: 1;
         }
 
         .stat-info h3 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: 5px;
             position: relative;
@@ -295,28 +438,29 @@ $peakHours = $scanner->getPeakHours();
 
         .stat-info p {
             margin: 0;
-            opacity: 0.9;
+            opacity: 0.95;
             position: relative;
             z-index: 1;
+            font-size: 14px;
         }
 
-        /* Animations */
+        /* Fast Animations */
         .slide-in-left {
-            animation: slideInLeft 0.6s ease-out forwards;
+            animation: slideInLeft 0.3s ease-out forwards;
         }
 
         .slide-in-right {
-            animation: slideInRight 0.6s ease-out forwards;
+            animation: slideInRight 0.3s ease-out forwards;
         }
 
         .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
+            animation: fadeInUp 0.4s ease-out forwards;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
         }
 
         .bounce-in {
-            animation: bounceIn 0.6s ease-out forwards;
+            animation: bounceIn 0.3s ease-out forwards;
         }
 
         @keyframes slideInLeft {
@@ -330,72 +474,163 @@ $peakHours = $scanner->getPeakHours();
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
         }
 
-        /* QR Generator Modal */
-        .qr-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            padding: 20px;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
         }
 
-        .qr-modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            position: relative;
-            animation: bounceIn 0.5s ease-out;
-        }
-
-        .qr-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
+        /* Button Styles */
+        .btn-primary {
+            background: var(--primary-gradient);
             border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--warning-gradient);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(216, 172, 65, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            border: none;
+            color: #fff;
+            transition: all 0.15s ease;
+        }
+
+        .btn-warning:hover {
+            background: var(--primary-gradient);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 150, 0, 0.3);
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: var(--danger-gradient);
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(224, 0, 0, 0.3);
         }
 
         /* Responsive Design */
+        @media (max-width: 1199px) {
+            .main-content {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .header-title {
+                font-size: 18px;
+            }
+            
+            .stat-card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-info h3 {
+                font-size: 24px;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding-left: 0;
             }
             
-            .sidebar {
-                transform: translateX(-100%);
+            body.sidebar-collapsed {
+                padding-left: 0;
             }
             
-            .sidebar.active {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+            }
+            
+            .sidebar.mobile-active {
                 transform: translateX(0);
+            }
+            
+            .sidebar.collapsed {
+                width: var(--sidebar-width);
             }
             
             .top-header {
                 left: 0;
             }
             
+            body.sidebar-collapsed .top-header {
+                left: 0;
+            }
+            
             .mobile-toggle {
                 display: block !important;
+            }
+            
+            .sidebar-toggle {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .header-title {
+                font-size: 16px;
+            }
+            
+            .user-profile span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .stat-icon {
+                font-size: 28px;
+                margin-bottom: 8px;
+            }
+            
+            .stat-info h3 {
+                font-size: 20px;
+            }
+            
+            .stat-info p {
+                font-size: 12px;
+            }
+            
+            .header-actions {
+                gap: 8px;
             }
         }
 
@@ -404,21 +639,196 @@ $peakHours = $scanner->getPeakHours();
             background: none;
             border: none;
             color: #666;
-            font-size: 20px;
-            padding: 10px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.15s ease;
         }
 
         .mobile-toggle:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
+            background: rgba(216, 172, 65, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Mobile Overlay - Enhanced */
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            z-index: 1030;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+        }
+
+        /* Ensure sidebar is above overlay but overlay is clickable */
+        .sidebar {
+            z-index: 1050;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .mobile-overlay.active {
+                display: block !important;
+            }
+            
+            /* Make sure overlay covers everything */
+            .mobile-overlay {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+
+        /* Mobile Close Button */
+        .mobile-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .mobile-close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-close-btn {
+                display: flex;
+            }
+            
+            .sidebar-toggle {
+                display: none !important;
+            }
+        }
+
+        /* Management Cards */
+        .management-card {
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .management-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Form Controls */
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(216, 172, 65, 0.25);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification Animations */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Scrollbar Styling */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* Enhanced card content */
+        .card-header {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            background: transparent;
+        }
+
+        /* Quick access buttons */
+        .quick-action-btn {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .quick-action-btn:hover {
+            background: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            color: var(--primary-color);
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
     <!-- Sidebar Navigation -->
-    <nav class="sidebar slide-in-left">
+    <nav class="sidebar slide-in-left" id="sidebar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <i class="fas fa-chevron-left" id="toggleIcon"></i>
+        </button>
+        
+        <!-- Mobile Close Button -->
+        <button class="mobile-close-btn" onclick="closeMobileSidebar()" title="Close Menu">
+            <i class="fas fa-times"></i>
+        </button>
+        
         <div class="sidebar-header">
             <img src="../../assets/images/logo.png" alt="CTU Logo" class="sidebar-logo">
             <h3 class="sidebar-title">CTU Admin</h3>
@@ -430,45 +840,52 @@ $peakHours = $scanner->getPeakHours();
                 <a href="#dashboard" class="nav-link active" data-section="dashboard">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
+                    <div class="nav-link-tooltip">Dashboard</div>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="#qr-generator" class="nav-link" data-section="qr-generator">
                     <i class="fas fa-qrcode"></i>
                     <span>QR Generator</span>
+                    <div class="nav-link-tooltip">QR Generator</div>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="#analytics" class="nav-link" data-section="analytics">
                     <i class="fas fa-chart-line"></i>
                     <span>Analytics</span>
+                    <div class="nav-link-tooltip">Analytics</div>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="#reports" class="nav-link" data-section="reports">
                     <i class="fas fa-file-alt"></i>
                     <span>Reports</span>
+                    <div class="nav-link-tooltip">Reports</div>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="#users" class="nav-link" data-section="users">
                     <i class="fas fa-users"></i>
                     <span>User Management</span>
+                    <div class="nav-link-tooltip">User Management</div>
                 </a>
             </div>
             <div class="nav-item">
                 <a href="#settings" class="nav-link" data-section="settings">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
+                    <div class="nav-link-tooltip">Settings</div>
                 </a>
             </div>
         </div>
         
-        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
+        <div style="position: absolute; bottom: 20px; left: 8px; right: 8px;">
             <div class="nav-item">
-                <a href="logout.php" class="nav-link" style="background: rgba(255,82,82,0.1); color: #ff5252;">
+                <a href="logout.php" class="nav-link" style="background: rgba(224, 0, 0, 0.1); color: var(--danger-color);">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
+                    <div class="nav-link-tooltip">Logout</div>
                 </a>
             </div>
         </div>
@@ -477,14 +894,14 @@ $peakHours = $scanner->getPeakHours();
     <!-- Top Header -->
     <header class="top-header slide-in-right">
         <div class="d-flex align-items-center">
-            <button class="mobile-toggle me-3" onclick="toggleSidebar()">
+            <button class="mobile-toggle me-3" onclick="openMobileSidebar()">
                 <i class="fas fa-bars"></i>
             </button>
             <h1 class="header-title">Campus Management System</h1>
         </div>
         
         <div class="header-actions">
-            <button class="notification-btn">
+            <button class="notification-btn" title="Notifications">
                 <i class="fas fa-bell"></i>
                 <div class="notification-badge"></div>
             </button>
@@ -503,15 +920,15 @@ $peakHours = $scanner->getPeakHours();
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="enhanced-card fade-in-up">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h4 class="mb-0">
-                                <i class="fas fa-chart-bar me-3"></i>Today's Campus Overview
-                            </h4>
+                        <div class="card-header p-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar me-2"></i>Today's Campus Overview
+                            </h5>
                         </div>
-                        <div class="card-body p-4">
-                            <div class="row g-4">
+                        <div class="card-body p-3">
+                            <div class="row g-3">
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bounce-in" style="animation-delay: 0.1s;">
+                                    <div class="stat-card bg-primary bounce-in" style="animation-delay: 0.05s;">
                                         <div class="stat-icon"><i class="fas fa-users"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['total_entries']; ?></h3>
@@ -520,7 +937,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-success bounce-in" style="animation-delay: 0.2s;">
+                                    <div class="stat-card bg-success bounce-in" style="animation-delay: 0.1s;">
                                         <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['student_entries']; ?></h3>
@@ -529,7 +946,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-info bounce-in" style="animation-delay: 0.3s;">
+                                    <div class="stat-card bg-info bounce-in" style="animation-delay: 0.15s;">
                                         <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['faculty_entries']; ?></h3>
@@ -538,7 +955,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-warning bounce-in" style="animation-delay: 0.4s;">
+                                    <div class="stat-card bg-warning bounce-in" style="animation-delay: 0.2s;">
                                         <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['total_exits']; ?></h3>
@@ -551,6 +968,62 @@ $peakHours = $scanner->getPeakHours();
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Actions -->
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <a href="#qr-generator" class="quick-action-btn" data-section="qr-generator">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-qrcode" style="font-size: 24px; color: var(--primary-color);"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Generate QR</h6>
+                                <small class="text-muted">Create QR codes</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <a href="#analytics" class="quick-action-btn" data-section="analytics">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-chart-line" style="font-size: 24px; color: var(--secondary-color);"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Analytics</h6>
+                                <small class="text-muted">View reports</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <a href="#users" class="quick-action-btn" data-section="users">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-users" style="font-size: 24px; color: var(--warning-color);"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Manage Users</h6>
+                                <small class="text-muted">User accounts</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <a href="#reports" class="quick-action-btn" data-section="reports">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-download" style="font-size: 24px; color: var(--danger-color);"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0">Export Data</h6>
+                                <small class="text-muted">Download reports</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- QR Generator Section -->
@@ -558,24 +1031,24 @@ $peakHours = $scanner->getPeakHours();
             <div class="row">
                 <div class="col-12">
                     <div class="enhanced-card fade-in-up">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h4 class="mb-0">
-                                <i class="fas fa-qrcode me-3"></i>QR Code Generator & Management
-                            </h4>
+                        <div class="card-header p-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-qrcode me-2"></i>QR Code Generator & Management
+                            </h5>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-3">
                             <!-- Quick QR Generator -->
                             <div class="row mb-4">
                                 <div class="col-lg-8 mx-auto">
                                     <div class="enhanced-card" style="border: 2px solid var(--primary-color) !important;">
-                                        <div class="card-header bg-light border-0 p-3">
+                                        <div class="card-header bg-light p-3">
                                             <h6 class="mb-0">
                                                 <i class="fas fa-magic me-2"></i>Quick QR Generator
                                             </h6>
                                         </div>
-                                        <div class="card-body p-4">
+                                        <div class="card-body p-3">
                                             <form id="quickGenerateForm">
-                                                <div class="row">
+                                                <div class="row align-items-end">
                                                     <div class="col-md-8">
                                                         <div class="form-floating">
                                                             <input type="text" class="form-control" id="idInput" placeholder="Enter ID" required>
@@ -586,7 +1059,7 @@ $peakHours = $scanner->getPeakHours();
                                                         </small>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <button type="submit" class="btn btn-primary w-100 h-100" style="background: var(--primary-gradient); border: none;">
+                                                        <button type="submit" class="btn btn-primary w-100 py-3">
                                                             <i class="fas fa-qrcode me-2"></i>Generate QR
                                                         </button>
                                                     </div>
@@ -604,13 +1077,13 @@ $peakHours = $scanner->getPeakHours();
                             
                             <!-- Batch Generation Options -->
                             <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <button class="btn w-100 py-3" onclick="generateAll('students')" style="background: var(--success-gradient); border: none; color: white; border-radius: 15px;">
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-success w-100 py-3" onclick="generateAll('students')" style="border-radius: 12px;">
                                         <i class="fas fa-user-graduate me-2"></i>Generate All Student QR Codes
                                     </button>
                                 </div>
-                                <div class="col-md-6">
-                                    <button class="btn w-100 py-3" onclick="generateAll('faculty')" style="background: var(--secondary-gradient); border: none; color: white; border-radius: 15px;">
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-info w-100 py-3" onclick="generateAll('faculty')" style="border-radius: 12px;">
                                         <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty QR Codes
                                     </button>
                                 </div>
@@ -631,28 +1104,28 @@ $peakHours = $scanner->getPeakHours();
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="enhanced-card fade-in-up">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h5 class="mb-0">
+                        <div class="card-header p-3">
+                            <h6 class="mb-0">
                                 <i class="fas fa-chart-line me-2"></i>Peak Hours Analysis
-                            </h5>
+                            </h6>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-3">
                             <div class="chart-container">
-                                <canvas id="peakHoursChart"></canvas>
+                                <canvas id="peakHoursChart" style="max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="enhanced-card fade-in-up" style="animation-delay: 0.1s;">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h5 class="mb-0">
+                        <div class="card-header p-3">
+                            <h6 class="mb-0">
                                 <i class="fas fa-pie-chart me-2"></i>Department Distribution
-                            </h5>
+                            </h6>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-3">
                             <div class="chart-container">
-                                <canvas id="departmentChart"></canvas>
+                                <canvas id="departmentChart" style="max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -665,22 +1138,22 @@ $peakHours = $scanner->getPeakHours();
             <div class="row">
                 <div class="col-12">
                     <div class="enhanced-card fade-in-up">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h4 class="mb-0">
-                                <i class="fas fa-download me-3"></i>Data Export Center
-                            </h4>
+                        <div class="card-header p-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-download me-2"></i>Data Export Center
+                            </h5>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="d-grid gap-3 mb-4">
-                                        <button class="btn btn-success py-3" onclick="exportExcel()" style="border-radius: 15px;">
+                                        <button class="btn btn-success py-3" onclick="exportExcel()" style="border-radius: 12px;">
                                             <i class="fas fa-file-excel me-2"></i>Export to Excel
-                                            <span class="loading-spinner d-none" id="excelLoading"></span>
+                                            <span class="loading-spinner d-none ms-2" id="excelLoading"></span>
                                         </button>
-                                        <button class="btn btn-danger py-3" onclick="exportPDF()" style="border-radius: 15px;">
+                                        <button class="btn btn-danger py-3" onclick="exportPDF()" style="border-radius: 12px;">
                                             <i class="fas fa-file-pdf me-2"></i>Export to PDF
-                                            <span class="loading-spinner d-none" id="pdfLoading"></span>
+                                            <span class="loading-spinner d-none ms-2" id="pdfLoading"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -691,15 +1164,15 @@ $peakHours = $scanner->getPeakHours();
                                         </label>
                                         <div class="row">
                                             <div class="col-6">
-                                                <input type="date" id="startDate" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 10px;">
+                                                <input type="date" id="startDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
                                             </div>
                                             <div class="col-6">
-                                                <input type="date" id="endDate" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 10px;">
+                                                <input type="date" id="endDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
                                             </div>
                                         </div>
-                                        <button class="btn btn-primary w-100 mt-3 py-3" onclick="generateReport()" style="background: var(--primary-gradient); border: none; border-radius: 15px;">
+                                        <button class="btn btn-primary w-100 py-3" onclick="generateReport()" style="border-radius: 12px;">
                                             <i class="fas fa-chart-bar me-2"></i>Generate Custom Report
-                                            <span class="loading-spinner d-none" id="reportLoading"></span>
+                                            <span class="loading-spinner d-none ms-2" id="reportLoading"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -715,38 +1188,115 @@ $peakHours = $scanner->getPeakHours();
             <div class="row">
                 <div class="col-12">
                     <div class="enhanced-card fade-in-up">
-                        <div class="card-header bg-transparent border-0 p-4">
-                            <h4 class="mb-0">
-                                <i class="fas fa-users me-3"></i>User Management System
-                            </h4>
+                        <div class="card-header p-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>User Management System
+                            </h5>
                         </div>
-                        <div class="card-body p-4">
+                        <div class="card-body p-3">
                             <div class="row">
                                 <div class="col-lg-4 col-md-6 mb-4">
-                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('students')" style="cursor: pointer; transition: all 0.3s ease;">
-                                        <div style="font-size: 48px; color: var(--success-color); margin-bottom: 20px;">
+                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('students')" style="cursor: pointer;">
+                                        <div style="font-size: 42px; color: var(--primary-color); margin-bottom: 15px;">
                                             <i class="fas fa-user-graduate"></i>
                                         </div>
                                         <h6>Manage Students</h6>
-                                        <p class="text-muted">Add, edit, or manage student accounts and information</p>
+                                        <p class="text-muted small">Add, edit, or manage student accounts and information</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-6 mb-4">
-                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('faculty')" style="cursor: pointer; transition: all 0.3s ease;">
-                                        <div style="font-size: 48px; color: var(--info-color); margin-bottom: 20px;">
+                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('faculty')" style="cursor: pointer;">
+                                        <div style="font-size: 42px; color: var(--secondary-color); margin-bottom: 15px;">
                                             <i class="fas fa-chalkboard-teacher"></i>
                                         </div>
                                         <h6>Manage Faculty</h6>
-                                        <p class="text-muted">Add, edit, or manage faculty accounts and information</p>
+                                        <p class="text-muted small">Add, edit, or manage faculty accounts and information</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-6 mb-4">
-                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('security')" style="cursor: pointer; transition: all 0.3s ease;">
-                                        <div style="font-size: 48px; color: var(--warning-color); margin-bottom: 20px;">
+                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('security')" style="cursor: pointer;">
+                                        <div style="font-size: 42px; color: var(--warning-color); margin-bottom: 15px;">
                                             <i class="fas fa-shield-alt"></i>
                                         </div>
                                         <h6>Manage Security</h6>
-                                        <p class="text-muted">Add, edit, or manage security personnel accounts</p>
+                                        <p class="text-muted small">Add, edit, or manage security personnel accounts</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="enhanced-card fade-in-up">
+                        <div class="card-header p-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>System Settings
+                            </h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h6 class="mb-3">
+                                        <i class="fas fa-palette me-2"></i>Theme Settings
+                                    </h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">Color Scheme</label>
+                                        <select class="form-select" style="border-radius: 8px;">
+                                            <option>CTU Gold Theme (Current)</option>
+                                            <option>Dark Theme</option>
+                                            <option>Light Theme</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <h6 class="mb-3">
+                                        <i class="fas fa-bell me-2"></i>Notification Settings
+                                    </h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                                        <label class="form-check-label" for="emailNotif">
+                                            Email Notifications
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pushNotif" checked>
+                                        <label class="form-check-label" for="pushNotif">
+                                            Push Notifications
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6 class="mb-3">
+                                        <i class="fas fa-database me-2"></i>System Information
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <small class="text-muted">Version</small>
+                                            <p class="mb-2">CTU Scanner v2.1</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted">Last Update</small>
+                                            <p class="mb-2"><?php echo date('M d, Y'); ?></p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted">Database</small>
+                                            <p class="mb-2">MySQL 8.0</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small class="text-muted">Status</small>
+                                            <p class="mb-2">
+                                                <span class="badge bg-success">Active</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -765,10 +1315,11 @@ $peakHours = $scanner->getPeakHours();
     <script>
         // Initialize charts with PHP data
         const peakHoursData = <?php echo json_encode($peakHours); ?>;
+        let sidebarCollapsed = false;
         
-        // Navigation functionality
+        // Enhanced Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link[data-section]');
+            const navLinks = document.querySelectorAll('.nav-link[data-section], .quick-action-btn[data-section]');
             const contentSections = document.querySelectorAll('.content-section');
             
             navLinks.forEach(link => {
@@ -776,10 +1327,18 @@ $peakHours = $scanner->getPeakHours();
                     e.preventDefault();
                     
                     // Remove active class from all nav links
-                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    document.querySelectorAll('.nav-link[data-section]').forEach(navLink => navLink.classList.remove('active'));
                     
-                    // Add active class to clicked nav link
-                    this.classList.add('active');
+                    // Add active class to clicked nav link (if it's a nav-link)
+                    if (this.classList.contains('nav-link')) {
+                        this.classList.add('active');
+                    } else {
+                        // Find corresponding nav link and activate it
+                        const correspondingNavLink = document.querySelector(`.nav-link[data-section="${this.dataset.section}"]`);
+                        if (correspondingNavLink) {
+                            correspondingNavLink.classList.add('active');
+                        }
+                    }
                     
                     // Hide all content sections
                     contentSections.forEach(section => {
@@ -795,24 +1354,126 @@ $peakHours = $scanner->getPeakHours();
                             targetSection.classList.add('fade-in-up');
                         }, 50);
                     }
+                    
+                    // Close mobile sidebar if open
+                    if (window.innerWidth <= 768) {
+                        toggleMobileSidebar(false);
+                    }
                 });
             });
             
-            // Initialize animations
-            const animatedElements = document.querySelectorAll('.fade-in-up, .bounce-in, .slide-in-left, .slide-in-right');
+            // Initialize animations with faster delays
+            const animatedElements = document.querySelectorAll('.fade-in-up, .bounce-in');
             animatedElements.forEach((element, index) => {
-                element.style.animationDelay = `${index * 0.1}s`;
+                element.style.animationDelay = `${index * 0.05}s`;
             });
             
+            // Initialize charts if function exists
             if (typeof initializeCharts === 'function') {
-                initializeCharts();
+                setTimeout(initializeCharts, 300);
             }
+            
+            // Handle window resize
+            window.addEventListener('resize', handleWindowResize);
+            handleWindowResize(); // Initial call
         });
         
-        // Mobile sidebar toggle
+        // Sidebar toggle functionality
         function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('active');
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                body.classList.add('sidebar-collapsed');
+                toggleIcon.className = 'fas fa-chevron-right';
+            } else {
+                sidebar.classList.remove('collapsed');
+                body.classList.remove('sidebar-collapsed');
+                toggleIcon.className = 'fas fa-chevron-left';
+            }
+            
+            // Store preference
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+        }
+        
+        // SIMPLE MOBILE SIDEBAR FUNCTIONS
+        function openMobileSidebar() {
+            console.log('Opening mobile sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.add('mobile-active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileSidebar() {
+            console.log('Closing mobile sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.remove('mobile-active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Mobile Detection and Sidebar Toggle
+        function isMobile() {
+            return window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // Keep this for backward compatibility
+        function toggleMobileSidebar(force = null) {
+            if (force === false) {
+                closeMobileSidebar();
+            } else if (force === true) {
+                openMobileSidebar();
+            } else {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.classList.contains('mobile-active')) {
+                    closeMobileSidebar();
+                } else {
+                    openMobileSidebar();
+                }
+            }
+        }
+        
+        // Force setup overlay handlers after DOM is fully loaded
+        window.addEventListener('load', function() {
+            console.log('Window loaded - simple setup');
+        });
+        
+        // Handle window resize and cleanup
+        function handleWindowResize() {
+            if (window.innerWidth > 768) {
+                // Desktop: cleanup mobile overlay
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('mobileOverlay');
+                
+                sidebar.classList.remove('mobile-active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                // Restore sidebar collapsed state
+                const savedState = localStorage.getItem('sidebarCollapsed');
+                if (savedState === 'true' && !sidebarCollapsed) {
+                    toggleSidebar();
+                }
+            } else {
+                // Mobile: ensure sidebar is not in collapsed state
+                const sidebar = document.getElementById('sidebar');
+                const body = document.body;
+                
+                if (sidebarCollapsed) {
+                    sidebar.classList.remove('collapsed');
+                    body.classList.remove('sidebar-collapsed');
+                    sidebarCollapsed = false;
+                }
+            }
         }
         
         // QR Generator Functions
@@ -839,102 +1500,105 @@ $peakHours = $scanner->getPeakHours();
             resultDiv.style.display = 'block';
             resultDiv.classList.add('fade-in-up');
             
-            fetch(`../../qr_generator_api.php?action=generate_by_id&id=${encodeURIComponent(id)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const person = data.person;
-                        resultDiv.innerHTML = `
-                            <div class="enhanced-card border-success" style="border-width: 2px !important;">
-                                <div class="card-body p-4">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-6">
-                                            <div class="d-flex align-items-center mb-3">
-                                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-check"></i>
+            // Simulate API call
+            setTimeout(() => {
+                fetch(`../../qr_generator_api.php?action=generate_by_id&id=${encodeURIComponent(id)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const person = data.person;
+                            resultDiv.innerHTML = `
+                                <div class="enhanced-card border-success" style="border-width: 2px !important;">
+                                    <div class="card-body p-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                        <i class="fas fa-check"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">${person.FName} ${person.MName ? person.MName + ' ' : ''}${person.LName}</h6>
+                                                        <small class="text-muted">QR Code Generated</small>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h5 class="mb-0">${person.FName} ${person.MName ? person.MName + ' ' : ''}${person.LName}</h5>
-                                                    <small class="text-muted">QR Code Generated Successfully</small>
+                                                
+                                                <div class="info-grid">
+                                                    <p class="mb-1"><strong>ID:</strong> <span class="badge bg-primary">${person.ID}</span></p>
+                                                    <p class="mb-1"><strong>Type:</strong> <span class="badge bg-info">${person.Type}</span></p>
+                                                    ${person.Course ? `<p class="mb-1"><strong>Course:</strong> ${person.Course}</p>` : ''}
+                                                    ${person.YearLvl ? `<p class="mb-1"><strong>Year:</strong> ${person.YearLvl} - Section ${person.Section}</p>` : ''}
+                                                    <p class="mb-3"><strong>Department:</strong> ${person.Department}</p>
+                                                </div>
+                                                
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <button class="btn btn-success btn-sm" onclick="testScanner('${person.ID}')">
+                                                        <i class="fas fa-camera me-1"></i>Test
+                                                    </button>
+                                                    <button class="btn btn-primary btn-sm" onclick="downloadQR('${person.ID}', '${person.FName} ${person.LName}')">
+                                                        <i class="fas fa-download me-1"></i>Download
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-sm" onclick="shareQR('${person.ID}')">
+                                                        <i class="fas fa-share me-1"></i>Share
+                                                    </button>
                                                 </div>
                                             </div>
-                                            
-                                            <div class="info-grid">
-                                                <p><strong>ID:</strong> <span class="badge bg-primary">${person.ID}</span></p>
-                                                <p><strong>Type:</strong> <span class="badge bg-info">${person.Type}</span></p>
-                                                ${person.Course ? `<p><strong>Course:</strong> ${person.Course}</p>` : ''}
-                                                ${person.YearLvl ? `<p><strong>Year:</strong> ${person.YearLvl} - Section ${person.Section}</p>` : ''}
-                                                <p><strong>Department:</strong> ${person.Department}</p>
+                                            <div class="col-md-6 text-center">
+                                                <div class="qr-container" style="background: var(--primary-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
+                                                    <img src="${data.qr_url}" alt="QR Code" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
+                                                </div>
+                                                <p class="mt-2 small text-muted">
+                                                    <i class="fas fa-mobile-alt me-1"></i>Scan with CTU Scanner
+                                                </p>
                                             </div>
-                                            
-                                            <div class="mt-4 d-flex gap-2 flex-wrap">
-                                                <button class="btn btn-success" onclick="testScanner('${person.ID}')" style="border-radius: 10px;">
-                                                    <i class="fas fa-camera me-1"></i>Test Scanner
-                                                </button>
-                                                <button class="btn btn-primary" onclick="downloadQR('${person.ID}', '${person.FName} ${person.LName}')" style="border-radius: 10px;">
-                                                    <i class="fas fa-download me-1"></i>Download
-                                                </button>
-                                                <button class="btn btn-outline-secondary" onclick="shareQR('${person.ID}')" style="border-radius: 10px;">
-                                                    <i class="fas fa-share me-1"></i>Share
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 text-center">
-                                            <div class="qr-container" style="background: linear-gradient(45deg, #667eea, #764ba2); padding: 20px; border-radius: 20px; display: inline-block;">
-                                                <img src="${data.qr_url}" alt="QR Code" class="img-fluid" style="max-width: 200px; border: 4px solid white; border-radius: 15px;">
-                                            </div>
-                                            <p class="mt-3 text-muted">
-                                                <i class="fas fa-mobile-alt me-1"></i>Scan with CTU Scanner
-                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                        showNotification('QR Code generated successfully!', 'success');
-                    } else {
+                            `;
+                            showNotification('QR Code generated successfully!', 'success');
+                        } else {
+                            resultDiv.innerHTML = `
+                                <div class="enhanced-card border-warning" style="border-width: 2px !important;">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">ID Not Found</h6>
+                                                <small class="text-muted">${data.message}</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="alert alert-info border-0 p-3" style="background: rgba(13, 202, 240, 0.1);">
+                                            <p class="mb-2 small"><strong>Testing Mode:</strong> Generate QR for testing purposes.</p>
+                                            <button class="btn btn-warning btn-sm" onclick="generateTestQR('${id}')">
+                                                <i class="fas fa-vial me-1"></i>Generate Test QR
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
                         resultDiv.innerHTML = `
-                            <div class="enhanced-card border-warning" style="border-width: 2px !important;">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <div class="enhanced-card border-danger" style="border-width: 2px !important;">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
                                             <i class="fas fa-exclamation-triangle"></i>
                                         </div>
                                         <div>
-                                            <h5 class="mb-0">ID Not Found</h5>
-                                            <small class="text-muted">${data.message}</small>
+                                            <h6 class="mb-0">Error</h6>
+                                            <p class="mb-0 small">Error generating QR code: ${error.message}</p>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="alert alert-info border-0" style="background: rgba(13, 202, 240, 0.1);">
-                                        <p class="mb-2"><strong>Testing Mode:</strong> Generate QR for testing purposes.</p>
-                                        <button class="btn btn-warning" onclick="generateTestQR('${id}')" style="border-radius: 10px;">
-                                            <i class="fas fa-vial me-1"></i>Generate Test QR
-                                        </button>
                                     </div>
                                 </div>
                             </div>
                         `;
-                    }
-                })
-                .catch(error => {
-                    resultDiv.innerHTML = `
-                        <div class="enhanced-card border-danger" style="border-width: 2px !important;">
-                            <div class="card-body p-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="mb-0">Error</h5>
-                                        <p class="mb-0">Error generating QR code: ${error.message}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    showNotification('Error generating QR code', 'error');
-                });
+                        showNotification('Error generating QR code', 'error');
+                    });
+            }, 800);
         }
         
         function generateTestQR(id) {
@@ -943,45 +1607,45 @@ $peakHours = $scanner->getPeakHours();
             
             resultDiv.innerHTML = `
                 <div class="enhanced-card border-warning" style="border-width: 2px !important;">
-                    <div class="card-body p-4">
+                    <div class="card-body p-3">
                         <div class="row align-items-center">
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center mb-3">
-                                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
                                         <i class="fas fa-vial"></i>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">Test QR Code</h5>
-                                        <small class="text-muted">Generated for testing purposes</small>
+                                        <h6 class="mb-0">Test QR Code</h6>
+                                        <small class="text-muted">Generated for testing</small>
                                     </div>
                                 </div>
                                 
                                 <div class="info-grid">
-                                    <p><strong>ID:</strong> <span class="badge bg-warning text-dark">${id}</span></p>
-                                    <p><strong>Type:</strong> <span class="badge bg-secondary">Test/Unknown</span></p>
+                                    <p class="mb-1"><strong>ID:</strong> <span class="badge bg-warning text-dark">${id}</span></p>
+                                    <p class="mb-3"><strong>Type:</strong> <span class="badge bg-secondary">Test/Unknown</span></p>
                                 </div>
                                 
-                                <div class="alert alert-warning border-0" style="background: rgba(255, 193, 7, 0.1);">
+                                <div class="alert alert-warning border-0 p-2" style="background: rgba(255, 193, 7, 0.1);">
                                     <small>
                                         <i class="fas fa-info-circle me-1"></i>
                                         This ID is not in the database but can be used for testing.
                                     </small>
                                 </div>
                                 
-                                <div class="mt-4 d-flex gap-2 flex-wrap">
-                                    <button class="btn btn-success" onclick="testScanner('${id}')" style="border-radius: 10px;">
-                                        <i class="fas fa-camera me-1"></i>Test Scanner
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <button class="btn btn-success btn-sm" onclick="testScanner('${id}')">
+                                        <i class="fas fa-camera me-1"></i>Test
                                     </button>
-                                    <button class="btn btn-primary" onclick="downloadQR('${id}', 'Test ID')" style="border-radius: 10px;">
+                                    <button class="btn btn-primary btn-sm" onclick="downloadQR('${id}', 'Test ID')">
                                         <i class="fas fa-download me-1"></i>Download
                                     </button>
                                 </div>
                             </div>
                             <div class="col-md-6 text-center">
-                                <div class="qr-container" style="background: linear-gradient(45deg, #ffc107, #ff8f00); padding: 20px; border-radius: 20px; display: inline-block;">
-                                    <img src="${qrUrl}" alt="QR Code" class="img-fluid" style="max-width: 200px; border: 4px solid white; border-radius: 15px;">
+                                <div class="qr-container" style="background: var(--warning-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
+                                    <img src="${qrUrl}" alt="QR Code" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
                                 </div>
-                                <p class="mt-3 text-muted">
+                                <p class="mt-2 small text-muted">
                                     <i class="fas fa-flask me-1"></i>Test QR Code
                                 </p>
                             </div>
@@ -995,29 +1659,31 @@ $peakHours = $scanner->getPeakHours();
         function generateAll(type) {
             const resultsArea = document.getElementById('qrResultsArea');
             resultsArea.innerHTML = `
-                <div class="text-center p-5">
-                    <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
-                    <h5>Loading all ${type} QR codes...</h5>
-                    <p class="text-muted">This may take a moment</p>
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary mb-3" style="width: 2rem; height: 2rem;"></div>
+                    <h6>Loading all ${type} QR codes...</h6>
+                    <p class="text-muted small">This may take a moment</p>
                 </div>
             `;
             
-            fetch(`../../qr_generator_api.php?action=${type}`)
-                .then(response => response.text())
-                .then(html => {
-                    resultsArea.innerHTML = html;
-                    resultsArea.classList.add('fade-in-up');
-                    showNotification(`${type} QR codes loaded successfully!`, 'success');
-                })
-                .catch(error => {
-                    resultsArea.innerHTML = `
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Error loading ${type} codes: ${error.message}
-                        </div>
-                    `;
-                    showNotification(`Error loading ${type} codes`, 'error');
-                });
+            setTimeout(() => {
+                fetch(`../../qr_generator_api.php?action=${type}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        resultsArea.innerHTML = html;
+                        resultsArea.classList.add('fade-in-up');
+                        showNotification(`${type} QR codes loaded successfully!`, 'success');
+                    })
+                    .catch(error => {
+                        resultsArea.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Error loading ${type} codes: ${error.message}
+                            </div>
+                        `;
+                        showNotification(`Error loading ${type} codes`, 'error');
+                    });
+            }, 1000);
         }
         
         function testScanner(id) {
@@ -1067,14 +1733,15 @@ $peakHours = $scanner->getPeakHours();
         
         // Enhanced management functions
         function manageUsers(type) {
-            const managementCards = document.querySelectorAll('.management-card');
             const clickedCard = event.currentTarget;
             
             clickedCard.style.transform = 'scale(0.95)';
             showNotification(`Loading ${type} management...`, 'info');
             
             setTimeout(() => {
-                window.location.href = `manage_users.php?type=${type}`;
+                clickedCard.style.transform = '';
+                // window.location.href = `manage_users.php?type=${type}`;
+                showNotification(`${type} management would open here`, 'info');
             }, 300);
         }
         
@@ -1088,9 +1755,9 @@ $peakHours = $scanner->getPeakHours();
             showNotification('Preparing Excel export...', 'info');
             
             setTimeout(() => {
-                window.open(`export_excel.php?start_date=${startDate}&end_date=${endDate}`);
+                // window.open(`export_excel.php?start_date=${startDate}&end_date=${endDate}`);
                 loading.classList.add('d-none');
-                showNotification('Excel file downloaded!', 'success');
+                showNotification('Excel file would download here!', 'success');
             }, 1500);
         }
         
@@ -1103,9 +1770,9 @@ $peakHours = $scanner->getPeakHours();
             showNotification('Preparing PDF export...', 'info');
             
             setTimeout(() => {
-                window.open(`export_pdf.php?start_date=${startDate}&end_date=${endDate}`);
+                // window.open(`export_pdf.php?start_date=${startDate}&end_date=${endDate}`);
                 loading.classList.add('d-none');
-                showNotification('PDF file downloaded!', 'success');
+                showNotification('PDF file would download here!', 'success');
             }, 1500);
         }
         
@@ -1125,17 +1792,17 @@ $peakHours = $scanner->getPeakHours();
             setTimeout(() => {
                 showNotification(`Custom report generated for ${startDate} to ${endDate}`, 'success');
                 loading.classList.add('d-none');
-            }, 2500);
+            }, 2000);
         }
         
-        // Notification system
+        // Enhanced notification system with faster animations
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             const colors = {
                 success: 'bg-success',
                 error: 'bg-danger',
                 warning: 'bg-warning text-dark',
-                info: 'bg-info'
+                info: 'bg-primary'
             };
             
             const icons = {
@@ -1147,19 +1814,20 @@ $peakHours = $scanner->getPeakHours();
             
             notification.className = `alert ${colors[type]} border-0 shadow-lg position-fixed`;
             notification.style.cssText = `
-                top: 20px;
+                top: 90px;
                 right: 20px;
                 z-index: 9999;
-                min-width: 300px;
-                border-radius: 15px;
-                animation: slideInRight 0.5s ease-out;
+                min-width: 280px;
+                border-radius: 12px;
+                animation: slideInRight 0.3s ease-out;
+                font-size: 14px;
             `;
             
             notification.innerHTML = `
                 <div class="d-flex align-items-center">
                     <i class="fas ${icons[type]} me-2"></i>
-                    <span>${message}</span>
-                    <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+                    <span class="flex-grow-1">${message}</span>
+                    <button type="button" class="btn-close btn-close-${type === 'warning' ? 'dark' : 'white'} ms-2" onclick="this.parentElement.parentElement.remove()"></button>
                 </div>
             `;
             
@@ -1167,25 +1835,219 @@ $peakHours = $scanner->getPeakHours();
             
             setTimeout(() => {
                 if (notification.parentElement) {
-                    notification.style.animation = 'slideOutRight 0.5s ease-out';
-                    setTimeout(() => notification.remove(), 500);
+                    notification.style.animation = 'slideOutRight 0.3s ease-out';
+                    setTimeout(() => notification.remove(), 300);
                 }
-            }, 5000);
+            }, 4000);
         }
         
-        // Add CSS animations for notifications
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
+        // Initialize chart data (placeholder)
+        function initializeCharts() {
+            // Peak Hours Chart
+            const peakCtx = document.getElementById('peakHoursChart');
+            if (peakCtx) {
+                new Chart(peakCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['6AM', '8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
+                        datasets: [{
+                            label: 'Campus Entries',
+                            data: [12, 45, 78, 125, 89, 156, 67, 23],
+                            borderColor: '#D8AC41',
+                            backgroundColor: 'rgba(216, 172, 65, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
             }
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
+            
+            // Department Chart
+            const deptCtx = document.getElementById('departmentChart');
+            if (deptCtx) {
+                new Chart(deptCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Engineering', 'Business', 'Education', 'Arts & Sciences', 'Others'],
+                        datasets: [{
+                            data: [35, 25, 20, 15, 5],
+                            backgroundColor: [
+                                '#D8AC41',
+                                '#E00000',
+                                '#FF9600',
+                                '#DB362D',
+                                '#6c757d'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
             }
-        `;
-        document.head.appendChild(style);
+        }
+        
+        // Load saved sidebar state
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true' && window.innerWidth > 768) {
+                setTimeout(() => toggleSidebar(), 100);
+            }
+        });
+        
+        // Enhanced keyboard shortcuts and touch handling
+        document.addEventListener('keydown', function(e) {
+            // ESC to close mobile sidebar
+            if (e.key === 'Escape') {
+                closeMobileSidebar();
+            }
+            
+            // Ctrl + B to toggle sidebar
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                if (!isMobile()) {
+                    toggleSidebar();
+                } else {
+                    toggleMobileSidebar();
+                }
+            }
+        });
     </script>
+    
+    <style>
+        /* Additional notification animations */
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+        
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition-duration: 0.15s !important;
+        }
+        
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px 8px;
+            }
+            
+            .enhanced-card {
+                margin-bottom: 15px;
+            }
+            
+            .stat-card {
+                padding: 15px 10px;
+            }
+            
+            .btn {
+                font-size: 13px;
+            }
+            
+            .card-body {
+                padding: 15px !important;
+            }
+            
+            .row.g-3 > * {
+                margin-bottom: 10px;
+            }
+        }
+        
+        /* Loading states */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Enhanced hover effects */
+        .enhanced-card {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        .enhanced-card:hover {
+            transform: translateY(-4px) scale(1.01);
+        }
+        
+        /* Improved focus states */
+        .btn:focus,
+        .form-control:focus,
+        .nav-link:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Print styles */
+        @media print {
+            .sidebar,
+            .top-header,
+            .quick-action-btn {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin: 0;
+                padding: 0;
+            }
+            
+            body {
+                padding-left: 0;
+                background: white !important;
+            }
+        }
+    </style>
 </body>
 </html>
