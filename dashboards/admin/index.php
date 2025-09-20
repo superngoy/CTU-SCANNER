@@ -14,343 +14,13 @@ $peakHours = $scanner->getPeakHours();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #e74c3c;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --info-color: #3498db;
-            --purple-color: #9b59b6;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-        }
-        
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #34495e 100%) !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 1rem 0;
-        }
-        
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.4rem;
-        }
-        
-        .navbar-brand img {
-            height: 50px;
-            width: auto;
-            margin-right: 15px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        }
-        
-        .navbar-text {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 25px;
-            backdrop-filter: blur(15px);
-            font-weight: 500;
-        }
-        
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            backdrop-filter: blur(15px);
-            background: rgba(255,255,255,0.95);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 45px rgba(0,0,0,0.15);
-        }
-        
-        .card-header {
-            background: linear-gradient(135deg, rgba(52, 73, 94, 0.1) 0%, rgba(44, 62, 80, 0.05) 100%);
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            border-radius: 20px 20px 0 0 !important;
-            padding: 25px;
-        }
-        
-        .card-header h4, .card-header h5 {
-            color: var(--primary-color);
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .card-body {
-            padding: 30px;
-        }
-        
-        .stat-card {
-            padding: 30px;
-            border-radius: 20px;
-            color: white;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            transition: all 0.4s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-            pointer-events: none;
-        }
-        
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            pointer-events: none;
-            transition: all 0.4s ease;
-        }
-        
-        .stat-card:hover::after {
-            transform: scale(1.5);
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 3rem;
-            opacity: 0.9;
-            float: right;
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .stat-card h3 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .stat-card p {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0;
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
-        }
-        
-        .bg-primary { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
-        .bg-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
-        .bg-info { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
-        .bg-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
-        
-        .management-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.8) 100%);
-            border: 2px solid rgba(52, 73, 94, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .management-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-            transition: left 0.5s;
-        }
-        
-        .management-card:hover::before {
-            left: 100%;
-        }
-        
-        .management-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            border-color: var(--primary-color);
-        }
-        
-        .management-card i {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            transition: all 0.3s ease;
-        }
-        
-        .management-card:hover i {
-            transform: scale(1.2);
-            color: var(--secondary-color);
-        }
-        
-        .management-card h6 {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-        }
-        
-        .management-card p {
-            color: #666;
-            font-size: 0.95rem;
-            margin: 0;
-        }
-        
-        .btn {
-            border-radius: 12px;
-            font-weight: 600;
-            padding: 12px 25px;
-            transition: all 0.3s ease;
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        }
-        
-        .form-control, .form-select {
-            border-radius: 12px;
-            border: 2px solid rgba(52, 73, 94, 0.1);
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 73, 94, 0.25);
-        }
-        
-        .container-fluid {
-            max-width: 1400px;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-        
-        .export-section {
-            background: linear-gradient(135deg, rgba(52, 73, 94, 0.05) 0%, rgba(44, 62, 80, 0.03) 100%);
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .date-input-group {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 768px) {
-            .stat-card h3 {
-                font-size: 2.5rem;
-            }
-            
-            .navbar-brand img {
-                height: 40px;
-                margin-right: 10px;
-            }
-            
-            .card-header, .card-body {
-                padding: 20px;
-            }
-            
-            .management-card {
-                padding: 25px 20px;
-            }
-            
-            .management-card i {
-                font-size: 2.5rem;
-            }
-        }
-    </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
-                <img src="/assets/images/logo.png" alt="CTU Logo">
+                <img src="../../assets/images/logo.png" alt="CTU Logo">
                 <div>
                     <div>CTU Admin Dashboard</div>
                     <small style="font-size: 0.75rem; opacity: 0.9;">System Administration Panel</small>
@@ -477,10 +147,81 @@ $peakHours = $scanner->getPeakHours();
             </div>
         </div>
 
+        <!-- QR Code Generator Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-qrcode me-2"></i>QR Code Generator & Management
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Quick QR Generator -->
+                        <div class="row mb-4">
+                            <div class="col-lg-8 mx-auto">
+                                <div class="card border-2" style="border-color: var(--primary-color) !important;">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-magic me-2"></i>Quick QR Generator
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="quickGenerateForm">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="form-floating">
+                                                        <input type="text" class="form-control" id="idInput" placeholder="Enter ID" required>
+                                                        <label for="idInput">Enter Student ID or Faculty ID</label>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        Examples: 2024-001, FAC-001, or create your own test ID
+                                                    </small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <button type="submit" class="btn btn-primary w-100 h-100">
+                                                        <i class="fas fa-qrcode me-2"></i>Generate QR
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                        <!-- Quick Generate Result -->
+                                        <div id="quickResult" style="display: none;" class="mt-4">
+                                            <!-- Result will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Batch Generation Options -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <button class="btn btn-success w-100 py-3" onclick="generateAll('students')">
+                                    <i class="fas fa-user-graduate me-2"></i>Generate All Student QR Codes
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-info w-100 py-3" onclick="generateAll('faculty')">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty QR Codes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- QR Results Area -->
+                        <div id="qrResultsArea">
+                            <!-- Generated QR codes will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Detailed Analytics -->
         <div class="row mb-4">
             <div class="col-lg-6">
-                <div class="card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="card fade-in-up" style="animation-delay: 0.4s;">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-pie-chart me-2"></i>Department Distribution
@@ -494,7 +235,7 @@ $peakHours = $scanner->getPeakHours();
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card fade-in-up" style="animation-delay: 0.4s;">
+                <div class="card fade-in-up" style="animation-delay: 0.5s;">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-calendar-week me-2"></i>Weekly Activity Trends
@@ -512,7 +253,7 @@ $peakHours = $scanner->getPeakHours();
         <!-- Management Section -->
         <div class="row">
             <div class="col-12">
-                <div class="card fade-in-up" style="animation-delay: 0.5s;">
+                <div class="card fade-in-up" style="animation-delay: 0.6s;">
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-cog me-2"></i>User Management System
@@ -548,6 +289,7 @@ $peakHours = $scanner->getPeakHours();
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../assets/js/admin.js"></script>
@@ -556,9 +298,159 @@ $peakHours = $scanner->getPeakHours();
         // Initialize charts with PHP data
         const peakHoursData = <?php echo json_encode($peakHours); ?>;
         
+        // QR Generator Functions
+        document.getElementById('quickGenerateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('idInput').value.trim();
+            
+            if (!id) {
+                alert('Please enter an ID');
+                return;
+            }
+            
+            generateSingleQR(id);
+        });
+        
+        function generateSingleQR(id) {
+            const resultDiv = document.getElementById('quickResult');
+            resultDiv.innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p>Generating QR code...</p></div>';
+            resultDiv.style.display = 'block';
+            
+            fetch(`../../qr_generator_api.php?action=generate_by_id&id=${encodeURIComponent(id)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const person = data.person;
+                        resultDiv.innerHTML = `
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <h5>${person.FName} ${person.MName ? person.MName + ' ' : ''}${person.LName}</h5>
+                                            <p><strong>ID:</strong> <span class="badge bg-primary">${person.ID}</span></p>
+                                            <p><strong>Type:</strong> <span class="badge bg-info">${person.Type}</span></p>
+                                            ${person.Course ? `<p><strong>Course:</strong> ${person.Course}</p>` : ''}
+                                            ${person.YearLvl ? `<p><strong>Year:</strong> ${person.YearLvl} - Section ${person.Section}</p>` : ''}
+                                            <p><strong>Department:</strong> ${person.Department}</p>
+                                            
+                                            <div class="mt-3">
+                                                <button class="btn btn-success me-2" onclick="testScanner('${person.ID}')">
+                                                    <i class="fas fa-camera me-1"></i>Test Scanner
+                                                </button>
+                                                <button class="btn btn-primary" onclick="downloadQR('${person.ID}', '${person.FName} ${person.LName}')">
+                                                    <i class="fas fa-download me-1"></i>Download
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 text-center">
+                                            <img src="${data.qr_url}" alt="QR Code" class="img-fluid" style="max-width: 200px; border: 2px solid var(--primary-color); border-radius: 10px;">
+                                            <p class="mt-2 text-muted">Scan with CTU Scanner</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                ${data.message}
+                                <hr>
+                                <p><strong>Testing Mode:</strong> Generate QR for testing purposes.</p>
+                                <button class="btn btn-warning" onclick="generateTestQR('${id}')">
+                                    <i class="fas fa-vial me-1"></i>Generate Test QR
+                                </button>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error generating QR code: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+        
+        function generateTestQR(id) {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(id)}`;
+            const resultDiv = document.getElementById('quickResult');
+            
+            resultDiv.innerHTML = `
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5>Test QR Code</h5>
+                                <p><strong>ID:</strong> <span class="badge bg-warning">${id}</span></p>
+                                <p><strong>Type:</strong> <span class="badge bg-secondary">Test/Unknown</span></p>
+                                <p class="text-warning">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    This ID is not in the database but can be used for testing.
+                                </p>
+                                
+                                <div class="mt-3">
+                                    <button class="btn btn-success me-2" onclick="testScanner('${id}')">
+                                        <i class="fas fa-camera me-1"></i>Test Scanner
+                                    </button>
+                                    <button class="btn btn-primary" onclick="downloadQR('${id}', 'Test ID')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <img src="${qrUrl}" alt="QR Code" class="img-fluid" style="max-width: 200px; border: 2px solid var(--warning-color); border-radius: 10px;">
+                                <p class="mt-2 text-muted">Test QR Code</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateAll(type) {
+            const resultsArea = document.getElementById('qrResultsArea');
+            resultsArea.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary"></div><p>Loading all ' + type + ' QR codes...</p></div>';
+            
+            fetch(`../../qr_generator_api.php?action=${type}`)
+                .then(response => response.text())
+                .then(html => {
+                    resultsArea.innerHTML = html;
+                })
+                .catch(error => {
+                    resultsArea.innerHTML = '<div class="alert alert-danger">Error loading ' + type + ' codes</div>';
+                });
+        }
+        
+        function testScanner(id) {
+            window.open(`../scanner/index.php?test_id=${encodeURIComponent(id)}`, '_blank');
+        }
+        
+        function downloadQR(id, name) {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(id)}`;
+            
+            fetch(qrUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `QR_${id}_${name.replace(/\s+/g, '_')}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Download failed:', error);
+                    alert('Download failed. Right-click the QR code to save manually.');
+                });
+        }
+        
         // Enhanced management functions
         function manageUsers(type) {
-            // Add loading animation
             const managementCards = document.querySelectorAll('.management-card');
             const clickedCard = event.currentTarget;
             
@@ -607,22 +499,19 @@ $peakHours = $scanner->getPeakHours();
             
             loading.classList.remove('d-none');
             
-            // Simulate report generation
             setTimeout(() => {
-                alert(`Report generated for ${startDate} to ${endDate}`);
+                alert(`Custom report generated for ${startDate} to ${endDate}`);
                 loading.classList.add('d-none');
             }, 2000);
         }
         
         // Initialize page animations
         document.addEventListener('DOMContentLoaded', function() {
-            // Stagger animation for cards
             const cards = document.querySelectorAll('.fade-in-up');
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
             });
             
-            // Initialize charts if admin.js is loaded
             if (typeof initializeCharts === 'function') {
                 initializeCharts();
             }
