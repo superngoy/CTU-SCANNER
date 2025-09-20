@@ -6,20 +6,20 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#FF9B00">
+    <meta name="theme-color" content="#FF9600">
     <title>CTU Scanner - QR Code Scanner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-orange: #FF9B00;
-            --secondary-yellow: #FFE100;
-            --tertiary-gold: #FFC900;
-            --light-beige: #EBE389;
-            --ctu-red: #8B0000;
-            --ctu-gold: #DAA520;
-            --gradient-bg: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #3e7cb1 50%, #5ba0d0 75%, #7fc4ef 100%);
-            --scanner-glow: rgba(255, 155, 0, 0.4);
+            --primary-gold: #DBB356;
+            --primary-red: #E00000;
+            --primary-orange: #FF9600;
+            --gold-light: #F5D982;
+            --red-dark: #B30000;
+            --orange-light: #FFB347;
+            --scanner-glow: rgba(219, 179, 86, 0.6);
+            --card-shadow: rgba(0, 0, 0, 0.15);
         }
 
         * {
@@ -30,7 +30,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gradient-bg);
+            background: transparent;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
@@ -43,24 +43,24 @@
             position: relative;
         }
 
-        /* CTU Logo Background */
+        /* Super Large CTU Logo Background */
         body::before {
             content: '';
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(80vw, 80vh, 600px);
-            height: min(80vw, 80vh, 600px);
-            background-image: url('/assets/images/logo.png'); /* Path for CTU logo */
+            width: min(120vw, 120vh, 1200px);
+            height: min(120vw, 120vh, 1200px);
+            background-image: url('/assets/images/logo.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             opacity: 0.08;
             z-index: -1;
             pointer-events: none;
-            filter: grayscale(1) brightness(1.2);
-            animation: logoFloat 20s ease-in-out infinite;
+            filter: grayscale(0) brightness(1.1) contrast(1.1);
+            animation: logoFloat 25s ease-in-out infinite;
         }
 
         @keyframes logoFloat {
@@ -74,7 +74,7 @@
             }
             50% { 
                 transform: translate(-48%, -52%) scale(1.01) rotate(-0.3deg);
-                opacity: 0.1;
+                opacity: 0.12;
             }
             75% { 
                 transform: translate(-51%, -49%) scale(1.03) rotate(0.2deg);
@@ -82,35 +82,54 @@
             }
         }
 
+        /* Additional decorative elements */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(219, 179, 86, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(224, 0, 0, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(255, 150, 0, 0.025) 0%, transparent 50%);
+            z-index: -2;
+            pointer-events: none;
+        }
+
         .scanner-container {
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            padding: 15px;
             position: relative;
             z-index: 1;
         }
 
         .scanner-header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             flex-shrink: 0;
             position: relative;
         }
 
         .logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
             border-radius: 50%;
-            margin: 0 auto 15px;
+            margin: 0 auto 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 25px rgba(255, 155, 0, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(219, 179, 86, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.1),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
             border: 3px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
         }
@@ -122,9 +141,9 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
             transform: rotate(45deg);
-            animation: logoShine 3s ease-in-out infinite;
+            animation: logoShine 4s ease-in-out infinite;
         }
 
         @keyframes logoShine {
@@ -133,40 +152,48 @@
         }
 
         .scanner-header h1 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            color: #333;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
             letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .scanner-header p {
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1.1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            font-weight: 500;
+            color: #555;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .scanner-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
             box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
+                0 30px 60px var(--card-shadow),
+                0 0 0 1px rgba(219, 179, 86, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             min-height: 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(219, 179, 86, 0.2);
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--tertiary-gold) 50%, var(--secondary-yellow) 100%);
-            padding: 20px 25px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-orange) 50%, var(--primary-red) 100%);
+            padding: 25px 30px;
             border-radius: 25px 25px 0 0;
             color: white;
             flex-shrink: 0;
@@ -181,8 +208,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            animation: headerShine 4s ease-in-out infinite;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: headerShine 5s ease-in-out infinite;
         }
 
         @keyframes headerShine {
@@ -193,23 +220,23 @@
 
         .card-header h4 {
             margin: 0;
-            font-weight: 700;
-            font-size: 1.3rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-weight: 800;
+            font-size: 1.4rem;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
             position: relative;
             z-index: 2;
         }
 
         .scanner-controls select {
             background: rgba(255, 255, 255, 0.25);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             color: white;
             border-radius: 12px;
-            padding: 10px 15px;
-            font-size: 0.95rem;
-            font-weight: 500;
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-weight: 600;
             width: 100%;
-            margin-top: 12px;
+            margin-top: 15px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             position: relative;
@@ -218,42 +245,43 @@
 
         .scanner-controls select:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
         }
 
         .scanner-controls select option {
             background: #333;
             color: white;
-            padding: 10px;
+            padding: 12px;
         }
 
         .card-body {
-            padding: 30px 25px;
+            padding: 30px 25px 20px 25px;
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 0;
+            gap: 15px;
         }
 
         .qr-reader {
             width: 100%;
             max-width: 380px;
             height: 300px;
-            border: 4px solid transparent;
+            border: 5px solid transparent;
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(45deg, var(--primary-orange), var(--tertiary-gold), var(--secondary-yellow)) border-box;
-            border-radius: 20px;
+                        linear-gradient(45deg, var(--primary-gold), var(--primary-orange), var(--primary-red)) border-box;
+            border-radius: 25px;
             overflow: hidden;
             position: relative;
             background-color: #000;
             touch-action: manipulation;
             flex-shrink: 0;
             box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.2),
-                inset 0 0 0 1px rgba(255, 155, 0, 0.1);
+                0 20px 40px var(--card-shadow),
+                inset 0 0 0 2px rgba(219, 179, 86, 0.15);
         }
 
         .qr-reader video {
@@ -261,7 +289,7 @@
             height: 100% !important;
             object-fit: cover;
             background: #000;
-            border-radius: 16px;
+            border-radius: 20px;
         }
 
         /* Enhanced Scanner Frame */
@@ -270,8 +298,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border: none;
             border-radius: 15px;
             z-index: 10;
@@ -279,157 +307,140 @@
             background: transparent;
         }
 
-        /* Animated Corner Brackets */
+        /* Animated Corner Brackets with new colors */
         .scanner-frame::before,
         .scanner-frame::after {
             content: '';
             position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 4px solid var(--secondary-yellow);
-            border-radius: 4px;
-            animation: cornerPulse 2s ease-in-out infinite;
+            width: 35px;
+            height: 35px;
+            border: 5px solid var(--primary-gold);
+            border-radius: 6px;
+            animation: cornerPulse 2.5s ease-in-out infinite;
         }
 
         .scanner-frame::before {
-            top: -4px;
-            left: -4px;
+            top: -5px;
+            left: -5px;
             border-right: none;
             border-bottom: none;
-            box-shadow: -2px -2px 10px rgba(255, 225, 0, 0.3);
+            box-shadow: -3px -3px 15px rgba(219, 179, 86, 0.4);
         }
 
         .scanner-frame::after {
-            bottom: -4px;
-            right: -4px;
+            bottom: -5px;
+            right: -5px;
             border-left: none;
             border-top: none;
-            box-shadow: 2px 2px 10px rgba(255, 225, 0, 0.3);
+            box-shadow: 3px 3px 15px rgba(219, 179, 86, 0.4);
         }
 
         /* Additional corner brackets */
         .scanner-frame-extra::before {
             content: '';
             position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 30px;
-            height: 30px;
-            border: 4px solid var(--secondary-yellow);
+            top: -5px;
+            right: -5px;
+            width: 35px;
+            height: 35px;
+            border: 5px solid var(--primary-orange);
             border-left: none;
             border-bottom: none;
-            border-radius: 4px;
-            animation: cornerPulse 2s ease-in-out infinite 0.5s;
-            box-shadow: 2px -2px 10px rgba(255, 225, 0, 0.3);
+            border-radius: 6px;
+            animation: cornerPulse 2.5s ease-in-out infinite 0.6s;
+            box-shadow: 3px -3px 15px rgba(255, 150, 0, 0.4);
         }
 
         .scanner-frame-extra::after {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: -4px;
-            width: 30px;
-            height: 30px;
-            border: 4px solid var(--secondary-yellow);
+            bottom: -5px;
+            left: -5px;
+            width: 35px;
+            height: 35px;
+            border: 5px solid var(--primary-red);
             border-right: none;
             border-top: none;
-            border-radius: 4px;
-            animation: cornerPulse 2s ease-in-out infinite 0.5s;
-            box-shadow: -2px 2px 10px rgba(255, 225, 0, 0.3);
+            border-radius: 6px;
+            animation: cornerPulse 2.5s ease-in-out infinite 0.6s;
+            box-shadow: -3px 3px 15px rgba(224, 0, 0, 0.4);
         }
 
         @keyframes cornerPulse {
             0%, 100% { 
-                opacity: 0.7;
+                opacity: 0.8;
                 transform: scale(1);
-                filter: brightness(1) drop-shadow(0 0 8px rgba(255, 225, 0, 0.6));
+                filter: brightness(1) drop-shadow(0 0 10px currentColor);
             }
             50% { 
                 opacity: 1;
-                transform: scale(1.08);
-                filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 225, 0, 0.8));
+                transform: scale(1.1);
+                filter: brightness(1.4) drop-shadow(0 0 20px currentColor);
             }
         }
 
-        /* Scanning Line Animation - More prominent */
+        /* Scanning Line Animation with new colors */
         .scanning-line {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 85%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--secondary-yellow), var(--secondary-yellow), transparent);
-            border-radius: 3px;
-            animation: scanLine 3s ease-in-out infinite;
-            box-shadow: 0 0 15px var(--secondary-yellow), 0 0 30px rgba(255, 225, 0, 0.5);
-            opacity: 0.9;
+            width: 88%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary-gold), var(--primary-orange), transparent);
+            border-radius: 4px;
+            animation: scanLine 3.5s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--primary-gold), 0 0 40px rgba(219, 179, 86, 0.6);
+            opacity: 0.95;
         }
 
         @keyframes scanLine {
             0% { 
                 top: 8%; 
                 opacity: 0;
-                transform: translateX(-50%) scaleX(0.5);
+                transform: translateX(-50%) scaleX(0.4);
             }
             15% { 
-                opacity: 0.9;
+                opacity: 0.95;
                 transform: translateX(-50%) scaleX(1);
             }
             85% { 
-                opacity: 0.9;
+                opacity: 0.95;
                 transform: translateX(-50%) scaleX(1);
             }
             100% { 
                 top: 92%; 
                 opacity: 0;
-                transform: translateX(-50%) scaleX(0.5);
+                transform: translateX(-50%) scaleX(0.4);
             }
         }
 
-        /* Grid Overlay - More subtle */
+        /* Grid Overlay with new colors */
         .scanner-grid {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 220px;
-            height: 220px;
+            width: 240px;
+            height: 240px;
             background-image: 
-                linear-gradient(rgba(255, 225, 0, 0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 225, 0, 0.08) 1px, transparent 1px);
-            background-size: 22px 22px;
+                linear-gradient(rgba(219, 179, 86, 0.12) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(219, 179, 86, 0.12) 1px, transparent 1px);
+            background-size: 24px 24px;
             border-radius: 15px;
-            opacity: 0.4;
-            animation: gridFade 4s ease-in-out infinite;
+            opacity: 0.5;
+            animation: gridFade 4.5s ease-in-out infinite;
         }
 
         @keyframes gridFade {
             0%, 100% { 
-                opacity: 0.15; 
+                opacity: 0.2; 
                 transform: translate(-50%, -50%) scale(1);
             }
             50% { 
-                opacity: 0.4;
-                transform: translate(-50%, -50%) scale(1.01);
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1.02);
             }
-        }
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            background-image: 
-                linear-gradient(rgba(255, 225, 0, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 225, 0, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            border-radius: 15px;
-            opacity: 0.3;
-            animation: gridFade 3s ease-in-out infinite;
-        }
-
-        @keyframes gridFade {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.3; }
         }
 
         .scanner-status {
@@ -437,64 +448,83 @@
             text-align: center;
             flex-shrink: 0;
             width: 100%;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         .alert {
-            border-radius: 15px;
+            border-radius: 18px;
             border: none;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            font-size: 1rem;
-            padding: 15px 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            font-size: 1.05rem;
+            padding: 18px 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+            margin-bottom: 0;
+            position: relative;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert-success {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.9), rgba(32, 201, 151, 0.9));
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.92), rgba(32, 201, 151, 0.92));
             color: white;
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
         }
 
         .alert-danger {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(231, 76, 60, 0.9));
+            background: linear-gradient(135deg, var(--primary-red), #CC0000);
             color: white;
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 10px 30px rgba(224, 0, 0, 0.4);
         }
 
         .alert-warning {
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 152, 0, 0.9));
-            color: #333;
-            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-gold));
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 150, 0, 0.4);
         }
 
         .alert-info {
-            background: linear-gradient(135deg, rgba(23, 162, 184, 0.9), rgba(0, 123, 255, 0.9));
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.92), rgba(0, 123, 255, 0.92));
             color: white;
-            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+            box-shadow: 0 10px 30px rgba(23, 162, 184, 0.4);
         }
 
         .spinner-border {
             color: var(--primary-orange) !important;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-width: 3px;
+            width: 3rem;
+            height: 3rem;
+            border-width: 4px;
         }
 
         /* Enhanced Permission Button */
         .permission-btn {
-            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-size: 1.15rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(255, 155, 0, 0.4);
-            margin: 12px 8px;
-            border: 2px solid transparent;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(219, 179, 86, 0.5);
+            margin: 15px 10px;
+            border: 3px solid transparent;
+            backdrop-filter: blur(15px);
             position: relative;
             overflow: hidden;
         }
@@ -506,7 +536,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
             transition: left 0.5s ease;
         }
 
@@ -515,32 +545,32 @@
         }
 
         .permission-btn:hover {
-            background: linear-gradient(135deg, #e6890a, #e6b800);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 155, 0, 0.5);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #c49b47, #e6890a);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(219, 179, 86, 0.6);
+            border-color: rgba(255, 255, 255, 0.25);
         }
 
         .permission-btn:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
-        /* Recent Scans Float Window - Enhanced */
+        /* Recent Scans Float Window - Enhanced with new colors */
         .recent-scans-float {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            width: 320px;
-            max-height: 55vh;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(15px);
+            top: 20px;
+            right: 20px;
+            width: 340px;
+            max-height: 60vh;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 25px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
             z-index: 1000;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateX(110%);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(219, 179, 86, 0.2);
         }
 
         .recent-scans-float.open {
@@ -548,83 +578,84 @@
         }
 
         .float-header {
-            background: linear-gradient(135deg, var(--tertiary-gold), var(--secondary-yellow));
-            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+            padding: 20px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #333;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .float-header h6 {
             margin: 0;
-            font-weight: 700;
-            font-size: 1rem;
+            font-weight: 800;
+            font-size: 1.1rem;
         }
 
         .close-btn, .toggle-btn {
             background: none;
             border: none;
-            color: #333;
-            font-size: 1.2rem;
+            color: white;
+            font-size: 1.3rem;
             cursor: pointer;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 12px;
             transition: all 0.3s ease;
-            min-width: 40px;
-            min-height: 40px;
+            min-width: 45px;
+            min-height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .close-btn:hover, .toggle-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
-            transform: scale(1.05);
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
         }
 
         .toggle-btn {
             position: fixed;
-            top: 75px;
-            right: 15px;
-            background: linear-gradient(135deg, var(--primary-orange), var(--tertiary-gold));
+            top: 85px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
             color: white;
             border-radius: 50%;
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             z-index: 999;
-            box-shadow: 0 8px 25px rgba(255, 155, 0, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(219, 179, 86, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.2);
         }
 
         .toggle-btn:hover {
-            background: linear-gradient(135deg, #e6890a, #e6b800);
-            transform: scale(1.1);
-            box-shadow: 0 10px 30px rgba(255, 155, 0, 0.4);
+            background: linear-gradient(135deg, #c49b47, #e6890a);
+            transform: scale(1.15);
+            box-shadow: 0 15px 40px rgba(219, 179, 86, 0.5);
         }
 
         .float-body {
-            padding: 15px 20px;
-            max-height: calc(55vh - 70px);
+            padding: 20px 25px;
+            max-height: calc(60vh - 80px);
             overflow-y: auto;
         }
 
         .scan-item {
             background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 15px 18px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--primary-orange);
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 155, 0, 0.1);
+            padding: 18px 22px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary-gold);
+            font-size: 0.95rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            border: 2px solid rgba(219, 179, 86, 0.15);
             transition: all 0.3s ease;
         }
 
         .scan-item:hover {
-            transform: translateX(2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transform: translateX(3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-left-color: var(--primary-orange);
         }
 
         .scan-item:last-child {
@@ -632,62 +663,62 @@
         }
 
         .scan-time {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #6c757d;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .scan-name {
-            font-weight: 700;
+            font-weight: 800;
             color: #333;
-            margin-bottom: 3px;
-            font-size: 0.95rem;
+            margin-bottom: 4px;
+            font-size: 1rem;
         }
 
         .scan-role {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #6c757d;
-            margin-bottom: 3px;
-            font-weight: 500;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .scan-data {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-orange);
-            font-size: 0.85rem;
-            margin-bottom: 5px;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
         }
 
         .scan-location {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #28a745;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
             body::before {
-                width: min(85vw, 85vh, 500px);
-                height: min(85vw, 85vh, 500px);
+                width: min(130vw, 130vh, 1000px);
+                height: min(130vw, 130vh, 1000px);
                 opacity: 0.06;
             }
 
             .scanner-container {
-                padding: 8px;
+                padding: 10px;
             }
 
             .scanner-header h1 {
-                font-size: 1.6rem;
+                font-size: 1.8rem;
             }
 
             .scanner-header p {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
 
             .logo {
-                width: 55px;
-                height: 55px;
+                width: 65px;
+                height: 65px;
             }
 
             .qr-reader {
@@ -696,141 +727,102 @@
             }
 
             .scanner-frame {
-                width: 180px;
-                height: 180px;
+                width: 200px;
+                height: 200px;
             }
 
             .recent-scans-float {
-                width: calc(100vw - 20px);
-                right: 10px;
-                left: 10px;
-                max-height: 45vh;
+                width: calc(100vw - 25px);
+                right: 12px;
+                left: 12px;
+                max-height: 50vh;
             }
 
             .toggle-btn {
-                width: 50px;
-                height: 50px;
-                right: 12px;
-                top: 70px;
-            }
-
-            .permission-btn {
-                padding: 12px 24px;
-                font-size: 1rem;
-            }
-
-            .card-header {
-                padding: 18px 20px;
+                width: 55px;
+                height: 55px;
+                right: 15px;
+                top: 80px;
             }
 
             .card-body {
-                padding: 20px 18px;
+                padding: 25px 20px 15px 20px;
+                gap: 12px;
+            }
+
+            .scanner-status {
+                margin-top: 15px;
+                min-height: 100px;
+            }
+
+            .scan-result-container,
+            .scan-error-container {
+                padding: 15px;
+                margin-top: 10px;
+            }
+
+            .scan-person-name {
+                font-size: 1.2rem;
+            }
+
+            .scan-success-icon {
+                font-size: 2rem;
             }
         }
 
         @media (max-width: 480px) {
             body::before {
-                width: min(90vw, 90vh, 400px);
-                height: min(90vw, 90vh, 400px);
+                width: min(140vw, 140vh, 800px);
+                height: min(140vw, 140vh, 800px);
                 opacity: 0.05;
             }
 
             .scanner-container {
-                padding: 5px;
+                padding: 8px;
             }
 
             .qr-reader {
                 height: 260px;
-                border-width: 3px;
+                border-width: 4px;
             }
 
             .scanner-frame {
-                width: 160px;
-                height: 160px;
+                width: 180px;
+                height: 180px;
             }
 
             .card-header h4 {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* Landscape mode optimizations */
-        @media (max-height: 600px) and (orientation: landscape) {
-            body::before {
-                width: min(40vh, 300px);
-                height: min(40vh, 300px);
-                opacity: 0.04;
-            }
-
-            .scanner-container {
-                flex-direction: row;
-                padding: 8px;
-            }
-
-            .scanner-header {
-                flex: 0 0 220px;
-                margin-right: 15px;
-                margin-bottom: 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .scanner-header h1 {
                 font-size: 1.2rem;
             }
 
-            .scanner-header p {
+            .card-body {
+                padding: 20px 15px 10px 15px;
+                gap: 10px;
+            }
+
+            .scanner-status {
+                margin-top: 10px;
+                min-height: 90px;
+            }
+
+            .scan-result-container,
+            .scan-error-container {
+                padding: 12px;
+                margin-top: 8px;
+                min-height: 80px;
+            }
+
+            .scan-person-name {
+                font-size: 1.1rem;
+            }
+
+            .scan-person-details {
                 font-size: 0.9rem;
             }
 
-            .logo {
-                width: 45px;
-                height: 45px;
-                margin-bottom: 10px;
-            }
-
-            .scanner-card {
-                flex: 1;
-                max-height: calc(100vh - 16px);
-            }
-
-            .qr-reader {
-                height: 220px;
-                max-width: 300px;
-            }
-
-            .scanner-frame {
-                width: 140px;
-                height: 140px;
-            }
-        }
-
-        /* Enhanced Animations */
-        @keyframes scanSuccess {
-            0% { 
-                transform: scale(1);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            }
-            50% { 
-                transform: scale(1.02);
-                box-shadow: 0 20px 50px rgba(255, 155, 0, 0.4);
-            }
-            100% { 
-                transform: scale(1);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            }
-        }
-
-        .scan-success {
-            animation: scanSuccess 0.4s ease;
-        }
-
-        /* PWA enhancements */
-        @media (display-mode: standalone) {
-            .scanner-container {
-                padding-top: max(env(safe-area-inset-top, 20px), 20px);
-                padding-bottom: max(env(safe-area-inset-bottom, 10px), 10px);
+            .scan-person-id {
+                font-size: 0.85rem;
+                padding: 4px 12px;
             }
         }
 
@@ -839,25 +831,152 @@
             touch-action: manipulation;
         }
 
+        /* Enhanced Animations */
+        @keyframes scanSuccess {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 20px 40px var(--card-shadow);
+            }
+            50% { 
+                transform: scale(1.03);
+                box-shadow: 0 25px 60px rgba(219, 179, 86, 0.5);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 20px 40px var(--card-shadow);
+            }
+        }
+
+        .scan-success {
+            animation: scanSuccess 0.5s ease;
+        }
+
         /* Status indicator improvements */
         .status-indicator {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(40, 167, 69, 0.9);
+            top: 18px;
+            left: 18px;
+            background: rgba(40, 167, 69, 0.93);
             color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            backdrop-filter: blur(15px);
             z-index: 15;
-            animation: statusFade 2s ease-in-out infinite;
+            animation: statusFade 2.5s ease-in-out infinite;
         }
 
         @keyframes statusFade {
-            0%, 100% { opacity: 0.8; }
+            0%, 100% { opacity: 0.85; }
             50% { opacity: 1; }
+        }
+
+        /* Scan Result Enhancement */
+        .scan-result-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--primary-gold);
+            backdrop-filter: blur(20px);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-result-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(219, 179, 86, 0.1), transparent);
+            animation: resultShine 2s ease-in-out infinite;
+        }
+
+        @keyframes resultShine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .scan-success-details {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scan-success-icon {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 10px;
+            animation: successPulse 1s ease-in-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .scan-person-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-red);
+            margin-bottom: 5px;
+        }
+
+        .scan-person-details {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .scan-person-id {
+            font-size: 0.95rem;
+            color: var(--primary-orange);
+            font-weight: 700;
+            background: rgba(255, 150, 0, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .scan-error-container {
+            background: linear-gradient(135deg, rgba(224, 0, 0, 0.95), rgba(180, 0, 0, 0.95));
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 15px 40px rgba(224, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+        }
+
+        .scan-error-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            animation: errorShake 0.5s ease-in-out;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
     </style>
 </head>
@@ -865,7 +984,7 @@
     <div class="scanner-container">
         <div class="scanner-header">
              <div class="logo">
-                <img src="/assets/images/logo.png" alt="CTU Logo" style="width: 60px; height: 60px; object-fit: contain;">
+                <img src="/assets/images/logo.png" alt="CTU Logo" style="width: 65px; height: 65px; object-fit: contain;">
             </div>
             <h1>CTU Access Control</h1>
             <p>Scan QR Code to Enter/Exit</p>
@@ -888,8 +1007,7 @@
             <div class="card-body">
                 <div class="qr-reader" id="reader">
                     <div class="scanner-frame"></div>
-                    <div class="scanner-frame-corner-tr"></div>
-                    <div class="scanner-frame-corner-bl"></div>
+                    <div class="scanner-frame-extra"></div>
                     <div class="scanning-line"></div>
                     <div class="scanner-grid"></div>
                     <div class="status-indicator" style="display: none;">
@@ -898,7 +1016,7 @@
                 </div>
                 
                 <div class="scanner-status">
-                    <div id="scanResult" class="alert" style="display: none;"></div>
+                    <div id="scanResult" style="display: none;"></div>
                     <div id="scannerStatus" class="text-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
@@ -936,7 +1054,7 @@
         let isScanning = false;
         let recentScansData = [];
         let lastScanTime = 0;
-        let scanCooldown = 2000;
+        let scanCooldown = 500; // Reduced from 2000ms to 500ms
         let cameraStream = null;
 
         // Storage keys
@@ -1373,12 +1491,12 @@
                     }
                 }
                 
-                // Resume scanning after delay
+                // Resume scanning after shorter delay
                 setTimeout(() => {
                     if (html5QrcodeScanner && isScanning) {
                         html5QrcodeScanner.resume();
                     }
-                }, 3000);
+                }, 500); // Reduced from 3000ms to 500ms
             })
             .catch(error => {
                 console.error('Scan processing error:', error);
@@ -1388,7 +1506,7 @@
                     if (html5QrcodeScanner && isScanning) {
                         html5QrcodeScanner.resume();
                     }
-                }, 3000);
+                }, 500); // Reduced from 3000ms to 500ms
             });
         }
 
@@ -1404,22 +1522,26 @@
 
         function showScanResult(data, type) {
             const resultDiv = document.getElementById('scanResult');
-            resultDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
             
             if (type === 'success' && data.person) {
                 resultDiv.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div>
-                            <strong>${data.message}</strong><br>
-                            <small>${data.person.name} (${data.person.id}) - ${data.person.type}</small>
+                    <div class="scan-result-container">
+                        <div class="scan-success-details">
+                            <div class="scan-success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="scan-person-name">${data.person.name}</div>
+                            <div class="scan-person-details">${data.person.type}</div>
+                            <div class="scan-person-id">ID: ${data.person.id}</div>
                         </div>
                     </div>
                 `;
             } else {
                 resultDiv.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div class="scan-error-container">
+                        <div class="scan-error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
                         <div>
                             <strong>${data.message || 'Scan failed'}</strong>
                         </div>
@@ -1430,11 +1552,11 @@
             resultDiv.style.display = 'block';
             resultDiv.classList.add('scan-success');
             
-            // Auto-hide after 4 seconds
+            // Auto-hide after 3 seconds (reduced from 4 seconds)
             setTimeout(() => {
                 resultDiv.style.display = 'none';
                 resultDiv.classList.remove('scan-success');
-            }, 4000);
+            }, 3000);
         }
 
         function addToRecentScansFromBackend(person) {
