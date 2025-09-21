@@ -19,7 +19,7 @@ if ($_POST['action'] === 'scan') {
         if ($person) {
             error_log("Person found: " . json_encode($person));
             
-            // Get scanner info to determine entry/exit
+            // Get person's image from database
             $database = new Database();
             
             // Use the same method detection as in CTUScanner
@@ -33,6 +33,7 @@ if ($_POST['action'] === 'scan') {
                 throw new Exception('Cannot find database connection method');
             }
             
+            // Get scanner info to determine entry/exit
             $stmt = $conn->prepare("SELECT typeofScanner FROM scanner WHERE ScannerID = ?");
             $stmt->execute([$scanner_id]);
             $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -42,7 +43,27 @@ if ($_POST['action'] === 'scan') {
                 exit();
             }
             
-            $person_id = $person['type'] === 'student' ? $person['StudentID'] : $person['FacultyID'];
+            $person_id = $person['type'] === 'student' ? $person['StudentID'] : 
+                        ($person['type'] === 'faculty' ? $person['FacultyID'] : $person['SecurityID']);
+            
+            // Get person's profile image
+            $image_path = null;
+            if ($person['type'] === 'student') {
+                $stmt = $conn->prepare("SELECT image FROM students WHERE StudentID = ?");
+            } elseif ($person['type'] === 'faculty') {
+                $stmt = $conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
+            } elseif ($person['type'] === 'security') {
+                $stmt = $conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
+            }
+            
+            if (isset($stmt)) {
+                $stmt->execute([$person_id]);
+                $image_result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $image_path = $image_result['image'] ?? null;
+            }
+            
+            // Generate image URL
+            $image_url = getImageUrl($image_path);
             
             if ($scanner_info['typeofScanner'] === 'entrance') {
                 $result = $scanner->logEntry($person_id, $person['type'], $scanner_id);
@@ -55,9 +76,27 @@ if ($_POST['action'] === 'scan') {
             }
             
             if ($result) {
-                $firstName = $person['type'] === 'student' ? $person['StudentFName'] : $person['FacultyFName'];
-                $lastName = $person['type'] === 'student' ? $person['StudentLName'] : $person['FacultyLName'];
-                $name = trim($firstName . ' ' . $lastName);
+                // Get person's name based on type
+                if ($person['type'] === 'student') {
+                    $firstName = $person['StudentFName'];
+                    $middleName = $person['StudentMName'] ?? '';
+                    $lastName = $person['StudentLName'];
+                } elseif ($person['type'] === 'faculty') {
+                    $firstName = $person['FacultyFName'];
+                    $middleName = $person['FacultyMName'] ?? '';
+                    $lastName = $person['FacultyLName'];
+                } elseif ($person['type'] === 'security') {
+                    $firstName = $person['SecurityFName'];
+                    $middleName = $person['SecurityMName'] ?? '';
+                    $lastName = $person['SecurityLName'];
+                } else {
+                    $firstName = 'Unknown';
+                    $middleName = '';
+                    $lastName = '';
+                }
+                
+                $name = trim($firstName . ' ' . $middleName . ' ' . $lastName);
+                $name = preg_replace('/\s+/', ' ', $name); // Remove extra spaces
                 
                 error_log("$action recorded successfully for $name");
                 
@@ -68,7 +107,11 @@ if ($_POST['action'] === 'scan') {
                         'name' => $name,
                         'id' => $person_id,
                         'type' => ucfirst($person['type']),
-                        'action' => $action
+                        'action' => $action,
+                        'image' => $image_url,
+                        'firstName' => $firstName,
+                        'middleName' => $middleName,
+                        'lastName' => $lastName
                     ]
                 ]);
             } else {
@@ -85,5 +128,23 @@ if ($_POST['action'] === 'scan') {
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request']);
+}
+
+/**
+ * Generate image URL for display
+ */
+function getImageUrl($imagePath) {
+    if (empty($imagePath)) {
+        return null; // Return null for no image, frontend will handle default avatar
+    }
+    
+    // Check if image file exists
+    $fullPath = '../../' . $imagePath;
+    if (file_exists($fullPath)) {
+        // Return relative path from scanner directory
+        return '../../' . $imagePath;
+    }
+    
+    return null; // File doesn't exist
 }
 ?>

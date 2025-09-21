@@ -36,6 +36,90 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             text-align: center;
             padding: 20px;
         }
+        
+        /* Image upload styles */
+        .image-upload-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .image-preview:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        .image-preview.has-image {
+            border-style: solid;
+            border-color: #28a745;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .image-placeholder {
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .image-actions {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            display: none;
+        }
+        
+        .image-preview.has-image:hover .image-actions {
+            display: block;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .default-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #007bff, #6f42c1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .file-input-label {
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-top: 8px;
+        }
+        
+        .image-info {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -85,16 +169,45 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
 
     <!-- Add User Modal -->
     <div class="modal fade" id="addUserModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New <?php echo ucfirst(rtrim($userType, 's')); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="addUserForm">
+                <form id="addUserForm" enctype="multipart/form-data">
                     <div class="modal-body">
-                        <div id="modalFormFields">
-                            <!-- Form fields will be populated by JavaScript -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center mb-4">
+                                    <div class="image-upload-container">
+                                        <div class="image-preview" id="addImagePreview">
+                                            <div class="image-placeholder">
+                                                <i class="fas fa-camera fa-2x mb-2"></i>
+                                                <div>Click to upload photo</div>
+                                            </div>
+                                            <div class="image-actions">
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeImage('add')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="addImageInput" name="image" accept="image/*" style="display: none;">
+                                        <label for="addImageInput" class="file-input-label text-primary">
+                                            <i class="fas fa-upload me-1"></i>Choose Photo
+                                        </label>
+                                        <div class="image-info">
+                                            JPG, PNG, GIF up to 5MB<br>
+                                            Recommended: 800x800px
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div id="modalFormFields">
+                                    <!-- Form fields will be populated by JavaScript -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -113,19 +226,53 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
 
     <!-- Edit User Modal -->
     <div class="modal fade" id="editUserModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit <?php echo ucfirst(rtrim($userType, 's')); ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="editUserForm">
+                <form id="editUserForm" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="text-center mb-3" id="editLoadingIndicator" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i> Loading user data...
                         </div>
-                        <div id="editModalFormFields">
-                            <!-- Form fields will be populated by JavaScript -->
+                        <div id="editFormContainer" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center mb-4">
+                                        <div class="image-upload-container">
+                                            <div class="image-preview" id="editImagePreview">
+                                                <div class="image-placeholder">
+                                                    <i class="fas fa-camera fa-2x mb-2"></i>
+                                                    <div>Click to upload photo</div>
+                                                </div>
+                                                <div class="image-actions">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeImage('edit')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <input type="file" id="editImageInput" name="image" accept="image/*" style="display: none;">
+                                            <label for="editImageInput" class="file-input-label text-primary">
+                                                <i class="fas fa-upload me-1"></i>Change Photo
+                                            </label>
+                                            <div class="image-info">
+                                                JPG, PNG, GIF up to 5MB<br>
+                                                Recommended: 800x800px
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" id="deleteImageBtn" style="display: none;" onclick="deleteUserImage()">
+                                                <i class="fas fa-trash me-1"></i>Delete Current Photo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div id="editModalFormFields">
+                                        <!-- Form fields will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <input type="hidden" id="editUserId" name="user_id">
                     </div>
@@ -147,11 +294,13 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
     <script>
         const userType = '<?php echo $userType; ?>';
         let users = [];
+        let currentEditUserId = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             setupFormFields();
             setupTableHeaders();
+            setupImageHandlers();
             loadUsers();
             
             // Setup form submission
@@ -159,12 +308,121 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             document.getElementById('editUserForm').addEventListener('submit', handleEditFormSubmit);
         });
 
+        function setupImageHandlers() {
+            // Add form image handlers
+            const addImagePreview = document.getElementById('addImagePreview');
+            const addImageInput = document.getElementById('addImageInput');
+            
+            addImagePreview.addEventListener('click', () => addImageInput.click());
+            addImageInput.addEventListener('change', (e) => handleImagePreview(e, 'add'));
+            
+            // Edit form image handlers
+            const editImagePreview = document.getElementById('editImagePreview');
+            const editImageInput = document.getElementById('editImageInput');
+            
+            editImagePreview.addEventListener('click', () => editImageInput.click());
+            editImageInput.addEventListener('change', (e) => handleImagePreview(e, 'edit'));
+        }
+
+        function handleImagePreview(event, formType) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(formType + 'ImagePreview');
+            
+            if (file) {
+                // Validate file
+                if (!file.type.startsWith('image/')) {
+                    showAlert('danger', 'Please select a valid image file');
+                    event.target.value = '';
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    showAlert('danger', 'File size must be less than 5MB');
+                    event.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="image-actions">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeImage('${formType}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    preview.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage(formType) {
+            const preview = document.getElementById(formType + 'ImagePreview');
+            const input = document.getElementById(formType + 'ImageInput');
+            
+            input.value = '';
+            preview.innerHTML = `
+                <div class="image-placeholder">
+                    <i class="fas fa-camera fa-2x mb-2"></i>
+                    <div>Click to upload photo</div>
+                </div>
+            `;
+            preview.classList.remove('has-image');
+        }
+
+        function deleteUserImage() {
+            if (!currentEditUserId) return;
+            
+            if (!confirm('Are you sure you want to delete this user\'s photo?')) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('action', 'delete_image');
+            formData.append('type', userType);
+            formData.append('user_id', currentEditUserId);
+            
+            fetch('manage_users_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reset image preview to default
+                    const preview = document.getElementById('editImagePreview');
+                    preview.innerHTML = `
+                        <div class="image-placeholder">
+                            <i class="fas fa-camera fa-2x mb-2"></i>
+                            <div>Click to upload photo</div>
+                        </div>
+                    `;
+                    preview.classList.remove('has-image');
+                    
+                    // Hide delete button
+                    document.getElementById('deleteImageBtn').style.display = 'none';
+                    
+                    showAlert('success', data.message);
+                    loadUsers(); // Refresh table
+                } else {
+                    showAlert('danger', data.message || 'Failed to delete image');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting image:', error);
+                showAlert('danger', 'Network error. Please try again.');
+            });
+        }
+
         function setupTableHeaders() {
             const headersRow = document.getElementById('tableHeaders');
             let headers = '';
             
             if (userType === 'students') {
                 headers = `
+                    <th>Photo</th>
                     <th>Student ID</th>
                     <th>Name</th>
                     <th>Course</th>
@@ -177,6 +435,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                 `;
             } else if (userType === 'faculty') {
                 headers = `
+                    <th>Photo</th>
                     <th>Faculty ID</th>
                     <th>Name</th>
                     <th>Department</th>
@@ -187,6 +446,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                 `;
             } else if (userType === 'security') {
                 headers = `
+                    <th>Photo</th>
                     <th>Security ID</th>
                     <th>Name</th>
                     <th>Gender</th>
@@ -442,6 +702,13 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         function generateTableRow(user) {
             let row = '<tr>';
             
+            // Generate avatar/image cell
+            const avatarHtml = user.imageUrl && user.imageUrl !== 'assets/images/default-avatar.png' 
+                ? `<img src="${user.imageUrl}" alt="Avatar" class="user-avatar">`
+                : `<div class="default-avatar">${getInitials(user)}</div>`;
+            
+            row += `<td>${avatarHtml}</td>`;
+            
             if (userType === 'students') {
                 const fullName = `${user.StudentFName} ${user.StudentMName || ''} ${user.StudentLName}`.replace(/\s+/g, ' ').trim();
                 row += `
@@ -519,6 +786,23 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             return row;
         }
 
+        function getInitials(user) {
+            let firstName, lastName;
+            
+            if (userType === 'students') {
+                firstName = user.StudentFName || '';
+                lastName = user.StudentLName || '';
+            } else if (userType === 'faculty') {
+                firstName = user.FacultyFName || '';
+                lastName = user.FacultyLName || '';
+            } else if (userType === 'security') {
+                firstName = user.SecurityFName || '';
+                lastName = user.SecurityLName || '';
+            }
+            
+            return (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        }
+
         function handleFormSubmit(e) {
             e.preventDefault();
             
@@ -546,8 +830,9 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
                     modal.hide();
                     
-                    // Reset form
+                    // Reset form and image preview
                     e.target.reset();
+                    removeImage('add');
                     
                     // Reload data
                     loadUsers();
@@ -573,12 +858,14 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         function editUser(userId) {
             const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
             const loadingIndicator = document.getElementById('editLoadingIndicator');
-            const formFields = document.getElementById('editModalFormFields');
+            const formContainer = document.getElementById('editFormContainer');
             const userIdField = document.getElementById('editUserId');
+            
+            currentEditUserId = userId;
             
             // Show loading
             loadingIndicator.style.display = 'block';
-            formFields.style.display = 'none';
+            formContainer.style.display = 'none';
             userIdField.value = userId;
             
             modal.show();
@@ -598,7 +885,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     
                     // Hide loading and show form
                     loadingIndicator.style.display = 'none';
-                    formFields.style.display = 'block';
+                    formContainer.style.display = 'block';
                 })
                 .catch(error => {
                     console.error('Error fetching user data:', error);
@@ -609,6 +896,32 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
 
         function populateEditForm(userData) {
             const formFields = document.getElementById('editModalFormFields');
+            const imagePreview = document.getElementById('editImagePreview');
+            const deleteImageBtn = document.getElementById('deleteImageBtn');
+            
+            // Handle image preview
+            if (userData.imageUrl && userData.imageUrl !== 'assets/images/default-avatar.png') {
+                imagePreview.innerHTML = `
+                    <img src="${userData.imageUrl}" alt="Current Photo">
+                    <div class="image-actions">
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeImage('edit')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                imagePreview.classList.add('has-image');
+                deleteImageBtn.style.display = 'block';
+            } else {
+                imagePreview.innerHTML = `
+                    <div class="image-placeholder">
+                        <i class="fas fa-camera fa-2x mb-2"></i>
+                        <div>Click to upload photo</div>
+                    </div>
+                `;
+                imagePreview.classList.remove('has-image');
+                deleteImageBtn.style.display = 'none';
+            }
+            
             let formHTML = '';
 
             if (userType === 'students') {

@@ -731,3 +731,143 @@ body {
         display: none !important;
     }
 }
+
+/* Add this to your assets/css/style.css file */
+
+/* Default avatar styles for when no image is uploaded */
+.default-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.default-avatar.large {
+    width: 150px;
+    height: 150px;
+    font-size: 48px;
+}
+
+/* User avatar styles */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    border-color: #007bff;
+    transform: scale(1.05);
+}
+
+/* Image upload and preview styles */
+.image-upload-container {
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.image-preview:hover {
+    border-color: #007bff;
+    background-color: #e3f2fd;
+}
+
+.image-preview.has-image {
+    border-style: solid;
+    border-color: #28a745;
+    background: white;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.image-placeholder {
+    text-align: center;
+    color: #6c757d;
+    user-select: none;
+}
+
+.image-placeholder i {
+    color: #007bff;
+    margin-bottom: 8px;
+}
+
+.image-actions {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    display: none;
+    z-index: 10;
+}
+
+.image-preview.has-image:hover .image-actions {
+    display: block;
+}
+
+.file-input-label {
+    cursor: pointer;
+    font-size: 0.875rem;
+    margin-top: 8px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.file-input-label:hover {
+    text-decoration: underline;
+}
+
+.image-info {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 5px;
+    line-height: 1.3;
+}
+
+/* Modal adjustments for image upload */
+.modal-xl .modal-body {
+    padding: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal-xl {
+        margin: 0.5rem;
+    }
+    
+    .modal-xl .modal-dialog {
+        max-width: none;
+    }
+    
+    .image-preview {
+        width: 120px;
+        height: 120px;
+    }
+}

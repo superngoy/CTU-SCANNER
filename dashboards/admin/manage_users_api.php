@@ -1,9 +1,11 @@
 <?php
 header('Content-Type: application/json');
 require_once '../../includes/functions.php';
+require_once '../../includes/image_upload_helper.php';
 
 try {
     $scanner = new CTUScanner();
+    $imageUploader = new ImageUploadHelper();
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
     $userType = $_GET['type'] ?? $_POST['type'] ?? '';
 
@@ -14,7 +16,8 @@ try {
             if ($userType === 'students') {
                 $stmt = $scanner->conn->prepare("
                     SELECT StudentID, StudentFName, StudentMName, StudentLName, 
-                           Course, YearLvl, Section, Department, Gender, BirthDate, isActive
+                           Course, YearLvl, Section, Department, Gender, BirthDate, 
+                           isActive, image, created_at
                     FROM students 
                     ORDER BY StudentLName ASC
                 ");
@@ -24,7 +27,7 @@ try {
             } elseif ($userType === 'faculty') {
                 $stmt = $scanner->conn->prepare("
                     SELECT FacultyID, FacultyFName, FacultyMName, FacultyLName, 
-                           Department, Gender, Birthdate, isActive
+                           Department, Gender, Birthdate, isActive, image, created_at
                     FROM faculty 
                     ORDER BY FacultyLName ASC
                 ");
@@ -34,7 +37,7 @@ try {
             } elseif ($userType === 'security') {
                 $stmt = $scanner->conn->prepare("
                     SELECT SecurityID, SecurityFName, SecurityMName, SecurityLName, 
-                           Gender, BirthDate, TimeSched, isActive
+                           Gender, BirthDate, TimeSched, isActive, image, created_at
                     FROM security 
                     ORDER BY SecurityLName ASC
                 ");
@@ -42,15 +45,38 @@ try {
                 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             
+            // Add image URLs to response
+            foreach ($users as &$user) {
+                $user['imageUrl'] = $imageUploader->getImageUrl($user['image']);
+            }
+            
             echo json_encode($users);
             break;
             
         case 'add_user':
+            $imagePath = null;
+            $imageUploadResult = ['success' => true];
+            
+            // Handle image upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $userId = $_POST[$userType === 'students' ? 'student_id' : 
+                                ($userType === 'faculty' ? 'faculty_id' : 'security_id')];
+                $imageUploadResult = $imageUploader->uploadImage($_FILES['image'], $userType, $userId);
+                if ($imageUploadResult['success']) {
+                    $imagePath = $imageUploadResult['path'];
+                }
+            }
+            
+            if (!$imageUploadResult['success']) {
+                echo json_encode(['success' => false, 'message' => 'Image upload failed: ' . $imageUploadResult['message']]);
+                break;
+            }
+            
             if ($userType === 'students') {
                 $stmt = $scanner->conn->prepare("
                     INSERT INTO students (StudentID, StudentFName, StudentMName, StudentLName, 
-                                        Gender, BirthDate, Course, YearLvl, Section, Department) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                        Gender, BirthDate, Course, YearLvl, Section, Department, image) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $result = $stmt->execute([
                     $_POST['student_id'],
@@ -62,14 +88,15 @@ try {
                     $_POST['course'],
                     $_POST['year_level'],
                     $_POST['section'],
-                    $_POST['department']
+                    $_POST['department'],
+                    $imagePath
                 ]);
                 
             } elseif ($userType === 'faculty') {
                 $stmt = $scanner->conn->prepare("
                     INSERT INTO faculty (FacultyID, FacultyFName, FacultyMName, FacultyLName, 
-                                       Gender, Birthdate, Department) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                                       Gender, Birthdate, Department, image) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $result = $stmt->execute([
                     $_POST['faculty_id'],
@@ -78,15 +105,16 @@ try {
                     $_POST['last_name'],
                     $_POST['gender'],
                     $_POST['birthdate'],
-                    $_POST['department']
+                    $_POST['department'],
+                    $imagePath
                 ]);
                 
             } elseif ($userType === 'security') {
                 $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $stmt = $scanner->conn->prepare("
                     INSERT INTO security (SecurityID, SecurityFName, SecurityMName, SecurityLName, 
-                                        Gender, BirthDate, TimeSched, password) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                        Gender, BirthDate, TimeSched, password, image) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
                 $result = $stmt->execute([
                     $_POST['security_id'],
@@ -96,13 +124,18 @@ try {
                     $_POST['gender'],
                     $_POST['birthdate'],
                     $_POST['time_sched'],
-                    $hashedPassword
+                    $hashedPassword,
+                    $imagePath
                 ]);
             }
             
             if ($result) {
                 echo json_encode(['success' => true, 'message' => 'User added successfully']);
             } else {
+                // If database insert fails, remove uploaded image
+                if ($imagePath) {
+                    $imageUploader->deleteImage($imagePath);
+                }
                 echo json_encode(['success' => false, 'message' => 'Failed to add user']);
             }
             break;
@@ -149,6 +182,7 @@ try {
             }
             
             if ($user) {
+                $user['imageUrl'] = $imageUploader->getImageUrl($user['image']);
                 echo json_encode($user);
             } else {
                 echo json_encode(['error' => 'User not found']);
@@ -156,12 +190,41 @@ try {
             break;
             
         case 'update_user':
+            $userId = $_POST['user_id'];
+            $imagePath = null;
+            $imageUploadResult = ['success' => true];
+            
+            // Get current user data to preserve existing image if no new image is uploaded
+            if ($userType === 'students') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM students WHERE StudentID = ?");
+            } elseif ($userType === 'faculty') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
+            } elseif ($userType === 'security') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
+            }
+            $stmt->execute([$userId]);
+            $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            $imagePath = $currentUser['image']; // Keep existing image by default
+            
+            // Handle new image upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $imageUploadResult = $imageUploader->uploadImage($_FILES['image'], $userType, $userId);
+                if ($imageUploadResult['success']) {
+                    $imagePath = $imageUploadResult['path'];
+                }
+            }
+            
+            if (!$imageUploadResult['success']) {
+                echo json_encode(['success' => false, 'message' => 'Image upload failed: ' . $imageUploadResult['message']]);
+                break;
+            }
+            
             if ($userType === 'students') {
                 $stmt = $scanner->conn->prepare("
                     UPDATE students SET 
                         StudentFName = ?, StudentMName = ?, StudentLName = ?, 
                         Gender = ?, BirthDate = ?, Course = ?, YearLvl = ?, 
-                        Section = ?, Department = ?
+                        Section = ?, Department = ?, image = ?
                     WHERE StudentID = ?
                 ");
                 $result = $stmt->execute([
@@ -174,14 +237,15 @@ try {
                     $_POST['year_level'],
                     $_POST['section'],
                     $_POST['department'],
-                    $_POST['user_id']
+                    $imagePath,
+                    $userId
                 ]);
                 
             } elseif ($userType === 'faculty') {
                 $stmt = $scanner->conn->prepare("
                     UPDATE faculty SET 
                         FacultyFName = ?, FacultyMName = ?, FacultyLName = ?, 
-                        Gender = ?, Birthdate = ?, Department = ?
+                        Gender = ?, Birthdate = ?, Department = ?, image = ?
                     WHERE FacultyID = ?
                 ");
                 $result = $stmt->execute([
@@ -191,7 +255,8 @@ try {
                     $_POST['gender'],
                     $_POST['birthdate'],
                     $_POST['department'],
-                    $_POST['user_id']
+                    $imagePath,
+                    $userId
                 ]);
                 
             } elseif ($userType === 'security') {
@@ -201,7 +266,7 @@ try {
                     $stmt = $scanner->conn->prepare("
                         UPDATE security SET 
                             SecurityFName = ?, SecurityMName = ?, SecurityLName = ?, 
-                            Gender = ?, BirthDate = ?, TimeSched = ?, password = ?
+                            Gender = ?, BirthDate = ?, TimeSched = ?, password = ?, image = ?
                         WHERE SecurityID = ?
                     ");
                     $result = $stmt->execute([
@@ -212,14 +277,15 @@ try {
                         $_POST['birthdate'],
                         $_POST['time_sched'],
                         $hashedPassword,
-                        $_POST['user_id']
+                        $imagePath,
+                        $userId
                     ]);
                 } else {
                     // Update without changing password
                     $stmt = $scanner->conn->prepare("
                         UPDATE security SET 
                             SecurityFName = ?, SecurityMName = ?, SecurityLName = ?, 
-                            Gender = ?, BirthDate = ?, TimeSched = ?
+                            Gender = ?, BirthDate = ?, TimeSched = ?, image = ?
                         WHERE SecurityID = ?
                     ");
                     $result = $stmt->execute([
@@ -229,7 +295,8 @@ try {
                         $_POST['gender'],
                         $_POST['birthdate'],
                         $_POST['time_sched'],
-                        $_POST['user_id']
+                        $imagePath,
+                        $userId
                     ]);
                 }
             }
@@ -244,18 +311,57 @@ try {
         case 'delete_user':
             $userId = $_POST['user_id'];
             
+            // Get user data to delete associated image
             if ($userType === 'students') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM students WHERE StudentID = ?");
+                $stmt->execute([$userId]);
+                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                
                 $stmt = $scanner->conn->prepare("DELETE FROM students WHERE StudentID = ?");
             } elseif ($userType === 'faculty') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
+                $stmt->execute([$userId]);
+                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                
                 $stmt = $scanner->conn->prepare("DELETE FROM faculty WHERE FacultyID = ?");
             } elseif ($userType === 'security') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
+                $stmt->execute([$userId]);
+                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                
                 $stmt = $scanner->conn->prepare("DELETE FROM security WHERE SecurityID = ?");
             }
             
             if ($stmt->execute([$userId])) {
+                // Delete associated image file
+                if ($userData && !empty($userData['image'])) {
+                    $imageUploader->deleteImage($userData['image']);
+                }
                 echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Failed to delete user']);
+            }
+            break;
+            
+        case 'delete_image':
+            $userId = $_POST['user_id'];
+            
+            // Remove image from filesystem
+            $imageUploader->removeOldImage($userType, $userId);
+            
+            // Update database to remove image reference
+            if ($userType === 'students') {
+                $stmt = $scanner->conn->prepare("UPDATE students SET image = NULL WHERE StudentID = ?");
+            } elseif ($userType === 'faculty') {
+                $stmt = $scanner->conn->prepare("UPDATE faculty SET image = NULL WHERE FacultyID = ?");
+            } elseif ($userType === 'security') {
+                $stmt = $scanner->conn->prepare("UPDATE security SET image = NULL WHERE SecurityID = ?");
+            }
+            
+            if ($stmt->execute([$userId])) {
+                echo json_encode(['success' => true, 'message' => 'Image deleted successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to delete image']);
             }
             break;
             

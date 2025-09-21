@@ -22,6 +22,375 @@
             --card-shadow: rgba(0, 0, 0, 0.15);
         }
 
+        /* Add these styles to your scanner index.php <style> section */
+
+/* Scan Result Avatar Styles */
+.scan-avatar-container {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.scan-result-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--primary-gold);
+    box-shadow: 0 8px 25px rgba(219, 179, 86, 0.4);
+    animation: avatarPulse 0.6s ease-out;
+}
+
+.scan-result-avatar-default {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    border: 4px solid var(--primary-gold);
+    box-shadow: 0 8px 25px rgba(219, 179, 86, 0.4);
+    animation: avatarPulse 0.6s ease-out;
+}
+
+@keyframes avatarPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Action Badge */
+.scan-action-badge {
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 8px;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(219, 179, 86, 0.3);
+}
+
+.scan-action-badge.entry {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.scan-action-badge.exit {
+    background: linear-gradient(135deg, var(--primary-red), #dc3545);
+    box-shadow: 0 4px 15px rgba(224, 0, 0, 0.3);
+}
+
+/* Recent Scans Avatar Styles */
+.scan-item {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    padding: 16px 20px;
+    border-radius: 15px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--primary-gold);
+    font-size: 0.95rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border: 2px solid rgba(219, 179, 86, 0.15);
+    transition: all 0.3s ease;
+}
+
+.scan-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-left-color: var(--primary-orange);
+}
+
+.scan-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.scan-avatar-small {
+    flex-shrink: 0;
+}
+
+.recent-scan-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-gold);
+    box-shadow: 0 4px 12px rgba(219, 179, 86, 0.3);
+}
+
+.recent-scan-avatar-default {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    border: 3px solid var(--primary-gold);
+    box-shadow: 0 4px 12px rgba(219, 179, 86, 0.3);
+}
+
+.scan-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.scan-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+.scan-name {
+    font-weight: 800;
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scan-action-mini {
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(219, 179, 86, 0.3);
+}
+
+.scan-action-mini.entry {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.scan-action-mini.exit {
+    background: linear-gradient(135deg, var(--primary-red), #dc3545);
+    box-shadow: 0 2px 8px rgba(224, 0, 0, 0.3);
+}
+
+.scan-item-details {
+    padding-left: 57px; /* Align with name after avatar */
+}
+
+.scan-role {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+
+.scan-data {
+    font-weight: 700;
+    color: var(--primary-orange);
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.scan-location {
+    font-size: 0.8rem;
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Enhanced scan result container */
+.scan-result-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.scan-success-details {
+    position: relative;
+    z-index: 2;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .scan-result-avatar,
+    .scan-result-avatar-default {
+        width: 70px;
+        height: 70px;
+        border-width: 3px;
+    }
+
+    .scan-result-avatar-default {
+        font-size: 24px;
+    }
+
+    .recent-scan-avatar,
+    .recent-scan-avatar-default {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+
+    .recent-scan-avatar-default {
+        font-size: 14px;
+    }
+
+    .scan-item-details {
+        padding-left: 52px; /* Adjust for smaller avatar */
+    }
+
+    .scan-person-name {
+        font-size: 1.2rem;
+    }
+
+    .scan-action-badge {
+        font-size: 0.8rem;
+        padding: 5px 14px;
+    }
+
+    .scan-item {
+        padding: 14px 16px;
+        margin-bottom: 10px;
+    }
+
+    .scan-item-header {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scan-result-avatar,
+    .scan-result-avatar-default {
+        width: 60px;
+        height: 60px;
+        border-width: 2px;
+    }
+
+    .scan-result-avatar-default {
+        font-size: 20px;
+    }
+
+    .recent-scan-avatar,
+    .recent-scan-avatar-default {
+        width: 35px;
+        height: 35px;
+        border-width: 2px;
+    }
+
+    .recent-scan-avatar-default {
+        font-size: 12px;
+    }
+
+    .scan-item-details {
+        padding-left: 47px; /* Adjust for smallest avatar */
+    }
+
+    .scan-person-name {
+        font-size: 1.1rem;
+    }
+
+    .scan-action-badge {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+    }
+
+    .scan-action-mini {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .scan-item {
+        padding: 12px 14px;
+        margin-bottom: 8px;
+    }
+}
+
+/* Loading state for avatars */
+.scan-result-avatar,
+.recent-scan-avatar {
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    transition: all 0.3s ease;
+}
+
+.scan-result-avatar:hover,
+.recent-scan-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(219, 179, 86, 0.5);
+}
+
+/* Avatar loading animation */
+@keyframes avatarLoading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.avatar-loading {
+    background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
+    background-size: 200px;
+    animation: avatarLoading 1.5s infinite;
+}
+
+/* Scan result enhancements */
+.scan-success-icon {
+    font-size: 2.2rem;
+    color: var(--primary-gold);
+    margin-bottom: 8px;
+    animation: successPulse 1s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(219, 179, 86, 0.5));
+}
+
+/* Enhanced floating window for mobile */
+@media (max-width: 768px) {
+    .recent-scans-float {
+        border-radius: 20px;
+        border-width: 1px;
+    }
+
+    .scan-item {
+        border-radius: 12px;
+        padding: 12px 16px;
+    }
+
+    .scan-item-header {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .scan-name {
+        font-size: 0.95rem;
+        line-height: 1.3;
+        white-space: normal;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+}
+
         * {
             margin: 0;
             padding: 0;

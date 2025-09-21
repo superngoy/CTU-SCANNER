@@ -20,18 +20,30 @@ require_once '../../config/database.php';
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #27ae60;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --info-color: #3498db;
-            --danger-color: #e74c3c;
+            --gold: #D8AC41;
+            --red: #E00000;
+            --orange: #FF9600;
+            --dark-red: #DB362D;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-red) 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            animation: gradientShift 15s ease infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--red) 0%, var(--orange) 100%) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1rem 0;
         }
         
         .navbar-brand {
@@ -49,45 +61,6 @@ require_once '../../config/database.php';
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-        }
-        
-        .navbar-text {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .activity-item {
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            padding: 12px;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(10px);
-        }
-        
-        .activity-item:hover {
-            background: rgba(255,255,255,0.9);
-            border-left-color: var(--secondary-color);
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         .stat-card {
             padding: 25px;
             border-radius: 15px;
@@ -95,15 +68,27 @@ require_once '../../config/database.php';
             margin-bottom: 15px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out;
         }
         
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
-        
+
         .stat-card::before {
             content: '';
             position: absolute;
@@ -121,6 +106,7 @@ require_once '../../config/database.php';
             float: right;
             position: relative;
             z-index: 2;
+            animation: pulse 2s infinite;
         }
         
         .stat-card h3 {
@@ -139,42 +125,53 @@ require_once '../../config/database.php';
             z-index: 2;
         }
         
-        .bg-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
-        .bg-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
-        .bg-info { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
-        .bg-secondary { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); }
-        
+        .bg-success { background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%); }
+        .bg-warning { background: linear-gradient(135deg, var(--orange) 0%, var(--red) 100%); }
+        .bg-info { background: linear-gradient(135deg, var(--red) 0%, var(--dark-red) 100%); }
+        .bg-secondary { background: linear-gradient(135deg, var(--dark-red) 0%, var(--gold) 100%); }
+
         .card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
             background: rgba(255,255,255,0.95);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
         }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .card-header {
-            background: linear-gradient(135deg, rgba(44,62,80,0.05) 0%, rgba(39,174,96,0.05) 100%);
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            border-radius: 15px 15px 0 0 !important;
-            padding: 20px;
+
+        .activity-item {
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--gold);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px;
+            background: rgba(255,255,255,0.9);
+            animation: slideInRight 0.5s ease-out;
         }
-        
-        .card-header h4 {
-            color: var(--primary-color);
-            font-weight: 700;
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
-        
-        .card-header h5 {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        
+
         .activity-feed {
             max-height: 600px;
             overflow-y: auto;
@@ -211,19 +208,37 @@ require_once '../../config/database.php';
         }
         
         .btn-outline-primary {
-            border-color: var(--secondary-color);
-            color: var(--secondary-color);
-            font-weight: 500;
-            border-radius: 8px;
+            border-color: var(--gold);
+            color: var(--gold);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
             transition: all 0.3s ease;
         }
-        
+
         .btn-outline-primary:hover {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-            transform: translateY(-1px);
+            background-color: var(--gold);
+            border-color: var(--gold);
+            color: white;
+            transform: translateY(-2px);
         }
-        
+
+        .btn-outline-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .btn-outline-primary:hover::before {
+            left: 100%;
+        }
+
         .activity-person {
             font-weight: 600;
             color: var(--primary-color);
@@ -255,13 +270,13 @@ require_once '../../config/database.php';
         }
         
         .activity-type.student {
-            background: rgba(52, 152, 219, 0.1);
-            color: #3498db;
+            background: rgba(216, 172, 65, 0.1);
+            color: var(--gold);
         }
         
         .activity-type.faculty {
-            background: rgba(155, 89, 182, 0.1);
-            color: #9b59b6;
+            background: rgba(224, 0, 0, 0.1);
+            color: var(--red);
         }
         
         .container-fluid {
