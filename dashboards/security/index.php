@@ -20,14 +20,29 @@ require_once '../../config/database.php';
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
         :root {
-            --gold: #D8AC41;
-            --red: #E00000;
-            --orange: #FF9600;
-            --dark-red: #DB362D;
+            --primary-color: #8A2125;    /* Dark Red */
+            --secondary-color: #DFBB65;  /* Gold */
+            --accent-color: #8A2125;     /* Dark Red for accents */
+            --success-color: #27AE60;    /* Keep standard success */
+            --warning-color: #DFBB65;    /* Gold for warnings */
+            --danger-color: #8A2125;     /* Dark Red for danger */
+            --info-color: #DFBB65;       /* Gold for info */
+            
+            /* Updated Gradients */
+            --primary-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
+            --secondary-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --success-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+            --warning-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --danger-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
+            --info-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --entries-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);      /* Dark Red */
+            --exits-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);        /* Gold */
+            --student-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);      /* Green */
+            --faculty-gradient: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);      /* Blue */
         }
         
         body {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--dark-red) 100%);
+            background: linear-gradient(135deg, #ECF0F1 0%, #F5F6FA 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             animation: gradientShift 15s ease infinite;
@@ -41,7 +56,7 @@ require_once '../../config/database.php';
         }
 
         .navbar {
-            background: linear-gradient(135deg, var(--red) 0%, var(--orange) 100%) !important;
+            background: var(--primary-gradient) !important;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             padding: 1rem 0;
         }
@@ -125,10 +140,14 @@ require_once '../../config/database.php';
             z-index: 2;
         }
         
-        .bg-success { background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%); }
-        .bg-warning { background: linear-gradient(135deg, var(--orange) 0%, var(--red) 100%); }
-        .bg-info { background: linear-gradient(135deg, var(--red) 0%, var(--dark-red) 100%); }
-        .bg-secondary { background: linear-gradient(135deg, var(--dark-red) 0%, var(--gold) 100%); }
+        .stat-card.bg-success { background: var(--success-gradient); }
+        .stat-card.bg-warning { background: var(--warning-gradient); }
+        .stat-card.bg-info { background: var(--info-gradient); }
+        .stat-card.bg-secondary { background: var(--secondary-gradient); }
+        .stat-card.entries { background: var(--entries-gradient); }
+        .stat-card.exits { background: var(--exits-gradient); }
+        .stat-card.students { background: var(--student-gradient); }
+        .stat-card.faculty { background: var(--faculty-gradient); }
 
         .card {
             border: none;
@@ -143,7 +162,7 @@ require_once '../../config/database.php';
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
@@ -153,7 +172,7 @@ require_once '../../config/database.php';
 
         .activity-item {
             transition: all 0.3s ease;
-            border-left: 4px solid var(--gold);
+            border-left: 4px solid var(--accent-color);
             border-radius: 8px;
             margin-bottom: 8px;
             padding: 12px;
@@ -188,7 +207,7 @@ require_once '../../config/database.php';
         }
         
         .activity-feed::-webkit-scrollbar-thumb {
-            background: var(--secondary-color);
+            background: var(--primary-color);
             border-radius: 3px;
         }
         
@@ -208,8 +227,8 @@ require_once '../../config/database.php';
         }
         
         .btn-outline-primary {
-            border-color: var(--gold);
-            color: var(--gold);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
             position: relative;
             overflow: hidden;
             z-index: 1;
@@ -217,10 +236,9 @@ require_once '../../config/database.php';
         }
 
         .btn-outline-primary:hover {
-            background-color: var(--gold);
-            border-color: var(--gold);
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
             color: white;
-            transform: translateY(-2px);
         }
 
         .btn-outline-primary::before {
@@ -270,13 +288,13 @@ require_once '../../config/database.php';
         }
         
         .activity-type.student {
-            background: rgba(216, 172, 65, 0.1);
-            color: var(--gold);
+            background: rgba(138, 33, 37, 0.1);
+            color: var(--primary-color);
         }
         
         .activity-type.faculty {
-            background: rgba(224, 0, 0, 0.1);
-            color: var(--red);
+            background: rgba(223, 187, 101, 0.1);
+            color: var(--secondary-color);
         }
         
         .container-fluid {
@@ -342,7 +360,7 @@ require_once '../../config/database.php';
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 col-sm-6">
-                                <div class="stat-card bg-success">
+                                <div class="stat-card entries">
                                     <div class="stat-icon"><i class="fas fa-sign-in-alt"></i></div>
                                     <div class="stat-info">
                                         <h3 id="todayEntries">-</h3>
@@ -351,7 +369,7 @@ require_once '../../config/database.php';
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
-                                <div class="stat-card bg-warning">
+                                <div class="stat-card exits">
                                     <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
                                     <div class="stat-info">
                                         <h3 id="todayExits">-</h3>
@@ -360,7 +378,7 @@ require_once '../../config/database.php';
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
-                                <div class="stat-card bg-info">
+                                <div class="stat-card students">
                                     <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                                     <div class="stat-info">
                                         <h3 id="studentEntries">-</h3>
@@ -369,7 +387,7 @@ require_once '../../config/database.php';
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
-                                <div class="stat-card bg-secondary">
+                                <div class="stat-card faculty">
                                     <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                                     <div class="stat-info">
                                         <h3 id="facultyEntries">-</h3>

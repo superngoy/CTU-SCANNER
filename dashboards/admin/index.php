@@ -15,23 +15,33 @@ $peakHours = $scanner->getPeakHours();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
+        /* Find and replace the :root CSS variables */
         :root {
             --sidebar-width: 280px;
             --sidebar-collapsed-width: 70px;
             --header-height: 70px;
             
             /* Updated Color Palette */
-            --primary-color: #D8AC41;
-            --danger-color: #E00000;
-            --warning-color: #FF9600;
-            --secondary-color: #DB362D;
+            --primary-color: #8A2125;    /* Dark Red */
+            --secondary-color: #DFBB65;  /* Gold */
+            --accent-color: #8A2125;     /* Dark Red for accents */
+            --success-color: #28a745;    /* Keep standard success */
+            --warning-color: #DFBB65;    /* Gold for warnings */
+            --danger-color: #8A2125;     /* Dark Red for danger */
+            --info-color: #DFBB65;       /* Gold for info */
             
-            /* Gradients with new colors */
-            --primary-gradient: linear-gradient(135deg, #D8AC41 0%, #FF9600 100%);
-            --secondary-gradient: linear-gradient(135deg, #DB362D 0%, #E00000 100%);
-            --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            --warning-gradient: linear-gradient(135deg, #FF9600 0%, #D8AC41 100%);
-            --danger-gradient: linear-gradient(135deg, #E00000 0%, #DB362D 100%);
+            /* Updated Gradients */
+            --primary-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
+            --secondary-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --success-gradient: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+            --warning-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --danger-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
+            --info-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            
+            --entries-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);      /* Dark Red */
+            --exits-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);        /* Gold */
+            --student-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);      /* Green */
+            --faculty-gradient: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);      /* Blue */
         }
 
         * {
@@ -42,7 +52,7 @@ $peakHours = $scanner->getPeakHours();
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #ECF0F1 0%, #F5F6FA 100%);
             min-height: 100vh;
             padding-left: var(--sidebar-width);
             transition: padding-left 0.2s ease;
@@ -60,7 +70,7 @@ $peakHours = $scanner->getPeakHours();
             top: 0;
             width: var(--sidebar-width);
             height: 100vh;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(180deg, #8A2125 0%, #9c262b 50%, #8A2125 100%);
             box-shadow: 4px 0 20px rgba(0,0,0,0.2);
             z-index: 1050;
             transition: all 0.2s ease;
@@ -88,7 +98,7 @@ $peakHours = $scanner->getPeakHours();
             height: 50px;
             border-radius: 12px;
             margin-bottom: 10px;
-            border: 2px solid var(--primary-color);
+            border: 2px solid #DFBB65;
             transition: all 0.2s ease;
         }
 
@@ -143,7 +153,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .sidebar-toggle:hover {
-            background: var(--warning-color);
+            background: rgba(138, 33, 37, 0.1);
             transform: scale(1.1);
         }
 
@@ -180,7 +190,7 @@ $peakHours = $scanner->getPeakHours();
             top: 0;
             width: 0;
             height: 100%;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
             transition: width 0.15s ease;
             border-radius: 10px;
         }
@@ -225,7 +235,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .nav-link.active {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
             color: #fff;
             transform: translateX(3px);
         }
@@ -315,7 +325,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .notification-btn:hover {
-            background: rgba(216, 172, 65, 0.1);
+            background: rgba(223, 187, 101, 0.1);
             color: var(--primary-color);
             transform: scale(1.1);
         }
@@ -326,7 +336,7 @@ $peakHours = $scanner->getPeakHours();
             right: 6px;
             width: 8px;
             height: 8px;
-            background: var(--danger-color);
+            background: #8A2125;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
@@ -337,17 +347,16 @@ $peakHours = $scanner->getPeakHours();
             gap: 8px;
             padding: 8px 15px;
             border-radius: 20px;
-            background: rgba(216, 172, 65, 0.1);
-            color: var(--primary-color);
+            background: rgba(138, 33, 37, 0.1);
+            color: #8A2125;
             text-decoration: none;
             transition: all 0.15s ease;
             font-size: 14px;
         }
 
         .user-profile:hover {
-            background: rgba(216, 172, 65, 0.2);
-            transform: scale(1.05);
-            color: var(--primary-color);
+            background: rgba(138, 33, 37, 0.2);
+            color: #8A2125;
         }
 
         /* Main Content */
@@ -377,7 +386,7 @@ $peakHours = $scanner->getPeakHours();
             left: 0;
             right: 0;
             height: 3px;
-            background: var(--primary-gradient);
+            background: var(--secondary-gradient);
         }
 
         .enhanced-card:hover {
@@ -497,9 +506,9 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .btn-primary:hover {
-            background: var(--warning-gradient);
+            background: var(--secondary-gradient);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(216, 172, 65, 0.3);
+            box-shadow: 0 4px 15px rgba(223, 187, 101, 0.3);
         }
 
         .btn-success {
@@ -598,16 +607,49 @@ $peakHours = $scanner->getPeakHours();
                 display: none;
             }
             
-            .main-content {
-                padding: 15px 10px;
+            /* Statistics Overview - Updated styles */
+            .stat-card {
+                border-radius: 12px;
+                padding: 18px;
+                text-align: center;
+                transition: all 0.15s ease;
+                position: relative;
+                overflow: hidden;
+                color: white;
+                margin-bottom: 15px;
             }
-            
-            .header-title {
-                font-size: 16px;
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                transform: scale(0);
+                transition: transform 0.3s ease;
             }
-            
-            .user-profile span {
-                display: none;
+
+            .stat-card:hover::before {
+                transform: scale(1);
+            }
+
+            .stat-icon {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+
+            .stat-info h3 {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 5px;
+            }
+
+            .stat-info p {
+                margin: 0;
+                opacity: 0.95;
+                font-size: 14px;
             }
         }
 
@@ -646,8 +688,8 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .mobile-toggle:hover {
-            background: rgba(216, 172, 65, 0.1);
-            color: var(--primary-color);
+            background: rgba(138, 33, 37, 0.1);
+            color: var(--accent-color);
         }
 
         /* Mobile Overlay - Enhanced */
@@ -812,6 +854,116 @@ $peakHours = $scanner->getPeakHours();
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
             color: var(--primary-color);
         }
+
+        /* Enhanced Mobile Sidebar Functions */
+        function openMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.add('mobile-active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            // Add fade-out animation class
+            sidebar.classList.add('fade-out');
+            overlay.classList.add('fade-out');
+            
+            // Remove classes after animation completes
+            setTimeout(() => {
+                sidebar.classList.remove('mobile-active', 'fade-out');
+                overlay.classList.remove('active', 'fade-out');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Updated event handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            const mobileCloseBtn = document.querySelector('.mobile-close-btn');
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            // Handle swipe to close
+            sidebar.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            sidebar.addEventListener('touchmove', e => {
+                touchEndX = e.touches[0].clientX;
+                const swipeDistance = touchStartX - touchEndX;
+                
+                if (swipeDistance > 50) { // Threshold for swipe
+                    closeMobileSidebar();
+                }
+            });
+            
+            // Ensure close button works
+            if (mobileCloseBtn) {
+                mobileCloseBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Prevent event bubbling
+                    closeMobileSidebar();
+                });
+            }
+            
+            // Ensure overlay click closes sidebar
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Prevent event bubbling
+                    closeMobileSidebar();
+                });
+            }
+            
+            // Prevent clicks inside sidebar from closing it
+            sidebar.addEventListener('click', function(e) {
+                e.stopPropagation(); // Stop click events from bubbling up
+            });
+        });
+
+        /* Add to your existing styles */
+        .sidebar {
+            transition: transform 0.3s ease-in-out !important;
+        }
+
+        .sidebar.mobile-active {
+            transform: translateX(0) !important;
+        }
+
+        .sidebar.fade-out {
+            transform: translateX(-100%) !important;
+        }
+
+        .mobile-overlay {
+            transition: opacity 0.3s ease-in-out !important;
+        }
+
+        .mobile-overlay.fade-out {
+            opacity: 0 !important;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1050;
+            }
+            
+            .mobile-close-btn {
+                display: flex !important;
+                z-index: 1051;
+            }
+            
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
     </style>
 </head>
 <body>
@@ -882,7 +1034,7 @@ $peakHours = $scanner->getPeakHours();
         
         <div style="position: absolute; bottom: 20px; left: 8px; right: 8px;">
             <div class="nav-item">
-                <a href="logout.php" class="nav-link" style="background: rgba(224, 0, 0, 0.1); color: var(--danger-color);">
+                <a href="logout.php" class="nav-link" style="background: var(--danger-gradient); color: #fff;">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                     <div class="nav-link-tooltip">Logout</div>
@@ -928,7 +1080,7 @@ $peakHours = $scanner->getPeakHours();
                         <div class="card-body p-3">
                             <div class="row g-3">
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-primary bounce-in" style="animation-delay: 0.05s;">
+                                    <div class="stat-card bg-primary bounce-in" style="background: var(--entries-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-users"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['total_entries']; ?></h3>
@@ -937,7 +1089,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-success bounce-in" style="animation-delay: 0.1s;">
+                                    <div class="stat-card bg-success bounce-in" style="background: var(--student-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['student_entries']; ?></h3>
@@ -946,7 +1098,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-info bounce-in" style="animation-delay: 0.15s;">
+                                    <div class="stat-card bg-info bounce-in" style="background: var(--faculty-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['faculty_entries']; ?></h3>
@@ -955,7 +1107,7 @@ $peakHours = $scanner->getPeakHours();
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-warning bounce-in" style="animation-delay: 0.2s;">
+                                    <div class="stat-card bg-danger bounce-in" style="background: var(--exits-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
                                         <div class="stat-info">
                                             <h3><?php echo $stats['total_exits']; ?></h3>
@@ -1066,6 +1218,7 @@ $peakHours = $scanner->getPeakHours();
                                                 </div>
                                             </form>
                                             
+
                                             <!-- Quick Generate Result -->
                                             <div id="quickResult" style="display: none;" class="mt-4">
                                                 <!-- Result will be loaded here -->
@@ -1416,10 +1569,63 @@ $peakHours = $scanner->getPeakHours();
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobileOverlay');
             
-            sidebar.classList.remove('mobile-active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
+            // Add fade-out animation class
+            sidebar.classList.add('fade-out');
+            overlay.classList.add('fade-out');
+            
+            // Remove classes after animation completes
+            setTimeout(() => {
+                sidebar.classList.remove('mobile-active', 'fade-out');
+                overlay.classList.remove('active', 'fade-out');
+                document.body.style.overflow = '';
+            }, 300);
         }
+        
+        // Add touch event handling for better mobile experience
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            const mobileCloseBtn = document.querySelector('.mobile-close-btn');
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            // Handle swipe to close
+            sidebar.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            sidebar.addEventListener('touchmove', e => {
+                touchEndX = e.touches[0].clientX;
+                const swipeDistance = touchStartX - touchEndX;
+                
+                if (swipeDistance > 50) { // Threshold for swipe
+                    closeMobileSidebar();
+                }
+            });
+            
+            // Ensure close button works
+            if (mobileCloseBtn) {
+                mobileCloseBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Prevent event bubbling
+                    closeMobileSidebar();
+                });
+            }
+            
+            // Ensure overlay click closes sidebar
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // Prevent event bubbling
+                    closeMobileSidebar();
+                });
+            }
+            
+            // Prevent clicks inside sidebar from closing it
+            sidebar.addEventListener('click', function(e) {
+                e.stopPropagation(); // Stop click events from bubbling up
+            });
+        });
         
         // Mobile Detection and Sidebar Toggle
         function isMobile() {
@@ -1464,7 +1670,7 @@ $peakHours = $scanner->getPeakHours();
                     toggleSidebar();
                 }
             } else {
-                // Mobile: ensure sidebar is not in collapsed state
+                // Mobile: ensure sidebar is not in collapsed state but don't auto-open
                 const sidebar = document.getElementById('sidebar');
                 const body = document.body;
                 
@@ -1473,6 +1679,10 @@ $peakHours = $scanner->getPeakHours();
                     body.classList.remove('sidebar-collapsed');
                     sidebarCollapsed = false;
                 }
+                
+                // Don't automatically add mobile-active class here
+                sidebar.classList.remove('mobile-active');
+                document.getElementById('mobileOverlay').classList.remove('active');
             }
         }
         
@@ -1522,6 +1732,7 @@ $peakHours = $scanner->getPeakHours();
                                                     </div>
                                                 </div>
                                                 
+
                                                 <div class="info-grid">
                                                     <p class="mb-1"><strong>ID:</strong> <span class="badge bg-primary">${person.ID}</span></p>
                                                     <p class="mb-1"><strong>Type:</strong> <span class="badge bg-info">${person.Type}</span></p>
@@ -1849,38 +2060,11 @@ $peakHours = $scanner->getPeakHours();
                 new Chart(peakCtx, {
                     type: 'line',
                     data: {
-                        labels: ['6AM', '8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'],
                         datasets: [{
-                            label: 'Campus Entries',
-                            data: [12, 45, 78, 125, 89, 156, 67, 23],
-                            borderColor: '#D8AC41',
-                            backgroundColor: 'rgba(216, 172, 65, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
+                            borderColor: '#8A2125',
+                            backgroundColor: 'rgba(138, 33, 37, 0.1)',
+                            // ...existing options...
                         }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0,0,0,0.1)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
                     }
                 });
             }
@@ -1889,44 +2073,27 @@ $peakHours = $scanner->getPeakHours();
             const deptCtx = document.getElementById('departmentChart');
             if (deptCtx) {
                 new Chart(deptCtx, {
-                    type: 'doughnut',
                     data: {
-                        labels: ['Engineering', 'Business', 'Education', 'Arts & Sciences', 'Others'],
                         datasets: [{
-                            data: [35, 25, 20, 15, 5],
                             backgroundColor: [
-                                '#D8AC41',
-                                '#E00000',
-                                '#FF9600',
-                                '#DB362D',
+                                '#8A2125',
+                                '#DFBB65',
+                                '#9c262b',
+                                '#e6c876',
                                 '#6c757d'
                             ],
-                            borderWidth: 0
+                            // ...existing options...
                         }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 15,
-                                    usePointStyle: true,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            }
-                        }
                     }
                 });
             }
         }
         
+               
         // Load saved sidebar state
         document.addEventListener('DOMContentLoaded', function() {
             const savedState = localStorage.getItem('sidebarCollapsed');
+
             if (savedState === 'true' && window.innerWidth > 768) {
                 setTimeout(() => toggleSidebar(), 100);
             }
