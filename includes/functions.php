@@ -66,6 +66,11 @@ class CTUScanner {
             $sql = "SELECT 
                         e.PersonID,
                         e.PersonType as PersonCategory,
+                        CASE 
+                            WHEN e.PersonType = 'student' THEN s.image
+                            WHEN e.PersonType = 'faculty' THEN f.image
+                            ELSE NULL
+                        END as image,
                         e.Timestamp,
                         CASE 
                             WHEN e.PersonType = 'student' THEN s.StudentFName
@@ -102,6 +107,11 @@ class CTUScanner {
             $limit = (int)$limit;
             
             $sql = "SELECT 
+                        CASE 
+                            WHEN e.PersonType = 'student' THEN s.image
+                            WHEN e.PersonType = 'faculty' THEN f.image
+                            ELSE NULL
+                        END as image, 
                         e.PersonID,
                         e.PersonType as PersonCategory,
                         e.Timestamp,

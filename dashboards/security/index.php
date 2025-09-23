@@ -275,7 +275,46 @@ require_once '../../config/database.php';
         .activity-time {
             font-size: 0.85rem;
             color: #888;
-            float: right;
+            flex-shrink: 0;
+        }
+
+        .activity-avatar {
+            flex-shrink: 0;
+            width: 45px;
+            height: 45px;
+            position: relative;
+        }
+
+        .activity-user-image {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            box-shadow: 0 3px 10px rgba(216, 172, 65, 0.2);
+            background: #f8f9fa;
+        }
+
+        .activity-avatar-default {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--dark-red), var(--red));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid var(--gold);
+            box-shadow: 0 3px 10px rgba(216, 172, 65, 0.2);
+        }
+
+        /* Add hover effect for images */
+        .activity-user-image:hover,
+        .activity-avatar-default:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
         }
         
         .activity-type {
@@ -481,7 +520,13 @@ require_once '../../config/database.php';
                 
                 return `
                     <div class="activity-item fade-in">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="activity-avatar">
+                                ${item.image ? 
+                                    `<img src="${item.image}" alt="${fullName}" class="activity-user-image" onerror="this.onerror=null; this.src='../../assets/images/default-avatar.png';">` :
+                                    `<div class="activity-avatar-default">${fullName.charAt(0).toUpperCase()}</div>`
+                                }
+                            </div>
                             <div class="flex-grow-1">
                                 <div class="activity-person">${fullName}</div>
                                 <div class="mt-1">
