@@ -1,12 +1,27 @@
 <?php
 session_start();
 require_once '../../includes/functions.php';
+
+// Determine the base path for assets and API calls
+// This works for both local and Infinity Free hosting
+$base_path = '/dashboards/admin/';
+$assets_path = '../../';
+
+// Handle AJAX requests for dashboard stats refresh
+if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
+    $scanner = new CTUScanner();
+    $stats = $scanner->getDailyStats();
+    header('Content-Type: application/json');
+    echo json_encode($stats);
+    exit;
+}
+
 $scanner = new CTUScanner();
 $stats = $scanner->getDailyStats();
 $peakHours = $scanner->getPeakHours();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-assets-path="<?php echo $assets_path; ?>" data-base-path="<?php echo $base_path; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -396,12 +411,14 @@ $peakHours = $scanner->getPeakHours();
 
         .stat-card {
             border-radius: 14px;
-            padding: 20px;
-            text-align: center;
+            padding: 24px;
+            text-align: left;
             transition: all 0.15s ease;
             position: relative;
             overflow: hidden;
             color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+            border: none;
         }
 
         .stat-card::before {
@@ -429,6 +446,50 @@ $peakHours = $scanner->getPeakHours();
         .stat-card.bg-warning { background: var(--warning-gradient); }
         .stat-card.bg-info { background: var(--secondary-gradient); }
         .stat-card.bg-danger { background: var(--danger-gradient); }
+
+        /* 5-Column responsive layout for analytics stats */
+        .col-lg-2-4 {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+
+        @media (max-width: 1400px) {
+            .col-lg-2-4 {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .col-lg-2-4 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .col-lg-2-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* Stat card number styling */
+        .stat-card h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card h6 {
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .card-body {
+            padding-left: 0;
+            padding-right: 0;
+        }
 
         .stat-icon {
             font-size: 32px;
@@ -579,16 +640,24 @@ $peakHours = $scanner->getPeakHours();
             }
             
             .sidebar {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 60px;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 1050;
                 transform: translateX(-100%);
-                width: var(--sidebar-width);
+                transition: transform 0.3s ease;
             }
             
-            .sidebar.mobile-active {
+            .sidebar.mobile-show {
+                display: block;
                 transform: translateX(0);
             }
             
             .sidebar.collapsed {
-                width: var(--sidebar-width);
+                width: 280px;
             }
             
             .top-header {
@@ -705,11 +774,10 @@ $peakHours = $scanner->getPeakHours();
             visibility: hidden;
             transition: all 0.2s ease;
             cursor: pointer;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
+            pointer-events: none;
         }
 
-        .mobile-overlay.active {
+        .mobile-overlay.mobile-show {
             opacity: 1;
             visibility: visible;
             pointer-events: all;
@@ -856,77 +924,6 @@ $peakHours = $scanner->getPeakHours();
         }
 
         /* Enhanced Mobile Sidebar Functions */
-        function openMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            
-            sidebar.classList.add('mobile-active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            
-            // Add fade-out animation class
-            sidebar.classList.add('fade-out');
-            overlay.classList.add('fade-out');
-            
-            // Remove classes after animation completes
-            setTimeout(() => {
-                sidebar.classList.remove('mobile-active', 'fade-out');
-                overlay.classList.remove('active', 'fade-out');
-                document.body.style.overflow = '';
-            }, 300);
-        }
-
-        // Updated event handlers
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            const mobileCloseBtn = document.querySelector('.mobile-close-btn');
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            // Handle swipe to close
-            sidebar.addEventListener('touchstart', e => {
-                touchStartX = e.touches[0].clientX;
-            });
-            
-            sidebar.addEventListener('touchmove', e => {
-                touchEndX = e.touches[0].clientX;
-                const swipeDistance = touchStartX - touchEndX;
-                
-                if (swipeDistance > 50) { // Threshold for swipe
-                    closeMobileSidebar();
-                }
-            });
-            
-            // Ensure close button works
-            if (mobileCloseBtn) {
-                mobileCloseBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    closeMobileSidebar();
-                });
-            }
-            
-            // Ensure overlay click closes sidebar
-            if (overlay) {
-                overlay.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    closeMobileSidebar();
-                });
-            }
-            
-            // Prevent clicks inside sidebar from closing it
-            sidebar.addEventListener('click', function(e) {
-                e.stopPropagation(); // Stop click events from bubbling up
-            });
-        });
-
         /* Add to your existing styles */
         .sidebar {
             transition: transform 0.3s ease-in-out !important;
@@ -977,7 +974,7 @@ $peakHours = $scanner->getPeakHours();
         </button>
         
         <!-- Mobile Close Button -->
-        <button class="mobile-close-btn" onclick="closeMobileSidebar()" title="Close Menu">
+        <button class="mobile-close-btn" onclick="hideMobileSidebarMenu()" title="Close Menu">
             <i class="fas fa-times"></i>
         </button>
         
@@ -1046,7 +1043,7 @@ $peakHours = $scanner->getPeakHours();
     <!-- Top Header -->
     <header class="top-header slide-in-right">
         <div class="d-flex align-items-center">
-            <button class="mobile-toggle me-3" onclick="openMobileSidebar()">
+            <button class="mobile-toggle me-3" onclick="showMobileSidebarMenu()">
                 <i class="fas fa-bars"></i>
             </button>
             <h1 class="header-title">Campus Management System</h1>
@@ -1083,7 +1080,7 @@ $peakHours = $scanner->getPeakHours();
                                     <div class="stat-card bg-primary bounce-in" style="background: var(--entries-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-users"></i></div>
                                         <div class="stat-info">
-                                            <h3><?php echo $stats['total_entries']; ?></h3>
+                                            <h3 data-stat="entries"><?php echo $stats['total_entries']; ?></h3>
                                             <p>Total Entries</p>
                                         </div>
                                     </div>
@@ -1092,7 +1089,7 @@ $peakHours = $scanner->getPeakHours();
                                     <div class="stat-card bg-success bounce-in" style="background: var(--student-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
                                         <div class="stat-info">
-                                            <h3><?php echo $stats['student_entries']; ?></h3>
+                                            <h3 data-stat="student"><?php echo $stats['student_entries']; ?></h3>
                                             <p>Student Entries</p>
                                         </div>
                                     </div>
@@ -1101,7 +1098,7 @@ $peakHours = $scanner->getPeakHours();
                                     <div class="stat-card bg-info bounce-in" style="background: var(--faculty-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                                         <div class="stat-info">
-                                            <h3><?php echo $stats['faculty_entries']; ?></h3>
+                                            <h3 data-stat="faculty"><?php echo $stats['faculty_entries']; ?></h3>
                                             <p>Faculty Entries</p>
                                         </div>
                                     </div>
@@ -1110,7 +1107,7 @@ $peakHours = $scanner->getPeakHours();
                                     <div class="stat-card bg-danger bounce-in" style="background: var(--exits-gradient) !important;">
                                         <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
                                         <div class="stat-info">
-                                            <h3><?php echo $stats['total_exits']; ?></h3>
+                                            <h3 data-stat="exits"><?php echo $stats['total_exits']; ?></h3>
                                             <p>Total Exits</p>
                                         </div>
                                     </div>
@@ -1254,31 +1251,304 @@ $peakHours = $scanner->getPeakHours();
 
         <!-- Analytics Section -->
         <div id="analytics-section" class="content-section" style="display: none;">
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="enhanced-card fade-in-up">
-                        <div class="card-header p-3">
-                            <h6 class="mb-0">
-                                <i class="fas fa-chart-line me-2"></i>Peak Hours Analysis
-                            </h6>
-                        </div>
-                        <div class="card-body p-3">
-                            <div class="chart-container">
-                                <canvas id="peakHoursChart" style="max-height: 300px;"></canvas>
+            <div class="container-fluid">
+                <!-- Analytics Filters -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card enhanced-card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                    <h5 class="mb-0"><i class="fas fa-sliders-h me-2"></i>Filters & Controls</h5>
+                                    <div class="d-flex gap-2 flex-wrap align-items-end">
+                                        <div class="form-group mb-0">
+                                            <label class="form-label small fw-semibold mb-1">Date Range:</label>
+                                            <select id="dateRangeFilter" class="form-select form-select-sm" style="min-width: 140px;">
+                                                <option value="today">Today</option>
+                                                <option value="week">This Week</option>
+                                                <option value="month">This Month</option>
+                                                <option value="year">This Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <label class="form-label small fw-semibold mb-1">Department:</label>
+                                            <select id="departmentFilter" class="form-select form-select-sm" style="min-width: 140px;">
+                                                <option value="all">All Departments</option>
+                                                <option value="COTE">COTE</option>
+                                                <option value="COED">COED</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <label class="form-label small fw-semibold mb-1">User Type:</label>
+                                            <select id="userTypeFilter" class="form-select form-select-sm" style="min-width: 140px;">
+                                                <option value="all">All Users</option>
+                                                <option value="student">Students</option>
+                                                <option value="faculty">Faculty</option>
+                                                <option value="security">Security</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-sm btn-primary" onclick="refreshAnalytics()" title="Refresh analytics data">
+                                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="enhanced-card fade-in-up" style="animation-delay: 0.1s;">
-                        <div class="card-header p-3">
-                            <h6 class="mb-0">
-                                <i class="fas fa-pie-chart me-2"></i>Department Distribution
-                            </h6>
+
+                <!-- Dashboard Statistics -->
+                <div class="row mb-4">
+                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card stat-card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-sign-in-alt me-1"></i>Total Entries</h6>
+                                        <h2 class="mb-0" id="totalEntries">0</h2>
+                                    </div>
+                                    <i class="fas fa-sign-in-alt fa-2x text-white-50 ms-2"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body p-3">
-                            <div class="chart-container">
-                                <canvas id="departmentChart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card stat-card bg-danger text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-sign-out-alt me-1"></i>Total Exits</h6>
+                                        <h2 class="mb-0" id="totalExits">0</h2>
+                                    </div>
+                                    <i class="fas fa-sign-out-alt fa-2x text-white-50 ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card stat-card bg-info text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-clock me-1"></i>Peak Hour</h6>
+                                        <h2 class="mb-0" id="peakHour">N/A</h2>
+                                    </div>
+                                    <i class="fas fa-clock fa-2x text-white-50 ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card stat-card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-calendar-alt me-1"></i>Busiest Day</h6>
+                                        <h2 class="mb-0" id="busiestDay">N/A</h2>
+                                    </div>
+                                    <i class="fas fa-chart-bar fa-2x text-white-50 ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card stat-card bg-secondary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-hourglass me-1"></i>Avg Dwell Time</h6>
+                                        <h2 class="mb-0" id="avgDwellTime">0h</h2>
+                                    </div>
+                                    <i class="fas fa-hourglass-end fa-2x text-white-50 ms-2"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Peak Hours Distribution</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="peakHoursChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-sitemap me-2"></i>Department Comparison</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-line-chart me-2"></i>Weekly Trends</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="weeklyTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Entry vs Exit</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="entryExitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 3 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-pie-chart me-2"></i>User Type Distribution</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="userTypeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-camera me-2"></i>Scanner Activity</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="scannerChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entry/Exit Logs Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Entry Logs Timeline</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="entryLogsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-sign-out-alt me-2"></i>Exit Logs Timeline</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="exitLogsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entry/Exit Comparison by Hour -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card enhanced-card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-arrows-alt-h me-2"></i>Entry & Exit by Hour</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="entryExitHourlyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Scans Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="mb-3"><i class="fas fa-history me-2"></i>Recent Scans</h5>
+                    </div>
+                </div>
+
+                <!-- Recent Entries Table -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                                <h5 class="mb-0"><i class="fas fa-sign-in-alt me-2 text-success"></i>Latest Entries</h5>
+                                <button class="btn btn-sm btn-outline-primary" onclick="adminDashboard.loadRecentEntries(new URLSearchParams(adminDashboard.filters))" title="Refresh entries">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
+                                <table class="table table-hover table-sm mb-0">
+                                    <thead class="table-light sticky-top">
+                                        <tr class="border-bottom-2">
+                                            <th style="width: 35%; padding: 12px 15px;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
+                                            <th style="width: 25%; padding: 12px 15px;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
+                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
+                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="entriesTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-5">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Loading entries...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Exits Table -->
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                                <h5 class="mb-0"><i class="fas fa-sign-out-alt me-2 text-danger"></i>Latest Exits</h5>
+                                <button class="btn btn-sm btn-outline-primary" onclick="adminDashboard.loadRecentExits(new URLSearchParams(adminDashboard.filters))" title="Refresh exits">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
+                                <table class="table table-hover table-sm mb-0">
+                                    <thead class="table-light sticky-top">
+                                        <tr class="border-bottom-2">
+                                            <th style="width: 35%; padding: 12px 15px;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
+                                            <th style="width: 25%; padding: 12px 15px;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
+                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
+                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exitsTableBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-5">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Loading exits...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -1375,6 +1645,15 @@ $peakHours = $scanner->getPeakHours();
                                         <p class="text-muted small">Add, edit, or manage security personnel accounts</p>
                                     </div>
                                 </div>
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="management-card enhanced-card text-center p-4" onclick="window.location.href='archive.php'" style="cursor: pointer;">
+                                        <div style="font-size: 42px; color: #6c757d; margin-bottom: 15px;">
+                                            <i class="fas fa-archive"></i>
+                                        </div>
+                                        <h6>View Archives</h6>
+                                        <p class="text-muted small">View, restore, or permanently delete archived users</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1466,9 +1745,108 @@ $peakHours = $scanner->getPeakHours();
     <script src="../../assets/js/admin.js"></script>
     
     <script>
+        // Get asset and base paths from HTML data attributes
+        const assetsPath = document.documentElement.getAttribute('data-assets-path') || '../../';
+        const basePath = document.documentElement.getAttribute('data-base-path') || '/dashboards/admin/';
+        
+        // Helper function to get correct asset paths
+        function getAssetPath(relativePath) {
+            return assetsPath + relativePath;
+        }
+        
+        // Helper function to get API endpoint paths
+        function getAPIPath(endpoint) {
+            return assetsPath + endpoint;
+        }
+        
         // Initialize charts with PHP data
         const peakHoursData = <?php echo json_encode($peakHours); ?>;
         let sidebarCollapsed = false;
+        let adminDashboard = null;
+        
+        // Refresh Analytics Function
+        function refreshAnalytics() {
+            if (adminDashboard && typeof adminDashboard.loadAnalytics === 'function') {
+                adminDashboard.loadAnalytics();
+            }
+        }
+        
+        // Show Section using query parameter instead of hash (works better on Infinity Free)
+        function showSection(sectionId) {
+            const navLinks = document.querySelectorAll('.nav-link[data-section]');
+            const contentSections = document.querySelectorAll('.content-section');
+            
+            // Remove active class from all nav links
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Find and activate the corresponding nav link
+            const correspondingNavLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+            if (correspondingNavLink) {
+                correspondingNavLink.classList.add('active');
+            }
+            
+            // Hide all content sections
+            contentSections.forEach(section => {
+                section.style.display = 'none';
+                section.classList.remove('fade-in-up');
+            });
+            
+            // Show selected section with animation
+            const targetSection = document.getElementById(sectionId + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                setTimeout(() => {
+                    targetSection.classList.add('fade-in-up');
+                }, 50);
+                
+                // Initialize and load analytics if switching to analytics section
+                if (sectionId === 'analytics' && adminDashboard) {
+                    // Stop dashboard auto-refresh
+                    if (adminDashboard.dashboardRefreshInterval) {
+                        adminDashboard.stopDashboardAutoRefresh();
+                    }
+                    
+                    // Initialize charts and load data immediately
+                    setTimeout(() => {
+                        adminDashboard.init();
+                    }, 100);
+                }
+                
+                // Start dashboard auto-refresh if switching to dashboard
+                if (sectionId === 'dashboard' && adminDashboard) {
+                    // Stop analytics auto-refresh
+                    if (adminDashboard.autoRefreshInterval) {
+                        adminDashboard.stopAutoRefresh();
+                    }
+                    
+                    // Start dashboard auto-refresh
+                    adminDashboard.startDashboardAutoRefresh();
+                }
+            } else {
+                // Stop auto-refresh when leaving sections
+                if (adminDashboard) {
+                    if (sectionId !== 'analytics' && adminDashboard.autoRefreshInterval) {
+                        adminDashboard.stopAutoRefresh();
+                    }
+                    if (sectionId !== 'dashboard' && adminDashboard.dashboardRefreshInterval) {
+                        adminDashboard.stopDashboardAutoRefresh();
+                    }
+                }
+            }
+            
+            // Update URL using query parameter (more reliable on Infinity Free than hash)
+            const url = new URL(window.location);
+            url.searchParams.set('section', sectionId);
+            window.history.replaceState({}, '', url);
+            
+            // Save to localStorage for persistence across refreshes
+            localStorage.setItem('lastVisitedSection', sectionId);
+            
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                toggleMobileSidebar(false);
+            }
+        }
         
         // Enhanced Navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -1478,40 +1856,7 @@ $peakHours = $scanner->getPeakHours();
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
-                    // Remove active class from all nav links
-                    document.querySelectorAll('.nav-link[data-section]').forEach(navLink => navLink.classList.remove('active'));
-                    
-                    // Add active class to clicked nav link (if it's a nav-link)
-                    if (this.classList.contains('nav-link')) {
-                        this.classList.add('active');
-                    } else {
-                        // Find corresponding nav link and activate it
-                        const correspondingNavLink = document.querySelector(`.nav-link[data-section="${this.dataset.section}"]`);
-                        if (correspondingNavLink) {
-                            correspondingNavLink.classList.add('active');
-                        }
-                    }
-                    
-                    // Hide all content sections
-                    contentSections.forEach(section => {
-                        section.style.display = 'none';
-                        section.classList.remove('fade-in-up');
-                    });
-                    
-                    // Show selected section with animation
-                    const targetSection = document.getElementById(this.dataset.section + '-section');
-                    if (targetSection) {
-                        targetSection.style.display = 'block';
-                        setTimeout(() => {
-                            targetSection.classList.add('fade-in-up');
-                        }, 50);
-                    }
-                    
-                    // Close mobile sidebar if open
-                    if (window.innerWidth <= 768) {
-                        toggleMobileSidebar(false);
-                    }
+                    showSection(this.dataset.section);
                 });
             });
             
@@ -1525,6 +1870,29 @@ $peakHours = $scanner->getPeakHours();
             if (typeof initializeCharts === 'function') {
                 setTimeout(initializeCharts, 300);
             }
+            
+            // Initialize AdminDashboard from admin.js - don't call init yet
+            if (typeof AdminDashboard === 'function') {
+                // Create instance but don't initialize charts yet
+                // Charts will be initialized when user navigates to analytics section
+                adminDashboard = new AdminDashboard();
+            }
+            
+            
+            // Check URL query parameter first (most reliable on Infinity Free)
+            const urlParams = new URLSearchParams(window.location.search);
+            let section = urlParams.get('section');
+            
+            // If no query parameter, check localStorage
+            if (!section) {
+                section = localStorage.getItem('lastVisitedSection');
+            }
+            
+            // Default to dashboard
+            section = section || 'dashboard';
+            
+            console.log('Page load: showing section:', section);
+            showSection(section);
             
             // Handle window resize
             window.addEventListener('resize', handleWindowResize);
@@ -1553,53 +1921,57 @@ $peakHours = $scanner->getPeakHours();
             localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
         }
         
-        // SIMPLE MOBILE SIDEBAR FUNCTIONS
-        function openMobileSidebar() {
-            console.log('Opening mobile sidebar');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
+        // MOBILE SIDEBAR FUNCTIONS - WITH CLEAN VARIABLE NAMES
+        function toggleMobileSidebarMenu() {
+            const mobileNavbar = document.getElementById('sidebar');
+            const mobileMenuOverlay = document.getElementById('mobileOverlay');
             
-            sidebar.classList.add('mobile-active');
-            overlay.classList.add('active');
+            const isMenuOpen = mobileNavbar.classList.contains('mobile-show');
+            
+            if (isMenuOpen) {
+                hideMobileSidebarMenu();
+            } else {
+                showMobileSidebarMenu();
+            }
+        }
+        
+        function showMobileSidebarMenu() {
+            const mobileNavbar = document.getElementById('sidebar');
+            const mobileMenuOverlay = document.getElementById('mobileOverlay');
+            
+            mobileNavbar.classList.add('mobile-show');
+            mobileMenuOverlay.classList.add('mobile-show');
             document.body.style.overflow = 'hidden';
         }
         
-        function closeMobileSidebar() {
-            console.log('Closing mobile sidebar');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
+        function hideMobileSidebarMenu() {
+            const mobileNavbar = document.getElementById('sidebar');
+            const mobileMenuOverlay = document.getElementById('mobileOverlay');
             
-            // Add fade-out animation class
-            sidebar.classList.add('fade-out');
-            overlay.classList.add('fade-out');
-            
-            // Remove classes after animation completes
-            setTimeout(() => {
-                sidebar.classList.remove('mobile-active', 'fade-out');
-                overlay.classList.remove('active', 'fade-out');
-                document.body.style.overflow = '';
-            }, 300);
+            mobileNavbar.classList.remove('mobile-show');
+            mobileMenuOverlay.classList.remove('mobile-show');
+            document.body.style.overflow = '';
         }
         
         // Add touch event handling for better mobile experience
         document.addEventListener('DOMContentLoaded', function() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
+            const mobileNavbar = document.getElementById('sidebar');
+            const mobileMenuOverlay = document.getElementById('mobileOverlay');
             const mobileCloseBtn = document.querySelector('.mobile-close-btn');
             let touchStartX = 0;
             let touchEndX = 0;
             
             // Handle swipe to close
-            sidebar.addEventListener('touchstart', e => {
+            mobileNavbar.addEventListener('touchstart', e => {
                 touchStartX = e.touches[0].clientX;
             });
             
-            sidebar.addEventListener('touchmove', e => {
+            mobileNavbar.addEventListener('touchmove', e => {
                 touchEndX = e.touches[0].clientX;
                 const swipeDistance = touchStartX - touchEndX;
                 
                 if (swipeDistance > 50) { // Threshold for swipe
-                    closeMobileSidebar();
+                    hideMobileSidebarMenu();
                 }
             });
             
@@ -1607,23 +1979,31 @@ $peakHours = $scanner->getPeakHours();
             if (mobileCloseBtn) {
                 mobileCloseBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    closeMobileSidebar();
+                    e.stopPropagation();
+                    hideMobileSidebarMenu();
                 });
             }
             
-            // Ensure overlay click closes sidebar
-            if (overlay) {
-                overlay.addEventListener('click', function(e) {
+            // Ensure overlay click closes menu
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    closeMobileSidebar();
+                    e.stopPropagation();
+                    hideMobileSidebarMenu();
                 });
             }
             
             // Prevent clicks inside sidebar from closing it
-            sidebar.addEventListener('click', function(e) {
-                e.stopPropagation(); // Stop click events from bubbling up
+            mobileNavbar.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Close menu when clicking nav links
+            const navLinks = mobileNavbar.querySelectorAll('.nav-link[data-section]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    hideMobileSidebarMenu();
+                });
             });
         });
         
@@ -1712,7 +2092,7 @@ $peakHours = $scanner->getPeakHours();
             
             // Simulate API call
             setTimeout(() => {
-                fetch(`../../qr_generator_api.php?action=generate_by_id&id=${encodeURIComponent(id)}`)
+                fetch(getAPIPath('qr_generator_api.php?action=generate_by_id&id=' + encodeURIComponent(id)))
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -1878,7 +2258,7 @@ $peakHours = $scanner->getPeakHours();
             `;
             
             setTimeout(() => {
-                fetch(`../../qr_generator_api.php?action=${type}`)
+                fetch(getAPIPath('qr_generator_api.php?action=' + type))
                     .then(response => response.text())
                     .then(html => {
                         resultsArea.innerHTML = html;
@@ -1951,8 +2331,7 @@ $peakHours = $scanner->getPeakHours();
             
             setTimeout(() => {
                 clickedCard.style.transform = '';
-                // window.location.href = `manage_users.php?type=${type}`;
-                showNotification(`${type} management would open here`, 'info');
+                window.location.href = `manage_users.php?type=${type}`;
             }, 300);
         }
         

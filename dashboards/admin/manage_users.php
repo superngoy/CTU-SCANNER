@@ -120,14 +120,98 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             color: #6c757d;
             margin-top: 5px;
         }
+
+        /* Search and Sort Styles */
+        .input-group {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .input-group .form-control {
+            border: none;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .input-group .form-control:focus {
+            box-shadow: none;
+            border: none;
+        }
+
+        .input-group .input-group-text {
+            border: none;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .dropdown-menu {
+            min-width: 200px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .dropdown-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .sort-section {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.875rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        /* Highlight search results */
+        .table tbody tr.search-hidden {
+            display: none;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            font-weight: 600;
+        }
+
+        .card-header {
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .card-header {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+
+            .card-header > div {
+                flex-direction: column !important;
+            }
+
+            .input-group {
+                min-width: 100% !important;
+            }
+
+            .dropdown, .btn-primary {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
+            <button class="navbar-brand btn btn-link" style="text-decoration: none;" onclick="window.history.back();">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
             <h4 class="text-white mb-0">Manage <?php echo ucfirst($userType); ?></h4>
         </div>
     </nav>
@@ -141,9 +225,30 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                             <i class="fas fa-<?php echo $userType === 'students' ? 'user-graduate' : ($userType === 'faculty' ? 'chalkboard-teacher' : 'shield-alt'); ?> me-2"></i>
                             <?php echo ucfirst($userType); ?> Management
                         </h5>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="fas fa-plus me-2"></i>Add New <?php echo ucfirst(rtrim($userType, 's')); ?>
-                        </button>
+                        <div class="d-flex gap-2 align-items-center">
+                            <!-- Search Bar -->
+                            <div class="input-group" style="min-width: 300px;">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Search by ID, Name...">
+                            </div>
+                            
+                            <!-- Sort Dropdown Button -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-sort me-2"></i>Sort
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="sortDropdown" id="sortMenu">
+                                    <!-- Sort options will be populated by JavaScript -->
+                                </ul>
+                            </div>
+                            
+                            <!-- Add User Button -->
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-plus me-2"></i>Add New <?php echo ucfirst(rtrim($userType, 's')); ?>
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="loading">
@@ -290,17 +395,62 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         </div>
     </div>
 
+    <!-- Archive User Modal -->
+    <div class="modal fade" id="archiveUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-archive me-2"></i>Archive User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Archive this user instead of permanently deleting. You can restore them later if needed.</p>
+                    
+                    <div class="mb-3">
+                        <label for="archiveReason" class="form-label">Archive Reason <span class="text-danger">*</span></label>
+                        <select class="form-select" id="archiveReason" required>
+                            <option value="">Select a reason...</option>
+                            <option value="deleted">Deleted</option>
+                            <option value="graduated">Graduated</option>
+                            <option value="resigned">Resigned</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <small class="text-muted">Select the reason for archiving this user</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="archiveNotes" class="form-label">Additional Notes</label>
+                        <textarea class="form-control" id="archiveNotes" rows="3" placeholder="Enter any additional notes (optional)"></textarea>
+                        <small class="text-muted">Add notes like contact info, forwarding address, etc.</small>
+                    </div>
+
+                    <input type="hidden" id="archiveUserId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="confirmArchive()">
+                        <i class="fas fa-archive me-2"></i>Archive User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const userType = '<?php echo $userType; ?>';
         let users = [];
         let currentEditUserId = null;
+        let currentSortBy = null;
+        let isAscending = true;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             setupFormFields();
             setupTableHeaders();
             setupImageHandlers();
+            setupSortMenu();
+            setupSearchHandler();
             loadUsers();
             
             // Setup form submission
@@ -458,6 +608,198 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             }
             
             headersRow.innerHTML = headers;
+        }
+
+        function setupSortMenu() {
+            const sortMenu = document.getElementById('sortMenu');
+            let sortOptions = [];
+
+            if (userType === 'students') {
+                sortOptions = [
+                    { label: 'Student ID (A-Z)', value: 'student_id_asc' },
+                    { label: 'Student ID (Z-A)', value: 'student_id_desc' },
+                    { label: 'Name (A-Z)', value: 'name_asc' },
+                    { label: 'Name (Z-A)', value: 'name_desc' },
+                    { label: 'Course (A-Z)', value: 'course_asc' },
+                    { label: 'Year Level (1-4)', value: 'year_asc' },
+                    { label: 'Year Level (4-1)', value: 'year_desc' },
+                    { label: 'Department (COTE-COED)', value: 'department_asc' },
+                    { label: 'Section (A-Z)', value: 'section_asc' }
+                ];
+            } else if (userType === 'faculty') {
+                sortOptions = [
+                    { label: 'Faculty ID (A-Z)', value: 'faculty_id_asc' },
+                    { label: 'Faculty ID (Z-A)', value: 'faculty_id_desc' },
+                    { label: 'Name (A-Z)', value: 'name_asc' },
+                    { label: 'Name (Z-A)', value: 'name_desc' },
+                    { label: 'Department (COTE-COED)', value: 'department_asc' },
+                    { label: 'Birth Date (Newest)', value: 'birthdate_desc' },
+                    { label: 'Birth Date (Oldest)', value: 'birthdate_asc' }
+                ];
+            } else if (userType === 'security') {
+                sortOptions = [
+                    { label: 'Security ID (A-Z)', value: 'security_id_asc' },
+                    { label: 'Security ID (Z-A)', value: 'security_id_desc' },
+                    { label: 'Name (A-Z)', value: 'name_asc' },
+                    { label: 'Name (Z-A)', value: 'name_desc' },
+                    { label: 'Schedule (A-Z)', value: 'schedule_asc' },
+                    { label: 'Birth Date (Newest)', value: 'birthdate_desc' },
+                    { label: 'Birth Date (Oldest)', value: 'birthdate_asc' }
+                ];
+            }
+
+            let menuHTML = '<li><div class="sort-section">Sort By</div></li>';
+            sortOptions.forEach(option => {
+                menuHTML += `<li><a class="dropdown-item" href="#" onclick="applySorting('${option.value}', event)">${option.label}</a></li>`;
+            });
+
+            sortMenu.innerHTML = menuHTML;
+        }
+
+        function setupSearchHandler() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                filterUsers(e.target.value);
+            });
+        }
+
+        function filterUsers(searchTerm) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const term = searchTerm.toLowerCase().trim();
+
+            if (term === '') {
+                rows.forEach(row => row.classList.remove('search-hidden'));
+                return;
+            }
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let found = false;
+
+                // Search in all cells except the first (photo) and last (actions)
+                for (let i = 1; i < cells.length - 1; i++) {
+                    const cellText = cells[i].textContent.toLowerCase();
+                    if (cellText.includes(term)) {
+                        found = true;
+                        // Highlight the matching text
+                        cells[i].innerHTML = cells[i].textContent.replace(
+                            new RegExp(term, 'gi'),
+                            match => `<mark class="highlight">${match}</mark>`
+                        );
+                    } else {
+                        // Restore original text if not matching
+                        cells[i].textContent = cells[i].textContent;
+                    }
+                }
+
+                row.classList.toggle('search-hidden', !found);
+            });
+        }
+
+        function applySorting(sortType, event) {
+            event.preventDefault();
+
+            // Determine sort field and direction
+            const [field, direction] = sortType.split('_');
+            isAscending = direction === 'asc';
+            currentSortBy = sortType;
+
+            // Sort the users array
+            const sortedUsers = [...users].sort((a, b) => {
+                let aValue, bValue;
+
+                if (userType === 'students') {
+                    switch (field) {
+                        case 'student':
+                            aValue = a.StudentID;
+                            bValue = b.StudentID;
+                            break;
+                        case 'name':
+                            aValue = `${a.StudentFName} ${a.StudentLName}`;
+                            bValue = `${b.StudentFName} ${b.StudentLName}`;
+                            break;
+                        case 'course':
+                            aValue = a.Course;
+                            bValue = b.Course;
+                            break;
+                        case 'year':
+                            aValue = parseInt(a.YearLvl);
+                            bValue = parseInt(b.YearLvl);
+                            break;
+                        case 'section':
+                            aValue = a.Section;
+                            bValue = b.Section;
+                            break;
+                        case 'department':
+                            aValue = a.Department;
+                            bValue = b.Department;
+                            break;
+                        default:
+                            return 0;
+                    }
+                } else if (userType === 'faculty') {
+                    switch (field) {
+                        case 'faculty':
+                            aValue = a.FacultyID;
+                            bValue = b.FacultyID;
+                            break;
+                        case 'name':
+                            aValue = `${a.FacultyFName} ${a.FacultyLName}`;
+                            bValue = `${b.FacultyFName} ${b.FacultyLName}`;
+                            break;
+                        case 'department':
+                            aValue = a.Department;
+                            bValue = b.Department;
+                            break;
+                        case 'birthdate':
+                            aValue = new Date(a.Birthdate);
+                            bValue = new Date(b.Birthdate);
+                            break;
+                        default:
+                            return 0;
+                    }
+                } else if (userType === 'security') {
+                    switch (field) {
+                        case 'security':
+                            aValue = a.SecurityID;
+                            bValue = b.SecurityID;
+                            break;
+                        case 'name':
+                            aValue = `${a.SecurityFName} ${a.SecurityLName}`;
+                            bValue = `${b.SecurityFName} ${b.SecurityLName}`;
+                            break;
+                        case 'schedule':
+                            aValue = a.TimeSched;
+                            bValue = b.TimeSched;
+                            break;
+                        case 'birthdate':
+                            aValue = new Date(a.BirthDate);
+                            bValue = new Date(b.BirthDate);
+                            break;
+                        default:
+                            return 0;
+                    }
+                }
+
+                // Compare values
+                if (typeof aValue === 'string') {
+                    aValue = aValue.toLowerCase();
+                    bValue = bValue.toLowerCase();
+                    return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                } else {
+                    return isAscending ? aValue - bValue : bValue - aValue;
+                }
+            });
+
+            // Update table with sorted data
+            populateTable(sortedUsers);
+            
+            // Update sort button text
+            const sortDropdown = document.getElementById('sortDropdown');
+            const activeOption = document.querySelector(`[onclick*="${sortType}"]`);
+            if (activeOption) {
+                sortDropdown.innerHTML = `<i class="fas fa-sort me-2"></i>${activeOption.textContent}`;
+            }
         }
 
         function setupFormFields() {
@@ -1202,30 +1544,46 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         }
 
         function deleteUser(userId) {
-            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            // Open archive modal instead of direct delete
+            document.getElementById('archiveUserId').value = userId;
+            const archiveModal = new bootstrap.Modal(document.getElementById('archiveUserModal'));
+            archiveModal.show();
+        }
+
+        function confirmArchive() {
+            const userId = document.getElementById('archiveUserId').value;
+            const reason = document.getElementById('archiveReason').value;
+            const notes = document.getElementById('archiveNotes').value;
+
+            if (!reason) {
+                showAlert('warning', 'Please select an archive reason');
                 return;
             }
-            
+
             const formData = new FormData();
-            formData.append('action', 'delete_user');
+            formData.append('action', 'archive_user');
             formData.append('type', userType);
             formData.append('user_id', userId);
-            
-            fetch('manage_users_api.php', {
+            formData.append('reason', reason);
+            formData.append('notes', notes);
+
+            fetch('archive_api.php', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    loadUsers(); // Reload table
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('archiveUserModal'));
+                    modal.hide();
+                    loadUsers();
                     showAlert('success', data.message);
                 } else {
-                    showAlert('danger', data.message || 'An error occurred');
+                    showAlert('danger', data.message || 'Failed to archive user');
                 }
             })
             .catch(error => {
-                console.error('Error deleting user:', error);
+                console.error('Error archiving user:', error);
                 showAlert('danger', 'Network error. Please try again.');
             });
         }

@@ -12,6 +12,8 @@ class SecurityDashboard {
         this.loadInitialData();
         this.startRealTimeUpdates();
         this.bindEvents();
+        this.initializeCharts();
+        this.loadAnalyticsData();
     }
 
     loadInitialData() {
@@ -283,6 +285,194 @@ class SecurityDashboard {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
+    }
+
+    initializeCharts() {
+        this.charts = {};
+
+        // Entry Logs Timeline Chart
+        const entryLogsCtx = document.getElementById('securityEntryLogsChart');
+        if (entryLogsCtx) {
+            this.charts.entryLogs = new Chart(entryLogsCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Entries',
+                        data: new Array(24).fill(0),
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+
+        // Exit Logs Timeline Chart
+        const exitLogsCtx = document.getElementById('securityExitLogsChart');
+        if (exitLogsCtx) {
+            this.charts.exitLogs = new Chart(exitLogsCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [{
+                        label: 'Exits',
+                        data: new Array(24).fill(0),
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+
+        // Entry/Exit Hourly Comparison Chart
+        const entryExitHourlyCtx = document.getElementById('securityEntryExitHourlyChart');
+        if (entryExitHourlyCtx) {
+            this.charts.entryExitHourly = new Chart(entryExitHourlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                    datasets: [
+                        {
+                            label: 'Entries',
+                            data: new Array(24).fill(0),
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Exits',
+                            data: new Array(24).fill(0),
+                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                            borderColor: 'rgba(231, 76, 60, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true },
+                        x: { stacked: false }
+                    },
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+    }
+
+    loadAnalyticsData() {
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Load entry logs
+        fetch(`../admin/analytics.php?action=entry_logs_hourly&dateRange=today`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Entry logs data:', data);
+            if (this.charts.entryLogs && Array.isArray(data)) {
+                const entryData = new Array(24).fill(0);
+                data.forEach(item => {
+                    const hour = parseInt(item.hour);
+                    if (hour >= 0 && hour <= 23) {
+                        entryData[hour] = parseInt(item.count);
+                    }
+                });
+                this.charts.entryLogs.data.datasets[0].data = entryData;
+                this.charts.entryLogs.update();
+            }
+        })
+        .catch(error => console.error('Error loading entry logs:', error));
+
+        // Load exit logs
+        fetch(`../admin/analytics.php?action=exit_logs_hourly&dateRange=today`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Exit logs data:', data);
+            if (this.charts.exitLogs && Array.isArray(data)) {
+                const exitData = new Array(24).fill(0);
+                data.forEach(item => {
+                    const hour = parseInt(item.hour);
+                    if (hour >= 0 && hour <= 23) {
+                        exitData[hour] = parseInt(item.count);
+                    }
+                });
+                this.charts.exitLogs.data.datasets[0].data = exitData;
+                this.charts.exitLogs.update();
+            }
+        })
+        .catch(error => console.error('Error loading exit logs:', error));
+
+        // Load entry/exit hourly comparison
+        fetch(`../admin/analytics.php?action=entry_exit_hourly&dateRange=today`, {
+            method: 'GET',
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Entry/Exit hourly data:', data);
+            if (this.charts.entryExitHourly && Array.isArray(data)) {
+                const entryData = new Array(24).fill(0);
+                const exitData = new Array(24).fill(0);
+                
+                data.forEach(item => {
+                    const hour = parseInt(item.hour);
+                    if (hour >= 0 && hour <= 23) {
+                        if (item.type === 'entry') {
+                            entryData[hour] = parseInt(item.count);
+                        } else if (item.type === 'exit') {
+                            exitData[hour] = parseInt(item.count);
+                        }
+                    }
+                });
+                
+                this.charts.entryExitHourly.data.datasets[0].data = entryData;
+                this.charts.entryExitHourly.data.datasets[1].data = exitData;
+                this.charts.entryExitHourly.update();
+            }
+        })
+        .catch(error => console.error('Error loading entry/exit hourly:', error));
     }
 }
 

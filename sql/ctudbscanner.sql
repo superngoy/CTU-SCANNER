@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2025 at 08:04 AM
+-- Generation Time: Nov 14, 2025 at 04:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -48,6 +48,33 @@ INSERT INTO `admin` (`AdminID`, `AdminFName`, `AdminMName`, `AdminLName`, `email
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `archive`
+--
+
+CREATE TABLE `archive` (
+  `ArchiveID` int(11) NOT NULL,
+  `OriginalUserType` enum('students','faculty','security') NOT NULL,
+  `OriginalUserID` varchar(50) NOT NULL,
+  `FirstName` varchar(100) DEFAULT NULL,
+  `MiddleName` varchar(100) DEFAULT NULL,
+  `LastName` varchar(100) DEFAULT NULL,
+  `Email` varchar(100) DEFAULT NULL,
+  `Gender` varchar(20) DEFAULT NULL,
+  `BirthDate` date DEFAULT NULL,
+  `Department` varchar(50) DEFAULT NULL,
+  `CourseOrSchedule` varchar(100) DEFAULT NULL,
+  `YearLevelOrPosition` varchar(50) DEFAULT NULL,
+  `Section` varchar(50) DEFAULT NULL,
+  `ImagePath` varchar(255) DEFAULT NULL,
+  `ArchiveReason` enum('deleted','graduated','resigned','inactive') NOT NULL,
+  `ArchiveDate` timestamp NOT NULL DEFAULT current_timestamp(),
+  `OriginalCreatedDate` datetime DEFAULT NULL,
+  `AdminNotes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `entrylogs`
 --
 
@@ -83,7 +110,9 @@ INSERT INTO `entrylogs` (`EntryID`, `PersonID`, `PersonType`, `Date`, `Timestamp
 (16, '8221182', 'student', '2025-10-08', '2025-10-08 02:11:43', 'SC001'),
 (17, '8221182', 'student', '2025-10-08', '2025-10-08 02:11:44', 'SC001'),
 (18, '8221182', 'student', '2025-10-24', '2025-10-24 12:34:02', 'SC001'),
-(19, '8221182', 'student', '2025-10-24', '2025-10-24 12:34:15', 'SC001');
+(19, '8221182', 'student', '2025-10-24', '2025-10-24 12:34:15', 'SC001'),
+(20, '8221183', 'student', '2025-11-14', '2025-11-14 12:53:08', 'SC001'),
+(21, 'FAC-002', 'faculty', '2025-11-14', '2025-11-14 12:53:49', 'SC001');
 
 -- --------------------------------------------------------
 
@@ -105,7 +134,10 @@ CREATE TABLE `exitlogs` (
 --
 
 INSERT INTO `exitlogs` (`ExitID`, `PersonID`, `PersonType`, `Date`, `Timestamp`, `ScannerID`) VALUES
-(1, '8221363', 'student', '2025-09-23', '2025-09-23 08:16:52', 'SC002');
+(1, '8221363', 'student', '2025-09-23', '2025-09-23 08:16:52', 'SC002'),
+(2, '8221183', 'student', '2025-11-14', '2025-11-14 13:05:36', 'SC002'),
+(3, '8221183', 'student', '2025-11-14', '2025-11-14 13:47:29', 'SC002'),
+(4, '8221183', 'student', '2025-11-14', '2025-11-14 14:40:55', 'SC002');
 
 -- --------------------------------------------------------
 
@@ -232,6 +264,16 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `archive`
+--
+ALTER TABLE `archive`
+  ADD PRIMARY KEY (`ArchiveID`),
+  ADD KEY `idx_original_user_id` (`OriginalUserID`),
+  ADD KEY `idx_user_type` (`OriginalUserType`),
+  ADD KEY `idx_archive_reason` (`ArchiveReason`),
+  ADD KEY `idx_archive_date` (`ArchiveDate`);
+
+--
 -- Indexes for table `entrylogs`
 --
 ALTER TABLE `entrylogs`
@@ -274,16 +316,22 @@ ALTER TABLE `students`
 --
 
 --
+-- AUTO_INCREMENT for table `archive`
+--
+ALTER TABLE `archive`
+  MODIFY `ArchiveID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `entrylogs`
 --
 ALTER TABLE `entrylogs`
-  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `exitlogs`
 --
 ALTER TABLE `exitlogs`
-  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

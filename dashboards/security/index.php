@@ -488,9 +488,58 @@ require_once '../../config/database.php';
                 </div>
             </div>
         </div>
+
+        <!-- Analytics Section -->
+        <div class="row mt-5 mb-4">
+            <div class="col-12">
+                <h4 class="mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Entry & Exit Analytics
+                </h4>
+            </div>
+        </div>
+
+        <!-- Entry/Exit Logs Charts Row -->
+        <div class="row mb-4">
+            <div class="col-lg-6 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i>Entry Logs Timeline</h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                        <canvas id="securityEntryLogsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-sign-out-alt me-2"></i>Exit Logs Timeline</h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                        <canvas id="securityExitLogsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry/Exit Comparison by Hour -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-arrows-alt-h me-2"></i>Entry & Exit by Hour</h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                        <canvas id="securityEntryExitHourlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../../assets/js/security.js"></script>
     
     <script>
