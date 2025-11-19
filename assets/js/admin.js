@@ -324,7 +324,56 @@ class AdminDashboard {
                 }
             });
         }
+
+        // Attempts Summary Chart (Success vs Failed)
+        const attemptsSummaryCtx = document.getElementById('attemptsSummaryChart');
+        if (attemptsSummaryCtx) {
+            this.charts.attemptsSummary = new Chart(attemptsSummaryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Success','Failed'],
+                    datasets: [{
+                        data: [0,0],
+                        backgroundColor: ['rgba(46,204,113,0.85)', 'rgba(241,196,15,0.85)'],
+                        borderColor: ['rgba(46,204,113,1)', 'rgba(241,196,15,1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { title: { display: true, text: 'Scan Attempts Summary' } }
+                }
+            });
+        }
+
+        // Attempts by Reason Chart
+        const attemptsReasonCtx = document.getElementById('attemptsReasonChart');
+        if (attemptsReasonCtx) {
+            this.charts.attemptsReason = new Chart(attemptsReasonCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Failed Scans',
+                        data: [],
+                        backgroundColor: 'rgba(231,76,60,0.85)',
+                        borderColor: 'rgba(231,76,60,1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'x',
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false }, title: { display: true, text: 'Failed Attempts by Reason' } }
+                }
+            });
+        }
     }
+
+
 
     setupFilterHandlers() {
         // Date range filter
@@ -387,7 +436,9 @@ class AdminDashboard {
             this.updateDashboardStats(params),
             this.loadEntryLogsData(params),
             this.loadExitLogsData(params),
-            this.loadEntryExitHourlyData(params)
+            this.loadEntryExitHourlyData(params),
+            this.loadAttemptsSummaryData(params),
+            this.loadAttemptsReasonData(params)
         ];
         
         console.log(`Starting ${promises.length} analytics data loading operations...`);
@@ -956,6 +1007,64 @@ class AdminDashboard {
             })
             .catch(error => {
                 console.error('Error loading entry/exit hourly data:', error);
+                throw error;
+            });
+    }
+
+    loadAttemptsSummaryData(params) {
+        const url = this.buildAnalyticsURL('attempts_summary', params);
+        console.log('Fetching attempts summary from:', url);
+        
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Attempts summary data:', data);
+                if (this.charts.attemptsSummary) {
+                    const total = data.total || (data.success + data.failed);
+                    const successRate = total > 0 ? Math.round((data.success / total) * 100) : 0;
+                    const failureRate = total > 0 ? Math.round((data.failed / total) * 100) : 0;
+                    
+                    this.charts.attemptsSummary.data.datasets[0].data = [data.success, data.failed];
+                    this.charts.attemptsSummary.data.labels = [`Success (${successRate}%)`, `Failed (${failureRate}%)`];
+                    this.charts.attemptsSummary.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading attempts summary:', error);
+                throw error;
+            });
+    }
+
+    loadAttemptsReasonData(params) {
+        const url = this.buildAnalyticsURL('attempts_by_reason', params);
+        console.log('Fetching attempts by reason from:', url);
+        
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Attempts by reason data:', data);
+                if (this.charts.attemptsReason && Array.isArray(data) && data.length > 0) {
+                    const labels = data.map(r => {
+                        // Format reason names for display
+                        return r.reason
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, l => l.toUpperCase());
+                    });
+                    const counts = data.map(r => parseInt(r.cnt));
+                    
+                    this.charts.attemptsReason.data.labels = labels;
+                    this.charts.attemptsReason.data.datasets[0].data = counts;
+                    this.charts.attemptsReason.update();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading attempts reason data:', error);
                 throw error;
             });
     }

@@ -214,21 +214,19 @@
     margin-bottom: 4px;
 }
 
+        .scan-details-mini {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 6px;
+            font-weight: 700;
+            text-transform: none;
+            word-break: break-word;
+        }
+
 .scan-location {
     font-size: 0.8rem;
     color: #28a745;
     font-weight: 600;
-}
-
-/* Enhanced scan result container */
-.scan-result-container {
-    position: relative;
-    overflow: hidden;
-}
-
-.scan-success-details {
-    position: relative;
-    z-index: 2;
 }
 
 /* Mobile responsive adjustments */
@@ -823,6 +821,17 @@
             justify-content: flex-start;
         }
 
+        #scanResult {
+            height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        #scanResult:not(:empty) {
+            height: auto;
+            pointer-events: auto;
+        }
+
         .alert {
             border-radius: 18px;
             border: none;
@@ -960,6 +969,34 @@
             margin: 0;
             font-weight: 800;
             font-size: 1.1rem;
+        }
+
+        /* Resizable handle (bottom-left) */
+        .recent-scans-float .resize-handle {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.06), rgba(0,0,0,0.04));
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            cursor: nwse-resize;
+            z-index: 1010;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.12s ease;
+            touch-action: none;
+        }
+
+        .recent-scans-float .resize-handle:hover {
+            transform: scale(1.05);
+        }
+
+        .recent-scans-float .resize-icon {
+            font-size: 0.8rem;
+            color: #666;
         }
 
         .close-btn, .toggle-btn {
@@ -1241,22 +1278,41 @@
             50% { opacity: 1; }
         }
 
-        /* Scan Result Enhancement */
+        /* Scan Result Enhancement - Fixed Position */
         .scan-result-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 400px;
             background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
-            padding: 20px;
-            margin-top: 15px;
+            padding: 25px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             border: 2px solid var(--primary-gold);
             backdrop-filter: blur(20px);
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
+            z-index: 998;
+            animation: fadeIn 0.2s ease-out;
+            will-change: opacity;
+        }
+
+        .scan-error-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 400px;
+            background: linear-gradient(135deg, rgba(224, 0, 0, 0.95), rgba(180, 0, 0, 0.95));
+            color: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(224, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            z-index: 998;
+            text-align: center;
+            animation: fadeIn 0.2s ease-out;
+            will-change: opacity;
         }
 
         .scan-result-container::before {
@@ -1276,10 +1332,19 @@
             100% { left: 100%; }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .scan-success-details {
             text-align: center;
             position: relative;
             z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .scan-success-icon {
@@ -1287,6 +1352,7 @@
             color: var(--primary-gold);
             margin-bottom: 10px;
             animation: successPulse 1s ease-in-out;
+            filter: drop-shadow(0 0 10px rgba(219, 179, 86, 0.5));
         }
 
         @keyframes successPulse {
@@ -1317,28 +1383,94 @@
             padding: 5px 15px;
             border-radius: 20px;
             display: inline-block;
+            margin-bottom: 10px;
         }
 
-        .scan-error-container {
-            background: linear-gradient(135deg, rgba(224, 0, 0, 0.95), rgba(180, 0, 0, 0.95));
-            color: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 15px;
-            box-shadow: 0 15px 40px rgba(224, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
-            min-height: 100px;
+        .scan-person-additional {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Nicely formatted label/value rows for additional information */
+        .scan-person-additional {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            align-items: center;
+        }
+
+        .scan-info-label {
+            color: #444;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: capitalize;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 6px;
+        }
+
+        .scan-info-value {
+            color: #333;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        /* Grid layout for main scan result to show avatar + info + action */
+        .scan-result-grid {
+            display: flex;
+            gap: 18px;
+            align-items: center;
             width: 100%;
-            text-align: center;
+        }
+
+        .scan-info {
+            flex: 1 1 auto;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .scan-actions-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .scan-action-badge {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.6px;
+            border-radius: 14px;
+            transform: translateZ(0);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .scan-action-badge:hover { transform: translateY(-2px) scale(1.02); }
+
+        /* Subtle pop for the action badge */
+        .scan-action-badge.entry, .scan-action-badge.exit {
+            animation: badgePop 0.45s ease-out;
+        }
+
+        @keyframes badgePop {
+            0% { transform: scale(0.85); opacity: 0; }
+            60% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .scan-info-row {
+            margin: 5px 0;
+            line-height: 1.4;
         }
 
         .scan-error-icon {
             font-size: 2rem;
-            margin-right: 15px;
             animation: errorShake 0.5s ease-in-out;
         }
 
@@ -1346,6 +1478,91 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
+        }
+
+        /* Mobile adjustments for fixed position */
+        @media (max-width: 768px) {
+            .scan-result-container,
+            .scan-error-container {
+                bottom: 15px;
+                left: 15px;
+                right: 15px;
+                max-width: none;
+                padding: 20px;
+            }
+
+            .scan-result-avatar,
+            .scan-result-avatar-default {
+                width: 70px;
+                height: 70px;
+                border-width: 3px;
+            }
+
+            .scan-result-avatar-default {
+                font-size: 24px;
+            }
+
+            .scan-person-name {
+                font-size: 1.2rem;
+            }
+
+            .scan-action-badge {
+                font-size: 0.8rem;
+                padding: 5px 14px;
+            }
+        }
+
+            .scan-person-additional {
+                grid-template-columns: 1fr;
+                gap: 8px 0;
+            }
+
+            .scan-info-value { text-align: left; }
+
+        @media (max-width: 480px) {
+            .scan-result-container,
+            .scan-error-container {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                padding: 15px;
+            }
+
+            .scan-result-avatar,
+            .scan-result-avatar-default {
+                width: 60px;
+                height: 60px;
+                border-width: 2px;
+            }
+
+            .scan-result-avatar-default {
+                font-size: 20px;
+            }
+
+            .scan-avatar-container {
+                margin-bottom: 10px;
+            }
+
+            .scan-person-name {
+                font-size: 1.1rem;
+            }
+
+            .scan-action-badge {
+                font-size: 0.75rem;
+                padding: 4px 12px;
+                margin-top: 6px;
+            }
+
+            .scan-success-icon {
+                font-size: 2rem;
+                margin-bottom: 8px;
+            }
+
+            .scan-error-icon {
+                font-size: 1.5rem;
+                margin-right: 10px;
+            }
         }
     </style>
 </head>
@@ -1409,6 +1626,9 @@
             <button class="close-btn" id="closeRecentScans">
                 <i class="fas fa-times"></i>
             </button>
+        </div>
+        <div class="resize-handle" id="recentResizeHandle" title="Drag to resize">
+            <i class="fas fa-grip-lines resize-icon" aria-hidden="true"></i>
         </div>
         <div class="float-body" id="recentScans">
             <div class="text-center text-muted py-3">Loading recent scans...</div>
@@ -1893,15 +2113,69 @@
             const resultDiv = document.getElementById('scanResult');
             
             if (type === 'success' && data.person) {
+                // Generate avatar HTML
+                let avatarHtml = '';
+                if (data.person.image) {
+                    avatarHtml = `<img src="${data.person.image}" alt="Profile" class="scan-result-avatar" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;scan-result-avatar-default&quot;>${getInitials(data.person.firstName, data.person.lastName)}</div>'">`;
+                } else {
+                    const initials = getInitials(data.person.firstName, data.person.lastName);
+                    avatarHtml = `<div class="scan-result-avatar-default">${initials}</div>`;
+                }
+                
+                // Build additional info based on user type (nicely labeled)
+                let additionalInfoHtml = '';
+                if (data.person.type === 'Student') {
+                    // Check if student is enrolled
+                    const enrollmentStatusHtml = data.person.isEnroll == 0 ? 
+                        '<div style="margin-top: 10px;"><span class="badge bg-warning"><i class="fas fa-exclamation-circle me-1"></i>Not Enrolled</span></div>' : '';
+                    
+                    additionalInfoHtml = `
+                        <div class="scan-person-additional">
+                            <div class="scan-info-label"><i class="fas fa-building"></i> department</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.department) || 'N/A'}</div>
+
+                            <div class="scan-info-label"><i class="fas fa-book"></i> course</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.course) || 'N/A'}</div>
+
+                            <div class="scan-info-label"><i class="fas fa-graduation-cap"></i> year</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.year) || 'N/A'}</div>
+
+                            <div class="scan-info-label"><i class="fas fa-users"></i> section</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.section) || 'N/A'}</div>
+                            ${enrollmentStatusHtml}
+                        </div>
+                    `;
+                } else if (data.person.type === 'Faculty') {
+                    additionalInfoHtml = `
+                        <div class="scan-person-additional">
+                            <div class="scan-info-label"><i class="fas fa-building"></i> department</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.department) || 'N/A'}</div>
+                        </div>
+                    `;
+                }
+                
                 resultDiv.innerHTML = `
                     <div class="scan-result-container">
                         <div class="scan-success-details">
-                            <div class="scan-success-icon">
-                                <i class="fas fa-check-circle"></i>
+                            <div class="scan-result-grid">
+                                <div class="scan-avatar-container">
+                                    ${avatarHtml}
+                                </div>
+
+                                <div class="scan-info">
+                                                    <div class="scan-person-name">${escapeHtml(data.person.name)}</div>
+                                                    <div class="scan-person-details">${escapeHtml(data.person.type)}</div>
+                                                    <div class="scan-person-id">ID: ${escapeHtml(data.person.id)}</div>
+                                    ${additionalInfoHtml}
+                                </div>
+
+                                <div class="scan-actions-right">
+                                    <div class="scan-success-icon"><i class="fas fa-check-circle"></i></div>
+                                    <div class="scan-action-badge ${escapeHtml(data.person.action.toLowerCase())}">
+                                        <i class="fas fa-${data.person.action === 'Entry' ? 'arrow-right' : 'arrow-left'} me-1"></i>${data.person.action}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="scan-person-name">${data.person.name}</div>
-                            <div class="scan-person-details">${data.person.type}</div>
-                            <div class="scan-person-id">ID: ${data.person.id}</div>
                         </div>
                     </div>
                 `;
@@ -1928,6 +2202,12 @@
             }, 3000);
         }
 
+        function getInitials(firstName, lastName) {
+            const f = (firstName || '').charAt(0).toUpperCase();
+            const l = (lastName || '').charAt(0).toUpperCase();
+            return (f + l) || '?';
+        }
+
         function addToRecentScansFromBackend(person) {
             const location = document.getElementById('scannerSelect').selectedOptions[0].text;
             const now = new Date();
@@ -1938,7 +2218,15 @@
                 role: person.type,
                 id: person.id,
                 location: location,
-                action: person.action
+                action: person.action,
+                image: person.image || null,
+                firstName: person.firstName || '',
+                lastName: person.lastName || ''
+                , department: person.department || null
+                , course: person.course || null
+                , year: person.year || null
+                , section: person.section || null
+                , isEnroll: person.isEnroll || 1
             };
 
             recentScansData.unshift(newScan);
@@ -1980,7 +2268,14 @@
                         role: scan.type,
                         id: scan.id,
                         location: scan.location || 'Scanner Location',
-                        action: scan.action
+                        action: scan.action,
+                        image: scan.image || null,
+                        firstName: scan.firstName || '',
+                        lastName: scan.lastName || ''
+                        , department: scan.department || null
+                        , course: scan.course || null
+                        , year: scan.year || null
+                        , section: scan.section || null
                     }));
                     
                     const today = new Date().toDateString();
@@ -2060,19 +2355,60 @@
             recentScansContainer.innerHTML = '';
 
             recentScansData.forEach(scan => {
+                // Generate avatar HTML
+                let avatarHtml = '';
+                if (scan.image) {
+                    avatarHtml = `<img src="${scan.image}" alt="Avatar" class="recent-scan-avatar" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;recent-scan-avatar-default&quot;>${getInitials(scan.firstName, scan.lastName)}</div>'">`;
+                } else {
+                    const initials = getInitials(scan.firstName, scan.lastName);
+                    avatarHtml = `<div class="recent-scan-avatar-default">${initials}</div>`;
+                }
+                
+                // Check if student is not enrolled
+                const enrollmentWarning = scan.role === 'Student' && scan.isEnroll == 0 ? 
+                    '<div class="mt-2"><span class="badge bg-warning text-dark"><i class="fas fa-exclamation-circle"></i> Not Enrolled</span></div>' : '';
+                
                 const scanItem = document.createElement('div');
                 scanItem.className = 'scan-item';
                 scanItem.innerHTML = `
-                    <div class="scan-time">${scan.time}</div>
-                    <div class="scan-name">${scan.name}</div>
-                    <div class="scan-role">${scan.role}</div>
-                    <div class="scan-data">ID: ${scan.id}</div>
-                    <div class="scan-location">${scan.action ? scan.action + ' - ' : ''}${scan.location}</div>
+                    <div class="scan-item-header">
+                        <div class="scan-avatar-small">
+                            ${avatarHtml}
+                        </div>
+                        <div class="scan-item-info">
+                            <div class="scan-time">${escapeHtml(scan.time)}</div>
+                            <div class="scan-name">${escapeHtml(scan.name)}</div>
+                        </div>
+                        <div class="scan-action-mini ${scan.action.toLowerCase()}">
+                            ${scan.action}
+                        </div>
+                    </div>
+                    <div class="scan-item-details">
+                        <div class="scan-role">${escapeHtml(scan.role)}</div>
+                        <div class="scan-data">ID: ${escapeHtml(scan.id)}</div>
+                            <div class="scan-details-mini">${scan.department ? escapeHtml(scan.department) : ''}${scan.course ? (scan.department ? ' • ' : '') + escapeHtml(scan.course) : ''}${scan.year ? (scan.course||scan.department ? ' • ' : '') + 'Year ' + escapeHtml(scan.year) : ''}${scan.section ? (scan.year||scan.course||scan.department ? ' • ' : '') + escapeHtml(scan.section) : ''}</div>
+                            <div class="scan-location">${escapeHtml(scan.location)}</div>
+                            ${enrollmentWarning}
+                    </div>
                 `;
                 recentScansContainer.appendChild(scanItem);
             });
         }
 
+
+            // Small utility to escape HTML when injecting user text
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>"]+/g, function(match) {
+                    switch (match) {
+                        case '&': return '&amp;';
+                        case '<': return '&lt;';
+                        case '>': return '&gt;';
+                        case '"': return '&quot;';
+                        default: return match;
+                    }
+                });
+            }
         function setupRecentScansToggle() {
             const toggleBtn = document.getElementById('toggleRecentScans');
             const floatWindow = document.getElementById('recentScansFloat');
@@ -2098,6 +2434,91 @@
             });
 
             updateRecentScansDisplay();
+            setupRecentScansResizer();
+        }
+
+        function setupRecentScansResizer() {
+            const floatWindow = document.getElementById('recentScansFloat');
+            const handle = document.getElementById('recentResizeHandle');
+            const body = floatWindow.querySelector('.float-body');
+
+            if (!floatWindow || !handle || !body) return;
+
+            // Load saved size
+            const saved = JSON.parse(localStorage.getItem('ctu_recent_scans_size') || '{}');
+            if (saved.width) floatWindow.style.width = saved.width + 'px';
+            if (saved.height) {
+                floatWindow.style.maxHeight = saved.height + 'px';
+                // adjust body
+                const headerH = floatWindow.querySelector('.float-header').offsetHeight;
+                body.style.maxHeight = (saved.height - headerH - 40) + 'px';
+            }
+
+            let isResizing = false;
+            let startX = 0, startY = 0, startW = 0, startH = 0;
+
+            function onPointerMove(e) {
+                if (!isResizing) return;
+                // unify touch / pointer
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+                const deltaX = startX - clientX; // dragging left -> increase width
+                const deltaY = clientY - startY; // dragging down -> increase height
+
+                const minW = 260;
+                const maxW = Math.min(window.innerWidth - 40, 900);
+                const minH = 160;
+                const maxH = Math.min(window.innerHeight - 80, 1200);
+
+                let newW = Math.max(minW, Math.min(maxW, startW + deltaX));
+                let newH = Math.max(minH, Math.min(maxH, startH + deltaY));
+
+                floatWindow.style.width = newW + 'px';
+                floatWindow.style.maxHeight = newH + 'px';
+
+                const headerH = floatWindow.querySelector('.float-header').offsetHeight;
+                body.style.maxHeight = (newH - headerH - 40) + 'px';
+
+                // Save to localStorage
+                localStorage.setItem('ctu_recent_scans_size', JSON.stringify({ width: newW, height: newH }));
+            }
+
+            function onPointerUp(e) {
+                if (!isResizing) return;
+                isResizing = false;
+                // Remove global listeners
+                window.removeEventListener('pointermove', onPointerMove);
+                window.removeEventListener('pointerup', onPointerUp);
+                window.removeEventListener('touchmove', onPointerMove);
+                window.removeEventListener('touchend', onPointerUp);
+                try { handle.releasePointerCapture(e.pointerId); } catch (err) {}
+            }
+
+            handle.addEventListener('pointerdown', function (e) {
+                e.preventDefault();
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startW = floatWindow.offsetWidth;
+                startH = floatWindow.offsetHeight;
+                handle.setPointerCapture(e.pointerId);
+
+                window.addEventListener('pointermove', onPointerMove);
+                window.addEventListener('pointerup', onPointerUp);
+            });
+
+            // fallback for touch
+            handle.addEventListener('touchstart', function (e) {
+                isResizing = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                startW = floatWindow.offsetWidth;
+                startH = floatWindow.offsetHeight;
+
+                window.addEventListener('touchmove', onPointerMove, { passive: false });
+                window.addEventListener('touchend', onPointerUp);
+            });
         }
 
         // Update time display periodically

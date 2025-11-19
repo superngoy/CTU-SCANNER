@@ -1483,6 +1483,31 @@ $peakHours = $scanner->getPeakHours();
                     </div>
                 </div>
 
+                <!-- Scan Attempts Analytics -->
+                <div class="row mb-4">
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i>Scan Attempts Summary</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="attemptsSummaryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-3">
+                        <div class="card enhanced-card" style="height: 100%;">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Failed Attempts by Reason</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-center" style="height: 350px;">
+                                <canvas id="attemptsReasonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recent Scans Section -->
                 <div class="row mb-4">
                     <div class="col-12">

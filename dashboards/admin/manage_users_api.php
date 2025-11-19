@@ -17,7 +17,7 @@ try {
                 $stmt = $scanner->conn->prepare("
                     SELECT StudentID, StudentFName, StudentMName, StudentLName, 
                            Course, YearLvl, Section, Department, Gender, BirthDate, 
-                           isActive, image, created_at
+                           isActive, IsEnroll, image, created_at
                     FROM students 
                     ORDER BY StudentLName ASC
                 ");
@@ -75,9 +75,10 @@ try {
             if ($userType === 'students') {
                 $stmt = $scanner->conn->prepare("
                     INSERT INTO students (StudentID, StudentFName, StudentMName, StudentLName, 
-                                        Gender, BirthDate, Course, YearLvl, Section, Department, image) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                        Gender, BirthDate, Course, YearLvl, Section, Department, IsEnroll, image) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ");
+                $isEnroll = isset($_POST['is_enroll']) ? 1 : 0;
                 $result = $stmt->execute([
                     $_POST['student_id'],
                     $_POST['first_name'],
@@ -89,6 +90,7 @@ try {
                     $_POST['year_level'],
                     $_POST['section'],
                     $_POST['department'],
+                    $isEnroll,
                     $imagePath
                 ]);
                 
@@ -159,6 +161,22 @@ try {
             }
             break;
             
+        case 'update_enrollment':
+            $userId = $_POST['user_id'];
+            $isEnroll = $_POST['is_enroll'];
+            
+            if ($userType === 'students') {
+                $stmt = $scanner->conn->prepare("UPDATE students SET IsEnroll = ? WHERE StudentID = ?");
+                if ($stmt->execute([$isEnroll, $userId])) {
+                    echo json_encode(['success' => true, 'message' => 'Enrollment status updated successfully']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to update enrollment status']);
+                }
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Enrollment status can only be updated for students']);
+            }
+            break;
+            
         case 'get_user':
             $userId = $_GET['user_id'];
             $user = null;
@@ -224,9 +242,10 @@ try {
                     UPDATE students SET 
                         StudentFName = ?, StudentMName = ?, StudentLName = ?, 
                         Gender = ?, BirthDate = ?, Course = ?, YearLvl = ?, 
-                        Section = ?, Department = ?, image = ?
+                        Section = ?, Department = ?, IsEnroll = ?, image = ?
                     WHERE StudentID = ?
                 ");
+                $isEnroll = isset($_POST['is_enroll']) ? 1 : 0;
                 $result = $stmt->execute([
                     $_POST['first_name'],
                     $_POST['middle_name'],
@@ -237,6 +256,7 @@ try {
                     $_POST['year_level'],
                     $_POST['section'],
                     $_POST['department'],
+                    $isEnroll,
                     $imagePath,
                     $userId
                 ]);

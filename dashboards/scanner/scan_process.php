@@ -13,28 +13,58 @@ if ($_POST['action'] === 'scan') {
     error_log("Scan process - QR Data: $qr_data, Scanner: $scanner_id");
     
     try {
+        // Get database connection early - we'll need it for logging
+        $database = new Database();
+        if (method_exists($database, 'connect')) {
+            $conn = $database->connect();
+        } elseif (method_exists($database, 'getConnection')) {
+            $conn = $database->getConnection();
+        } elseif (method_exists($database, 'connection')) {
+            $conn = $database->connection();
+        } else {
+            throw new Exception('Cannot find database connection method');
+        }
+        
         // Verify QR Code
         $person = $scanner->verifyQRCode($qr_data);
         
         if ($person) {
             error_log("Person found: " . json_encode($person));
             
-            // Get person's image from database
-            $database = new Database();
-            
-            // Use the same method detection as in CTUScanner
-            if (method_exists($database, 'connect')) {
-                $conn = $database->connect();
-            } elseif (method_exists($database, 'getConnection')) {
-                $conn = $database->getConnection();
-            } elseif (method_exists($database, 'connection')) {
-                $conn = $database->connection();
-            } else {
-                throw new Exception('Cannot find database connection method');
+            // CHECK IF STUDENT IS ENROLLED - if not, reject the entry
+            if ($person['type'] === 'student' && (!isset($person['IsEnroll']) || $person['IsEnroll'] == 0)) {
+                error_log("Student not enrolled: {$person['StudentID']}");
+                
+                $person_id = $person['StudentID'];
+                
+                // Get scanner info for location
+                $stmt = $conn->prepare("SELECT Location FROM scanner WHERE ScannerID = ?");
+                $stmt->execute([$scanner_id]);
+                $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                // Log failed attempt - not enrolled
+                $stmtAttempts = $conn->prepare("
+                    INSERT INTO scan_attempts (scanned_at, qr_data, person_id, person_type, scanner_id, location, status, reason, ip_address)
+                    VALUES (NOW(), ?, ?, 'student', ?, ?, 'failed', 'not_enrolled', ?)
+                ");
+                $stmtAttempts->execute([
+                    $qr_data,
+                    $person_id,
+                    $scanner_id,
+                    $scanner_info['Location'] ?? 'Unknown',
+                    $_SERVER['REMOTE_ADDR'] ?? null
+                ]);
+                
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Access Denied: Student is not enrolled',
+                    'reason' => 'not_enrolled'
+                ]);
+                exit();
             }
             
             // Get scanner info to determine entry/exit
-            $stmt = $conn->prepare("SELECT typeofScanner FROM scanner WHERE ScannerID = ?");
+            $stmt = $conn->prepare("SELECT typeofScanner, Location FROM scanner WHERE ScannerID = ?");
             $stmt->execute([$scanner_id]);
             $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -98,12 +128,48 @@ if ($_POST['action'] === 'scan') {
                 $name = trim($firstName . ' ' . $middleName . ' ' . $lastName);
                 $name = preg_replace('/\s+/', ' ', $name); // Remove extra spaces
                 
+                // Log successful scan attempt to scan_attempts table
+                $meta = json_encode([
+                    'action' => $action,
+                    'department' => $person['Department'] ?? null
+                ]);
+                
+                $stmtAttempts = $conn->prepare("
+                    INSERT INTO scan_attempts (scanned_at, qr_data, person_id, person_type, scanner_id, location, status, reason, meta, ip_address)
+                    VALUES (NOW(), ?, ?, ?, ?, ?, 'success', NULL, ?, ?)
+                ");
+                $stmtAttempts->execute([
+                    $qr_data,
+                    $person_id,
+                    $person['type'],
+                    $scanner_id,
+                    $scanner_info['Location'] ?? 'Unknown',
+                    $meta,
+                    $_SERVER['REMOTE_ADDR'] ?? null
+                ]);
+                
+                // Get additional information based on user type
+                $additionalInfo = [];
+                if ($person['type'] === 'student') {
+                    $additionalInfo = [
+                        'department' => $person['Department'] ?? 'N/A',
+                        'course' => $person['Course'] ?? 'N/A',
+                        'year' => $person['YearLvl'] ?? 'N/A',
+                        'section' => $person['Section'] ?? 'N/A',
+                        'isEnroll' => $person['IsEnroll'] ?? 1
+                    ];
+                } elseif ($person['type'] === 'faculty') {
+                    $additionalInfo = [
+                        'department' => $person['Department'] ?? 'N/A'
+                    ];
+                }
+                
                 error_log("$action recorded successfully for $name");
                 
                 echo json_encode([
                     'success' => true,
                     'message' => $action . ' recorded successfully',
-                    'person' => [
+                    'person' => array_merge([
                         'name' => $name,
                         'id' => $person_id,
                         'type' => ucfirst($person['type']),
@@ -112,15 +178,99 @@ if ($_POST['action'] === 'scan') {
                         'firstName' => $firstName,
                         'middleName' => $middleName,
                         'lastName' => $lastName
-                    ]
+                    ], $additionalInfo)
                 ]);
             } else {
                 error_log("Failed to record $action for $person_id");
+                
+                // Log failed attempt
+                $stmtAttempts = $conn->prepare("
+                    INSERT INTO scan_attempts (scanned_at, qr_data, person_id, person_type, scanner_id, location, status, reason, ip_address)
+                    VALUES (NOW(), ?, ?, ?, ?, ?, 'failed', 'log_failed', ?)
+                ");
+                $stmtAttempts->execute([
+                    $qr_data,
+                    $person_id,
+                    $person['type'],
+                    $scanner_id,
+                    $scanner_info['Location'] ?? 'Unknown',
+                    $_SERVER['REMOTE_ADDR'] ?? null
+                ]);
+                
                 echo json_encode(['success' => false, 'message' => 'Failed to record ' . strtolower($action)]);
             }
         } else {
-            error_log("Invalid QR Code: $qr_data");
-            echo json_encode(['success' => false, 'message' => 'Invalid QR Code or inactive account']);
+            error_log("QR Code not found or user inactive: $qr_data");
+            
+            // Get scanner location for logging
+            $stmt = $conn->prepare("SELECT Location FROM scanner WHERE ScannerID = ?");
+            $stmt->execute([$scanner_id]);
+            $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Check if the QR data exists but is inactive (student, faculty, or security)
+            $reason = 'invalid_qr';
+            $inactiveUser = null;
+            
+            // Check if it's an inactive student
+            $stmt = $conn->prepare("SELECT 'student' as type, StudentID as id FROM students WHERE StudentID = ? AND isActive = 0");
+            $stmt->execute([$qr_data]);
+            $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$inactiveUser) {
+                // Check if it's an inactive faculty
+                $stmt = $conn->prepare("SELECT 'faculty' as type, FacultyID as id FROM faculty WHERE FacultyID = ? AND isActive = 0");
+                $stmt->execute([$qr_data]);
+                $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
+            if (!$inactiveUser) {
+                // Check if it's an inactive security
+                $stmt = $conn->prepare("SELECT 'security' as type, SecurityID as id FROM security WHERE SecurityID = ? AND isActive = 0");
+                $stmt->execute([$qr_data]);
+                $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
+            // If we found an inactive user, log with 'inactive' reason
+            if ($inactiveUser) {
+                $reason = 'inactive';
+                $log_person_id = $inactiveUser['id'];
+                $log_person_type = $inactiveUser['type'];
+            }
+            
+            // Log failed attempt
+            if ($inactiveUser) {
+                $stmtAttempts = $conn->prepare("
+                    INSERT INTO scan_attempts (scanned_at, qr_data, person_id, person_type, scanner_id, location, status, reason, ip_address)
+                    VALUES (NOW(), ?, ?, ?, ?, ?, 'failed', ?, ?)
+                ");
+                $stmtAttempts->execute([
+                    $qr_data,
+                    $log_person_id,
+                    $log_person_type,
+                    $scanner_id,
+                    $scanner_info['Location'] ?? 'Unknown',
+                    $reason,
+                    $_SERVER['REMOTE_ADDR'] ?? null
+                ]);
+            } else {
+                $stmtAttempts = $conn->prepare("
+                    INSERT INTO scan_attempts (scanned_at, qr_data, scanner_id, location, status, reason, ip_address)
+                    VALUES (NOW(), ?, ?, ?, 'failed', ?, ?)
+                ");
+                $stmtAttempts->execute([
+                    $qr_data,
+                    $scanner_id,
+                    $scanner_info['Location'] ?? 'Unknown',
+                    $reason,
+                    $_SERVER['REMOTE_ADDR'] ?? null
+                ]);
+            }
+            
+            echo json_encode([
+                'success' => false,
+                'message' => $reason === 'inactive' ? 'Account is inactive' : 'Invalid QR Code',
+                'reason' => $reason
+            ]);
         }
     } catch (Exception $e) {
         error_log("Scan process error: " . $e->getMessage());

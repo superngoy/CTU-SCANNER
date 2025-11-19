@@ -204,6 +204,24 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                 width: 100%;
             }
         }
+
+        /* Table row clickable styling */
+        #usersTable tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        #usersTable tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        #usersTable tbody tr.action-row {
+            cursor: default;
+        }
+
+        #usersTable tbody tr.action-row:hover {
+            background-color: transparent;
+        }
     </style>
 </head>
 <body>
@@ -436,6 +454,43 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         </div>
     </div>
 
+    <!-- User Detail Modal -->
+    <div class="modal fade" id="userDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detailLoadingIndicator" style="text-align: center; display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading user details...
+                    </div>
+                    <div id="detailContent" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div id="detailImageContainer" style="margin-bottom: 20px;">
+                                    <img id="detailImage" src="" alt="User Photo" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div id="detailInfo">
+                                    <!-- User info will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="detailEditBtn" onclick="editUserFromDetail()">
+                        <i class="fas fa-edit me-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const userType = '<?php echo $userType; ?>';
@@ -580,6 +635,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     <th>Section</th>
                     <th>Department</th>
                     <th>Gender</th>
+                    <th>Enrollment</th>
                     <th>Status</th>
                     <th>Actions</th>
                 `;
@@ -884,6 +940,14 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                                 <label>Birth Date</label>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="isEnrollCheck" name="is_enroll" value="1" checked>
+                                <label class="form-check-label" for="isEnrollCheck">
+                                    Student is Enrolled
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else if (userType === 'faculty') {
@@ -1013,7 +1077,12 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                 .then(response => response.json())
                 .then(data => {
                     users = data;
-                    populateTable(data);
+                    // Fix image paths for this page location (dashboards/admin/)
+                    users = users.map(user => ({
+                        ...user,
+                        imageUrl: user.imageUrl ? '../../../' + user.imageUrl : user.imageUrl
+                    }));
+                    populateTable(users);
                     document.querySelector('.loading').style.display = 'none';
                     document.getElementById('tableContainer').style.display = 'block';
                 })
@@ -1039,6 +1108,25 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             }
 
             tbody.innerHTML = html;
+            
+            // Add click handlers to table rows for detail view
+            document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // Don't open detail if clicking on action buttons
+                    if (e.target.closest('.table-actions')) {
+                        return;
+                    }
+                    
+                    // Get the user ID from the second cell (ID column)
+                    const cells = this.querySelectorAll('td');
+                    if (cells.length >= 2) {
+                        const userId = cells[1].textContent.trim();
+                        if (userId) {
+                            viewUserDetail(userId);
+                        }
+                    }
+                });
+            });
         }
 
         function generateTableRow(user) {
@@ -1051,9 +1139,14 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             
             row += `<td>${avatarHtml}</td>`;
             
+            let userId, fullName, additionalCells, actionHtml;
+            
             if (userType === 'students') {
-                const fullName = `${user.StudentFName} ${user.StudentMName || ''} ${user.StudentLName}`.replace(/\s+/g, ' ').trim();
-                row += `
+                userId = user.StudentID;
+                fullName = `${user.StudentFName} ${user.StudentMName || ''} ${user.StudentLName}`.replace(/\s+/g, ' ').trim();
+                const enrollmentBadge = user.IsEnroll == 1 ? 'bg-success' : 'bg-warning';
+                const enrollmentText = user.IsEnroll == 1 ? 'Enrolled' : 'Not Enrolled';
+                additionalCells = `
                     <td>${user.StudentID}</td>
                     <td>${fullName}</td>
                     <td>${user.Course}</td>
@@ -1061,70 +1154,50 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     <td>${user.Section}</td>
                     <td><span class="badge bg-${user.Department === 'COTE' ? 'primary' : 'success'}">${user.Department}</span></td>
                     <td>${user.Gender}</td>
+                    <td><button class="btn btn-sm btn-${enrollmentBadge}" onclick="toggleEnrollment('${userId}', ${user.IsEnroll == 1 ? 0 : 1}); event.stopPropagation();" title="Toggle Enrollment"><i class="fas fa-${user.IsEnroll == 1 ? 'check-circle' : 'times-circle'}"></i> ${enrollmentText}</button></td>
                     <td><span class="badge ${user.isActive == 1 ? 'bg-success' : 'bg-danger'}">${user.isActive == 1 ? 'Active' : 'Inactive'}</span></td>
-                    <td class="table-actions">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${user.StudentID}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm ${user.isActive == 1 ? 'btn-outline-warning' : 'btn-outline-success'}" 
-                                onclick="toggleStatus('${user.StudentID}', ${user.isActive == 1 ? 0 : 1})" 
-                                title="${user.isActive == 1 ? 'Deactivate' : 'Activate'}">
-                            <i class="fas ${user.isActive == 1 ? 'fa-ban' : 'fa-check'}"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.StudentID}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
                 `;
             } else if (userType === 'faculty') {
-                const fullName = `${user.FacultyFName} ${user.FacultyMName || ''} ${user.FacultyLName}`.replace(/\s+/g, ' ').trim();
-                row += `
+                userId = user.FacultyID;
+                fullName = `${user.FacultyFName} ${user.FacultyMName || ''} ${user.FacultyLName}`.replace(/\s+/g, ' ').trim();
+                additionalCells = `
                     <td>${user.FacultyID}</td>
                     <td>${fullName}</td>
                     <td><span class="badge bg-${user.Department === 'COTE' ? 'primary' : 'success'}">${user.Department}</span></td>
                     <td>${user.Gender}</td>
                     <td>${user.Birthdate}</td>
                     <td><span class="badge ${user.isActive == 1 ? 'bg-success' : 'bg-danger'}">${user.isActive == 1 ? 'Active' : 'Inactive'}</span></td>
-                    <td class="table-actions">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${user.FacultyID}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm ${user.isActive == 1 ? 'btn-outline-warning' : 'btn-outline-success'}" 
-                                onclick="toggleStatus('${user.FacultyID}', ${user.isActive == 1 ? 0 : 1})" 
-                                title="${user.isActive == 1 ? 'Deactivate' : 'Activate'}">
-                            <i class="fas ${user.isActive == 1 ? 'fa-ban' : 'fa-check'}"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.FacultyID}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
                 `;
             } else if (userType === 'security') {
-                const fullName = `${user.SecurityFName} ${user.SecurityMName || ''} ${user.SecurityLName}`.replace(/\s+/g, ' ').trim();
-                row += `
+                userId = user.SecurityID;
+                fullName = `${user.SecurityFName} ${user.SecurityMName || ''} ${user.SecurityLName}`.replace(/\s+/g, ' ').trim();
+                additionalCells = `
                     <td>${user.SecurityID}</td>
                     <td>${fullName}</td>
                     <td>${user.Gender}</td>
                     <td>${user.BirthDate}</td>
                     <td>${user.TimeSched}</td>
                     <td><span class="badge ${user.isActive == 1 ? 'bg-success' : 'bg-danger'}">${user.isActive == 1 ? 'Active' : 'Inactive'}</span></td>
-                    <td class="table-actions">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${user.SecurityID}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm ${user.isActive == 1 ? 'btn-outline-warning' : 'btn-outline-success'}" 
-                                onclick="toggleStatus('${user.SecurityID}', ${user.isActive == 1 ? 0 : 1})" 
-                                title="${user.isActive == 1 ? 'Deactivate' : 'Activate'}">
-                            <i class="fas ${user.isActive == 1 ? 'fa-ban' : 'fa-check'}"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.SecurityID}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
                 `;
             }
             
-            row += '</tr>';
+            actionHtml = `
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${userId}'); event.stopPropagation();" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm ${user.isActive == 1 ? 'btn-outline-warning' : 'btn-outline-success'}" 
+                            onclick="toggleStatus('${userId}', ${user.isActive == 1 ? 0 : 1}); event.stopPropagation();" 
+                            title="${user.isActive == 1 ? 'Deactivate' : 'Activate'}">
+                        <i class="fas ${user.isActive == 1 ? 'fa-ban' : 'fa-check'}"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${userId}'); event.stopPropagation();" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            
+            row += additionalCells + actionHtml + '</tr>';
             return row;
         }
 
@@ -1220,6 +1293,11 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                         showAlert('danger', data.error);
                         modal.hide();
                         return;
+                    }
+                    
+                    // Fix image path for this page location (dashboards/admin/)
+                    if (data.imageUrl && !data.imageUrl.startsWith('assets/')) {
+                        data.imageUrl = '../../../' + data.imageUrl;
                     }
                     
                     // Populate edit form
@@ -1492,8 +1570,10 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
                     modal.hide();
                     
-                    // Reload data
-                    loadUsers();
+                    // Reload data with a small delay to ensure server processes the file
+                    setTimeout(() => {
+                        loadUsers();
+                    }, 300);
                     
                     // Show success message
                     showAlert('success', data.message);
@@ -1543,11 +1623,214 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
             });
         }
 
+        function toggleEnrollment(userId, newEnrollment) {
+            if (!confirm(`Are you sure you want to mark this student as ${newEnrollment ? 'enrolled' : 'not enrolled'}?`)) {
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('action', 'update_enrollment');
+            formData.append('type', 'students');
+            formData.append('user_id', userId);
+            formData.append('is_enroll', newEnrollment);
+            
+            fetch('manage_users_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadUsers(); // Reload table
+                    showAlert('success', data.message);
+                } else {
+                    showAlert('danger', data.message || 'An error occurred');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating enrollment:', error);
+                showAlert('danger', 'Network error. Please try again.');
+            });
+        }
+
         function deleteUser(userId) {
             // Open archive modal instead of direct delete
             document.getElementById('archiveUserId').value = userId;
             const archiveModal = new bootstrap.Modal(document.getElementById('archiveUserModal'));
             archiveModal.show();
+        }
+
+        function viewUserDetail(userId) {
+            const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+            const loadingIndicator = document.getElementById('detailLoadingIndicator');
+            const detailContent = document.getElementById('detailContent');
+            
+            // Show loading
+            loadingIndicator.style.display = 'block';
+            detailContent.style.display = 'none';
+            
+            modal.show();
+            
+            // Fetch user data
+            fetch(`manage_users_api.php?action=get_user&type=${userType}&user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showAlert('danger', data.error);
+                        modal.hide();
+                        return;
+                    }
+                    
+                    // Fix image path
+                    if (data.imageUrl && !data.imageUrl.startsWith('assets/')) {
+                        data.imageUrl = '../../../' + data.imageUrl;
+                    }
+                    
+                    // Populate detail view
+                    populateDetailView(data);
+                    
+                    // Hide loading and show content
+                    loadingIndicator.style.display = 'none';
+                    detailContent.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    showAlert('danger', 'Error loading user details');
+                    modal.hide();
+                });
+        }
+
+        function populateDetailView(userData) {
+            const detailImage = document.getElementById('detailImage');
+            const detailInfo = document.getElementById('detailInfo');
+            
+            // Handle image
+            if (userData.imageUrl && userData.imageUrl !== 'assets/images/default-avatar.png') {
+                detailImage.src = userData.imageUrl;
+                detailImage.style.display = 'block';
+            } else {
+                detailImage.style.display = 'none';
+            }
+            
+            let infoHtml = '';
+            
+            if (userType === 'students') {
+                infoHtml = `
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Student ID:</strong></div>
+                        <div class="col-sm-7">${userData.StudentID}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Full Name:</strong></div>
+                        <div class="col-sm-7">${userData.StudentFName} ${userData.StudentMName || ''} ${userData.StudentLName}`.replace(/\s+/g, ' ').trim() + `</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Department:</strong></div>
+                        <div class="col-sm-7"><span class="badge bg-${userData.Department === 'COTE' ? 'primary' : 'success'}">${userData.Department}</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Course:</strong></div>
+                        <div class="col-sm-7">${userData.Course}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Year Level:</strong></div>
+                        <div class="col-sm-7">Year ${userData.YearLvl}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Section:</strong></div>
+                        <div class="col-sm-7">${userData.Section}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Gender:</strong></div>
+                        <div class="col-sm-7">${userData.Gender}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Birth Date:</strong></div>
+                        <div class="col-sm-7">${userData.BirthDate || 'N/A'}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Enrollment:</strong></div>
+                        <div class="col-sm-7"><span class="badge ${userData.IsEnroll == 1 ? 'bg-success' : 'bg-warning'}">${userData.IsEnroll == 1 ? 'Enrolled' : 'Not Enrolled'}</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Status:</strong></div>
+                        <div class="col-sm-7"><span class="badge ${userData.isActive == 1 ? 'bg-success' : 'bg-danger'}">${userData.isActive == 1 ? 'Active' : 'Inactive'}</span></div>
+                    </div>
+                `;
+            } else if (userType === 'faculty') {
+                infoHtml = `
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Faculty ID:</strong></div>
+                        <div class="col-sm-7">${userData.FacultyID}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Full Name:</strong></div>
+                        <div class="col-sm-7">${userData.FacultyFName} ${userData.FacultyMName || ''} ${userData.FacultyLName}`.replace(/\s+/g, ' ').trim() + `</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Department:</strong></div>
+                        <div class="col-sm-7"><span class="badge bg-${userData.Department === 'COTE' ? 'primary' : 'success'}">${userData.Department}</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Gender:</strong></div>
+                        <div class="col-sm-7">${userData.Gender}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Birth Date:</strong></div>
+                        <div class="col-sm-7">${userData.Birthdate || 'N/A'}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Status:</strong></div>
+                        <div class="col-sm-7"><span class="badge ${userData.isActive == 1 ? 'bg-success' : 'bg-danger'}">${userData.isActive == 1 ? 'Active' : 'Inactive'}</span></div>
+                    </div>
+                `;
+            } else if (userType === 'security') {
+                infoHtml = `
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Security ID:</strong></div>
+                        <div class="col-sm-7">${userData.SecurityID}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Full Name:</strong></div>
+                        <div class="col-sm-7">${userData.SecurityFName} ${userData.SecurityMName || ''} ${userData.SecurityLName}`.replace(/\s+/g, ' ').trim() + `</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Gender:</strong></div>
+                        <div class="col-sm-7">${userData.Gender}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Birth Date:</strong></div>
+                        <div class="col-sm-7">${userData.BirthDate || 'N/A'}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Time Schedule:</strong></div>
+                        <div class="col-sm-7">${userData.TimeSched}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-5"><strong>Status:</strong></div>
+                        <div class="col-sm-7"><span class="badge ${userData.isActive == 1 ? 'bg-success' : 'bg-danger'}">${userData.isActive == 1 ? 'Active' : 'Inactive'}</span></div>
+                    </div>
+                `;
+            }
+            
+            detailInfo.innerHTML = infoHtml;
+            
+            // Store current user ID for edit button
+            document.getElementById('detailEditBtn').dataset.userId = 
+                userType === 'students' ? userData.StudentID : 
+                userType === 'faculty' ? userData.FacultyID : 
+                userData.SecurityID;
+        }
+
+        function editUserFromDetail() {
+            const userId = document.getElementById('detailEditBtn').dataset.userId;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('userDetailModal'));
+            modal.hide();
+            
+            // Open edit modal after closing detail modal
+            setTimeout(() => {
+                editUser(userId);
+            }, 300);
         }
 
         function confirmArchive() {

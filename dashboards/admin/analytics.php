@@ -414,6 +414,89 @@ try {
             }
             break;
 
+        case 'attempts_summary':
+            try {
+                $dateRange = $_GET['dateRange'] ?? 'today';
+                $userType = $_GET['userType'] ?? 'all';
+                list($startDate, $endDate) = getDateRange($dateRange);
+
+                $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
+                $typeFilter = '';
+                if ($userType !== 'all' && !empty($userType)) {
+                    $typeFilter = " AND person_type = ? ";
+                    $params[] = $userType;
+                }
+
+                $stmt = $scanner->conn->prepare("SELECT status, COUNT(*) as cnt FROM scan_attempts WHERE scanned_at BETWEEN ? AND ? {$typeFilter} GROUP BY status");
+                $stmt->execute($params);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $data = ['success' => 0, 'failed' => 0, 'total' => 0];
+                foreach ($rows as $r) {
+                    $s = strtolower($r['status']);
+                    if ($s === 'success') $data['success'] = (int)$r['cnt'];
+                    else $data['failed'] += (int)$r['cnt'];
+                    $data['total'] += (int)$r['cnt'];
+                }
+
+                echo json_encode($data);
+            } catch (PDOException $e) {
+                error_log("Attempts summary error: " . $e->getMessage());
+                echo json_encode(['success' => 0, 'failed' => 0, 'total' => 0]);
+            }
+            break;
+
+        case 'attempts_by_reason':
+            try {
+                $dateRange = $_GET['dateRange'] ?? 'today';
+                $userType = $_GET['userType'] ?? 'all';
+                list($startDate, $endDate) = getDateRange($dateRange);
+
+                $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
+                $typeFilter = '';
+                if ($userType !== 'all' && !empty($userType)) {
+                    $typeFilter = " AND person_type = ? ";
+                    $params[] = $userType;
+                }
+
+                // Get failed attempts by reason (excluding NULL reasons which are successful scans)
+                $stmt = $scanner->conn->prepare("SELECT reason, COUNT(*) as cnt FROM scan_attempts WHERE status = 'failed' AND reason IS NOT NULL AND scanned_at BETWEEN ? AND ? {$typeFilter} GROUP BY reason ORDER BY cnt DESC");
+                $stmt->execute($params);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                echo json_encode($rows);
+            } catch (PDOException $e) {
+                error_log("Attempts by reason error: " . $e->getMessage());
+                echo json_encode([]);
+            }
+            break;
+
+        case 'recent_failed_attempts':
+            try {
+                $dateRange = $_GET['dateRange'] ?? 'today';
+                $userType = $_GET['userType'] ?? 'all';
+                $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
+                list($startDate, $endDate) = getDateRange($dateRange);
+
+                $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
+                $typeFilter = '';
+                if ($userType !== 'all' && !empty($userType)) {
+                    $typeFilter = " AND person_type = ? ";
+                    $params[] = $userType;
+                }
+
+                $stmt = $scanner->conn->prepare("SELECT id, scanned_at, qr_data, person_id, person_type, scanner_id, location, reason, meta, ip_address FROM scan_attempts WHERE scanned_at BETWEEN ? AND ? AND status = 'failed' {$typeFilter} ORDER BY scanned_at DESC LIMIT ?");
+                $params[] = $limit;
+                $stmt->execute($params);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                echo json_encode($rows);
+            } catch (PDOException $e) {
+                error_log("Recent failed attempts error: " . $e->getMessage());
+                echo json_encode([]);
+            }
+            break;
+
         case 'entry_logs_hourly':
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';

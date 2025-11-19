@@ -72,28 +72,53 @@ class QRScanner {
             },
             body: `action=scan&qr_data=${encodeURIComponent(decodedText)}&scanner_id=${scannerId}`
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 this.showScanResult(data, 'success');
                 this.addToRecentScans(data.person);
             } else {
-                this.showScanResult(data, 'error');
+                // Display error message with reason if available
+                const displayData = {
+                    message: data.message || 'Scan failed',
+                    reason: data.reason
+                };
+                this.showScanResult(displayData, 'error');
             }
         })
         .catch(error => {
-            this.showScanResult({ message: 'Network error occurred' }, 'error');
+            console.error('Scan error:', error);
+            this.showScanResult({ message: 'Network error occurred: ' + error.message }, 'error');
         });
     }
 
     showScanResult(data, type) {
         const resultDiv = document.getElementById('scanResult');
         resultDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} scan-${type}`;
+        
+        // Build the message with reason if available
+        let reasonText = '';
+        if (data.reason) {
+            const reasonMap = {
+                'invalid_qr': 'Invalid QR Code',
+                'not_enrolled': 'Student Not Enrolled',
+                'inactive': 'Account Inactive',
+                'log_failed': 'Failed to Log'
+            };
+            reasonText = reasonMap[data.reason] || data.reason;
+            reasonText = ` - ${reasonText}`;
+        }
+        
         resultDiv.innerHTML = `
             <div class="d-flex align-items-center">
                 <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
                 <div>
-                    <strong>${data.message}</strong>
+                    <strong>${data.message}${reasonText}</strong>
                     ${data.person ? `<br><small>${data.person.name} (${data.person.id}) - ${data.person.type}</small>` : ''}
                 </div>
             </div>

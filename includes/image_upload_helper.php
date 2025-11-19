@@ -229,6 +229,23 @@ class ImageUploadHelper {
         if (empty($imagePath)) {
             return 'assets/images/default-avatar.png'; // Default image
         }
-        return $imagePath;
+        
+        // Add cache-busting query parameter to force browser to reload updated images
+        // Try different paths to find the file
+        $possiblePaths = [
+            '../../' . $imagePath,        // From manage_users_api.php location
+            '../' . $imagePath,           // From dashboards/admin/ location
+            $imagePath                    // Direct path
+        ];
+        
+        foreach ($possiblePaths as $checkPath) {
+            if (file_exists($checkPath)) {
+                $lastModified = filemtime($checkPath);
+                return $imagePath . '?v=' . $lastModified;
+            }
+        }
+        
+        // If file not found, still return path with current timestamp for debugging
+        return $imagePath . '?v=' . time();
     }
 }

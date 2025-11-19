@@ -40,6 +40,10 @@ try {
             'time' => date('h:i A', strtotime($entry['Timestamp'])),
             'timestamp' => $entry['Timestamp'],
             'image' => $personData['image'],
+            'department' => $personData['department'] ?? null,
+            'course' => $personData['course'] ?? null,
+            'year' => $personData['year'] ?? null,
+            'section' => $personData['section'] ?? null,
             'firstName' => $firstName,
             'middleName' => $middleName,
             'lastName' => $lastName
@@ -65,6 +69,10 @@ try {
             'time' => date('h:i A', strtotime($exit['Timestamp'])),
             'timestamp' => $exit['Timestamp'],
             'image' => $personData['image'],
+            'department' => $personData['department'] ?? null,
+            'course' => $personData['course'] ?? null,
+            'year' => $personData['year'] ?? null,
+            'section' => $personData['section'] ?? null,
             'firstName' => $firstName,
             'middleName' => $middleName,
             'lastName' => $lastName
@@ -115,6 +123,37 @@ function getPersonWithImage($conn, $personId, $personCategory) {
         error_log("Error getting image for $personCategory $personId: " . $e->getMessage());
     }
     
-    return ['image' => $image_path];
+    // Try to include some handy additional info (department, course, year, section)
+    $additional = [
+        'department' => null,
+        'course' => null,
+        'year' => null,
+        'section' => null
+    ];
+
+    try {
+        if (strtolower($personCategory) === 'student') {
+            $stmt2 = $conn->prepare("SELECT Department, Course, YearLvl, Section FROM students WHERE StudentID = ?");
+            $stmt2->execute([$personId]);
+            $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $additional['department'] = $row['Department'] ?? null;
+                $additional['course'] = $row['Course'] ?? null;
+                $additional['year'] = $row['YearLvl'] ?? null;
+                $additional['section'] = $row['Section'] ?? null;
+            }
+        } elseif (strtolower($personCategory) === 'faculty') {
+            $stmt2 = $conn->prepare("SELECT Department FROM faculty WHERE FacultyID = ?");
+            $stmt2->execute([$personId]);
+            $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $additional['department'] = $row['Department'] ?? null;
+            }
+        }
+    } catch (Exception $e) {
+        error_log('Error getting additional info: ' . $e->getMessage());
+    }
+
+    return array_merge(['image' => $image_path], $additional);
 }
 ?>
