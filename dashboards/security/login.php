@@ -32,14 +32,14 @@ if ($_POST) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --gold: #DFBB65;
-            --red: #8A2125;
-            --dark-red: #8A2125;
-            --gold-light: rgba(223, 187, 101, 0.2);
+            --gold: #E5C573;
+            --red: #972529;
+            --dark-red: #972529;
+            --gold-light: rgba(229, 197, 115, 0.2);
         }
         
         body {
-            background: linear-gradient(135deg, rgba(138, 33, 37, 0.7) 0%, rgba(138, 33, 37, 0.5) 100%);
+            background: #972529;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -61,7 +61,7 @@ if ($_POST) {
             opacity: 0.1;
             z-index: -1;
             border-radius: 50%;
-            box-shadow: 0 0 200px 100px rgba(138, 33, 37, 0.3);
+            box-shadow: 0 0 200px 100px rgba(151, 37, 41, 0.3);
             animation: slowRotate 30s linear infinite;
         }
 
@@ -88,7 +88,7 @@ if ($_POST) {
             transform: translateY(0);
             transition: all 0.3s ease;
             animation: slideIn 0.8s ease-out;
-            border: 1px solid rgba(223, 187, 101, 0.5);
+            border: 1px solid rgba(229, 197, 115, 0.5);
             color: #ffffff;
         }
         
@@ -109,7 +109,7 @@ if ($_POST) {
         }
         
         .login-header {
-            background: linear-gradient(45deg, rgba(138, 33, 37, 0.7), rgba(138, 33, 37, 0.5));
+            background: #972529;
             color: var(--gold);
             border-radius: 20px 20px 0 0;
             padding: 30px;
@@ -124,8 +124,8 @@ if ($_POST) {
             border-radius: 50%;
             margin: 0 auto;
             padding: 5px;
-            background: linear-gradient(45deg, var(--gold), rgba(223, 187, 101, 0.5));
-            box-shadow: 0 0 20px rgba(223, 187, 101, 0.3);
+            background: #E5C573;
+            box-shadow: 0 0 20px rgba(229, 197, 115, 0.3);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -144,9 +144,9 @@ if ($_POST) {
         }
 
         @keyframes glowPulse {
-            0% { box-shadow: 0 0 20px rgba(223, 187, 101, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(223, 187, 101, 0.5); }
-            100% { box-shadow: 0 0 20px rgba(223, 187, 101, 0.3); }
+            0% { box-shadow: 0 0 20px rgba(229, 197, 115, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(229, 197, 115, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(229, 197, 115, 0.3); }
         }
         
         .login-header::before {
@@ -165,7 +165,7 @@ if ($_POST) {
         }
         
         .btn-login {
-            background: linear-gradient(45deg, var(--red), rgba(138, 33, 37, 0.9));
+            background: #972529;
             border: 2px solid var(--gold);
             padding: 12px;
             border-radius: 10px;
@@ -193,8 +193,8 @@ if ($_POST) {
         
         .btn-login:hover {
             transform: translateY(-2px);
-            background: linear-gradient(45deg, rgba(138, 33, 37, 0.9), var(--red));
-            box-shadow: 0 5px 15px rgba(223, 187, 101, 0.3);
+            background: #7d1f23;
+            box-shadow: 0 5px 15px rgba(229, 197, 115, 0.3);
             color: var(--gold);
         }
         
@@ -204,7 +204,7 @@ if ($_POST) {
         
         .form-floating input {
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(223, 187, 101, 0.3);
+            border: 2px solid rgba(229, 197, 115, 0.3);
             transition: all 0.3s ease;
             color: white;
         }
@@ -212,7 +212,7 @@ if ($_POST) {
         .form-floating input:focus {
             background: rgba(255, 255, 255, 0.15);
             border-color: var(--gold);
-            box-shadow: 0 0 0 0.2rem rgba(223, 187, 101, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(229, 197, 115, 0.25);
             transform: scale(1.02);
             color: white;
         }
@@ -250,7 +250,7 @@ if ($_POST) {
             height: 2px;
             bottom: -2px;
             left: 0;
-            background: linear-gradient(45deg, var(--gold), rgba(223, 187, 101, 0.5));
+            background: #E5C573;
             transition: width 0.3s ease;
         }
         

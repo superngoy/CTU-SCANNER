@@ -1,9 +1,24 @@
 <?php
-error_reporting(E_ALL);
+// Suppress direct error output to the browser (prevents injected warnings on free hosts)
+error_reporting(0);
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/scan_error.log');
 
-header('Content-Type: application/json');
+// Start output buffering so we can clean any accidental output before returning JSON
+if (!ob_get_level()) ob_start();
+
 require_once '../../includes/functions.php';
+
+// Helper to send clean JSON and exit
+function send_json($arr) {
+    if (ob_get_length()) {
+        @ob_end_clean();
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($arr);
+    exit;
+}
 
 if ($_POST['action'] === 'scan') {
     $scanner = new CTUScanner();
@@ -55,12 +70,11 @@ if ($_POST['action'] === 'scan') {
                     $_SERVER['REMOTE_ADDR'] ?? null
                 ]);
                 
-                echo json_encode([
+                send_json([
                     'success' => false,
                     'message' => 'Access Denied: Student is not enrolled',
                     'reason' => 'not_enrolled'
                 ]);
-                exit();
             }
             
             // Get scanner info to determine entry/exit
@@ -69,8 +83,7 @@ if ($_POST['action'] === 'scan') {
             $scanner_info = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$scanner_info) {
-                echo json_encode(['success' => false, 'message' => 'Invalid scanner ID']);
-                exit();
+                send_json(['success' => false, 'message' => 'Invalid scanner ID']);
             }
             
             $person_id = $person['type'] === 'student' ? $person['StudentID'] : 
@@ -166,7 +179,7 @@ if ($_POST['action'] === 'scan') {
                 
                 error_log("$action recorded successfully for $name");
                 
-                echo json_encode([
+                send_json([
                     'success' => true,
                     'message' => $action . ' recorded successfully',
                     'person' => array_merge([
@@ -197,7 +210,7 @@ if ($_POST['action'] === 'scan') {
                     $_SERVER['REMOTE_ADDR'] ?? null
                 ]);
                 
-                echo json_encode(['success' => false, 'message' => 'Failed to record ' . strtolower($action)]);
+                send_json(['success' => false, 'message' => 'Failed to record ' . strtolower($action)]);
             }
         } else {
             error_log("QR Code not found or user inactive: $qr_data");
@@ -266,7 +279,7 @@ if ($_POST['action'] === 'scan') {
                 ]);
             }
             
-            echo json_encode([
+            send_json([
                 'success' => false,
                 'message' => $reason === 'inactive' ? 'Account is inactive' : 'Invalid QR Code',
                 'reason' => $reason
@@ -274,10 +287,10 @@ if ($_POST['action'] === 'scan') {
         }
     } catch (Exception $e) {
         error_log("Scan process error: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'System error: ' . $e->getMessage()]);
+        send_json(['success' => false, 'message' => 'System error: ' . $e->getMessage()]);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request']);
+    send_json(['success' => false, 'message' => 'Invalid request']);
 }
 
 /**

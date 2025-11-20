@@ -43,6 +43,16 @@ try {
                 ");
                 $stmt->execute();
                 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("
+                    SELECT StaffID, StaffFName, StaffMName, StaffLName, 
+                           Position, Department, Gender, BirthDate, isActive, image, created_at
+                    FROM staff 
+                    ORDER BY StaffLName ASC
+                ");
+                $stmt->execute();
+                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             
             // Add image URLs to response
@@ -60,7 +70,8 @@ try {
             // Handle image upload
             if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
                 $userId = $_POST[$userType === 'students' ? 'student_id' : 
-                                ($userType === 'faculty' ? 'faculty_id' : 'security_id')];
+                                ($userType === 'faculty' ? 'faculty_id' : 
+                                 ($userType === 'security' ? 'security_id' : 'staff_id'))];
                 $imageUploadResult = $imageUploader->uploadImage($_FILES['image'], $userType, $userId);
                 if ($imageUploadResult['success']) {
                     $imagePath = $imageUploadResult['path'];
@@ -129,6 +140,26 @@ try {
                     $hashedPassword,
                     $imagePath
                 ]);
+                
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("
+                    INSERT INTO staff (StaffID, StaffFName, StaffMName, StaffLName, 
+                                     Gender, BirthDate, Position, Department, image) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $result = $stmt->execute([
+                    $_POST['staff_id'],
+                    $_POST['first_name'],
+                    $_POST['middle_name'],
+                    $_POST['last_name'],
+                    $_POST['gender'],
+                    $_POST['birthdate'],
+                    $_POST['position'],
+                    $_POST['department'],
+                    $imagePath
+                ]);
+            } else {
+                $result = false;
             }
             
             if ($result) {
@@ -152,6 +183,8 @@ try {
                 $stmt = $scanner->conn->prepare("UPDATE faculty SET isActive = ? WHERE FacultyID = ?");
             } elseif ($userType === 'security') {
                 $stmt = $scanner->conn->prepare("UPDATE security SET isActive = ? WHERE SecurityID = ?");
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("UPDATE staff SET isActive = ? WHERE StaffID = ?");
             }
             
             if ($stmt->execute([$status, $userId])) {
@@ -197,6 +230,10 @@ try {
                 if ($user) {
                     unset($user['password']);
                 }
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("SELECT * FROM staff WHERE StaffID = ?");
+                $stmt->execute([$userId]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
             if ($user) {
@@ -219,9 +256,21 @@ try {
                 $stmt = $scanner->conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
             } elseif ($userType === 'security') {
                 $stmt = $scanner->conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM staff WHERE StaffID = ?");
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid user type']);
+                break;
             }
             $stmt->execute([$userId]);
             $currentUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Check if user exists
+            if (!$currentUser) {
+                echo json_encode(['success' => false, 'message' => 'User not found']);
+                break;
+            }
+            
             $imagePath = $currentUser['image']; // Keep existing image by default
             
             // Handle new image upload
@@ -319,6 +368,24 @@ try {
                         $userId
                     ]);
                 }
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("
+                    UPDATE staff SET 
+                        StaffFName = ?, StaffMName = ?, StaffLName = ?, 
+                        Gender = ?, BirthDate = ?, Position = ?, Department = ?, image = ?
+                    WHERE StaffID = ?
+                ");
+                $result = $stmt->execute([
+                    $_POST['first_name'],
+                    $_POST['middle_name'],
+                    $_POST['last_name'],
+                    $_POST['gender'],
+                    $_POST['birthdate'],
+                    $_POST['position'],
+                    $_POST['department'],
+                    $imagePath,
+                    $userId
+                ]);
             }
             
             if ($result) {
@@ -330,6 +397,7 @@ try {
             
         case 'delete_user':
             $userId = $_POST['user_id'];
+            $userData = null;
             
             // Get user data to delete associated image
             if ($userType === 'students') {
@@ -337,11 +405,21 @@ try {
                 $stmt->execute([$userId]);
                 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
                 
+                if (!$userData) {
+                    echo json_encode(['success' => false, 'message' => 'User not found']);
+                    break;
+                }
+                
                 $stmt = $scanner->conn->prepare("DELETE FROM students WHERE StudentID = ?");
             } elseif ($userType === 'faculty') {
                 $stmt = $scanner->conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
                 $stmt->execute([$userId]);
                 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$userData) {
+                    echo json_encode(['success' => false, 'message' => 'User not found']);
+                    break;
+                }
                 
                 $stmt = $scanner->conn->prepare("DELETE FROM faculty WHERE FacultyID = ?");
             } elseif ($userType === 'security') {
@@ -349,7 +427,26 @@ try {
                 $stmt->execute([$userId]);
                 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
                 
+                if (!$userData) {
+                    echo json_encode(['success' => false, 'message' => 'User not found']);
+                    break;
+                }
+                
                 $stmt = $scanner->conn->prepare("DELETE FROM security WHERE SecurityID = ?");
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("SELECT image FROM staff WHERE StaffID = ?");
+                $stmt->execute([$userId]);
+                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$userData) {
+                    echo json_encode(['success' => false, 'message' => 'User not found']);
+                    break;
+                }
+                
+                $stmt = $scanner->conn->prepare("DELETE FROM staff WHERE StaffID = ?");
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid user type']);
+                break;
             }
             
             if ($stmt->execute([$userId])) {

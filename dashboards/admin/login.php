@@ -32,14 +32,14 @@ if ($_POST) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --gold: #DFBB65;
-            --red: #8A2125;
-            --dark-red: #8A2125;
-            --gold-light: rgba(223, 187, 101, 0.2);
+            --gold: #E5C573;
+            --red: #972529;
+            --dark-red: #972529;
+            --gold-light: rgba(229, 197, 115, 0.2);
         }
         
         body {
-            background: linear-gradient(135deg, rgba(138, 33, 37, 0.7) 0%, rgba(138, 33, 37, 0.5) 100%);
+            background: #972529;
             min-height: 100vh;
             display: flex;
             align-items: center;

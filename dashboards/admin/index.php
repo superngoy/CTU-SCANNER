@@ -16,9 +16,107 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
     exit;
 }
 
+// AJAX endpoint for custom range analytics
+if (isset($_GET['ajax']) && $_GET['ajax'] == 2) {
+    $scanner = new CTUScanner();
+    $start = $_GET['start_date'] ?? date('Y-m-d');
+    $end = $_GET['end_date'] ?? date('Y-m-d');
+
+    header('Content-Type: application/json');
+    try {
+        $resp = [];
+
+        // Stats for range
+        $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date BETWEEN ? AND ?");
+        $stmt->execute([$start, $end]);
+        $resp['total_entries'] = (int)$stmt->fetchColumn();
+
+        $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM exitlogs WHERE Date BETWEEN ? AND ?");
+        $stmt->execute([$start, $end]);
+        $resp['total_exits'] = (int)$stmt->fetchColumn();
+
+        $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'student'");
+        $stmt->execute([$start, $end]);
+        $resp['student_entries'] = (int)$stmt->fetchColumn();
+
+        $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'faculty'");
+        $stmt->execute([$start, $end]);
+        $resp['faculty_entries'] = (int)$stmt->fetchColumn();
+
+        $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'staff'");
+        $stmt->execute([$start, $end]);
+        $resp['staff_entries'] = (int)$stmt->fetchColumn();
+
+        // Unique visitors
+        $stmt = $scanner->conn->prepare("SELECT COUNT(DISTINCT PersonID) FROM entrylogs WHERE Date BETWEEN ? AND ?");
+        $stmt->execute([$start, $end]);
+        $resp['unique_visitors'] = (int)$stmt->fetchColumn();
+
+        // Peak hours
+        $stmt = $scanner->conn->prepare("SELECT HOUR(Timestamp) as hour, COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ? GROUP BY HOUR(Timestamp) ORDER BY hour ASC");
+        $stmt->execute([$start, $end]);
+        $resp['peak_hours'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Department stats (students + faculty + staff)
+        $stmt = $scanner->conn->prepare("SELECT s.Department as Department, COUNT(*) as entry_count FROM entrylogs e LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student' WHERE e.Date BETWEEN ? AND ? AND e.PersonType = 'student' AND s.Department IS NOT NULL GROUP BY s.Department");
+        $stmt->execute([$start, $end]);
+        $studDeps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $scanner->conn->prepare("SELECT f.Department as Department, COUNT(*) as entry_count FROM entrylogs e LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty' WHERE e.Date BETWEEN ? AND ? AND e.PersonType = 'faculty' AND f.Department IS NOT NULL GROUP BY f.Department");
+        $stmt->execute([$start, $end]);
+        $facDeps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $stmt = $scanner->conn->prepare("SELECT st.Department as Department, COUNT(*) as entry_count FROM entrylogs e LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff' WHERE e.Date BETWEEN ? AND ? AND e.PersonType = 'staff' AND st.Department IS NOT NULL GROUP BY st.Department");
+        $stmt->execute([$start, $end]);
+        $staffDeps = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $resp['department_stats'] = array_merge($studDeps, $facDeps, $staffDeps);
+
+        // Location stats
+        $stmt = $scanner->conn->prepare("SELECT sc.Location, COUNT(*) as entry_count FROM entrylogs e LEFT JOIN scanner sc ON e.ScannerID = sc.ScannerID WHERE e.Date BETWEEN ? AND ? GROUP BY sc.Location");
+        $stmt->execute([$start, $end]);
+        $resp['location_stats'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode($resp);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $scanner = new CTUScanner();
 $stats = $scanner->getDailyStats();
 $peakHours = $scanner->getPeakHours();
+
+// Get user management counts
+$totalStudents = 0;
+$totalFaculty = 0;
+$totalSecurity = 0;
+$totalStaff = 0;
+
+try {
+    // Count students
+    $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM students WHERE isActive = 1");
+    $stmt->execute();
+    $totalStudents = $stmt->fetchColumn();
+    
+    // Count faculty
+    $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM faculty WHERE isActive = 1");
+    $stmt->execute();
+    $totalFaculty = $stmt->fetchColumn();
+    
+    // Count security
+    $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM security WHERE isActive = 1");
+    $stmt->execute();
+    $totalSecurity = $stmt->fetchColumn();
+    
+    // Count staff
+    $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM staff WHERE isActive = 1");
+    $stmt->execute();
+    $totalStaff = $stmt->fetchColumn();
+} catch (Exception $e) {
+    error_log("Error fetching user counts: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" data-assets-path="<?php echo $assets_path; ?>" data-base-path="<?php echo $base_path; ?>">
@@ -37,24 +135,24 @@ $peakHours = $scanner->getPeakHours();
             --header-height: 70px;
             
             /* Updated Color Palette */
-            --primary-color: #8A2125;    /* Dark Red */
-            --secondary-color: #DFBB65;  /* Gold */
-            --accent-color: #8A2125;     /* Dark Red for accents */
+            --primary-color: #972529;    /* Dark Red */
+            --secondary-color: #E5C573;  /* Gold */
+            --accent-color: #972529;     /* Dark Red for accents */
             --success-color: #28a745;    /* Keep standard success */
-            --warning-color: #DFBB65;    /* Gold for warnings */
-            --danger-color: #8A2125;     /* Dark Red for danger */
-            --info-color: #DFBB65;       /* Gold for info */
+            --warning-color: #E5C573;    /* Gold for warnings */
+            --danger-color: #972529;     /* Dark Red for danger */
+            --info-color: #E5C573;       /* Gold for info */
             
             /* Updated Gradients */
-            --primary-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-            --secondary-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --primary-gradient: #972529;
+            --secondary-gradient: #E5C573;
             --success-gradient: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
-            --warning-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
-            --danger-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-            --info-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --warning-gradient: #E5C573;
+            --danger-gradient: #972529;
+            --info-gradient: #E5C573;
             
-            --entries-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);      /* Dark Red */
-            --exits-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);        /* Gold */
+            --entries-gradient: #972529;      /* Dark Red */
+            --exits-gradient: #E5C573;        /* Gold */
             --student-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);      /* Green */
             --faculty-gradient: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);      /* Blue */
         }
@@ -67,7 +165,7 @@ $peakHours = $scanner->getPeakHours();
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ECF0F1 0%, #F5F6FA 100%);
+            background: #f5f6fa;
             min-height: 100vh;
             padding-left: var(--sidebar-width);
             transition: padding-left 0.2s ease;
@@ -85,7 +183,7 @@ $peakHours = $scanner->getPeakHours();
             top: 0;
             width: var(--sidebar-width);
             height: 100vh;
-            background: linear-gradient(180deg, #8A2125 0%, #9c262b 50%, #8A2125 100%);
+            background: #972529;
             box-shadow: 4px 0 20px rgba(0,0,0,0.2);
             z-index: 1050;
             transition: all 0.2s ease;
@@ -113,7 +211,7 @@ $peakHours = $scanner->getPeakHours();
             height: 50px;
             border-radius: 12px;
             margin-bottom: 10px;
-            border: 2px solid #DFBB65;
+            border: 2px solid #E5C573;
             transition: all 0.2s ease;
         }
 
@@ -168,7 +266,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .sidebar-toggle:hover {
-            background: rgba(138, 33, 37, 0.1);
+            background: rgba(151, 37, 41, 0.1);
             transform: scale(1.1);
         }
 
@@ -205,7 +303,7 @@ $peakHours = $scanner->getPeakHours();
             top: 0;
             width: 0;
             height: 100%;
-            background: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            background: #E5C573;
             transition: width 0.15s ease;
             border-radius: 10px;
         }
@@ -250,8 +348,8 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
-            color: #fff;
+            background: #E5C573;
+            color: #333;
             transform: translateX(3px);
         }
 
@@ -340,7 +438,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .notification-btn:hover {
-            background: rgba(223, 187, 101, 0.1);
+            background: rgba(229, 197, 115, 0.1);
             color: var(--primary-color);
             transform: scale(1.1);
         }
@@ -351,7 +449,7 @@ $peakHours = $scanner->getPeakHours();
             right: 6px;
             width: 8px;
             height: 8px;
-            background: #8A2125;
+            background: #972529;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
@@ -362,16 +460,16 @@ $peakHours = $scanner->getPeakHours();
             gap: 8px;
             padding: 8px 15px;
             border-radius: 20px;
-            background: rgba(138, 33, 37, 0.1);
-            color: #8A2125;
+            background: rgba(151, 37, 41, 0.1);
+            color: #972529;
             text-decoration: none;
             transition: all 0.15s ease;
             font-size: 14px;
         }
 
         .user-profile:hover {
-            background: rgba(138, 33, 37, 0.2);
-            color: #8A2125;
+            background: rgba(151, 37, 41, 0.2);
+            color: #972529;
         }
 
         /* Main Content */
@@ -410,53 +508,61 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .stat-card {
-            border-radius: 14px;
-            padding: 24px;
-            text-align: left;
-            transition: all 0.15s ease;
-            position: relative;
-            overflow: hidden;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-            border: none;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: scale(0);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover::before {
-            transform: scale(1);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
 
-        .stat-card.bg-primary { background: var(--primary-gradient); }
-        .stat-card.bg-success { background: var(--success-gradient); }
-        .stat-card.bg-warning { background: var(--warning-gradient); }
-        .stat-card.bg-info { background: var(--secondary-gradient); }
-        .stat-card.bg-danger { background: var(--danger-gradient); }
+        .stat-card h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-card p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .stat-card.entries {
+            border-left-color: #972529;
+        }
+
+        .stat-card.exits {
+            border-left-color: #E5C573;
+        }
+
+        .stat-card.peak {
+            border-left-color: #28a745;
+        }
+
+        .stat-card.busiest {
+            border-left-color: #E5C573;
+        }
+
+        .stat-card.dwell {
+            border-left-color: #007bff;
+        }
 
         /* 5-Column responsive layout for analytics stats */
         .col-lg-2-4 {
-            flex: 0 0 20%;
-            max-width: 20%;
+            flex: 0 0 25%;
+            max-width: 25%;
         }
 
         @media (max-width: 1400px) {
             .col-lg-2-4 {
-                flex: 0 0 25%;
-                max-width: 25%;
+                flex: 0 0 33.33%;
+                max-width: 33.33%;
             }
         }
 
@@ -475,43 +581,25 @@ $peakHours = $scanner->getPeakHours();
         }
 
         /* Stat card number styling */
-        .stat-card h2 {
-            font-size: 2.5rem;
+        .stat-card h3 {
+            font-size: 2rem;
             font-weight: 700;
             line-height: 1;
+            color: var(--primary-color);
+            margin: 0;
         }
 
-        .stat-card h6 {
-            font-size: 0.85rem;
+        .stat-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 5px 0 0 0;
             letter-spacing: 0.5px;
         }
 
         .stat-card .card-body {
             padding-left: 0;
             padding-right: 0;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-info h3 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-info p {
-            margin: 0;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            font-size: 14px;
+            display: none;
         }
 
         /* Fast Animations */
@@ -569,7 +657,7 @@ $peakHours = $scanner->getPeakHours();
         .btn-primary:hover {
             background: var(--secondary-gradient);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(223, 187, 101, 0.3);
+            box-shadow: 0 4px 15px rgba(229, 197, 115, 0.3);
         }
 
         .btn-success {
@@ -586,15 +674,15 @@ $peakHours = $scanner->getPeakHours();
         .btn-warning {
             background: var(--warning-gradient);
             border: none;
-            color: #fff;
+            color: #333;
             transition: all 0.15s ease;
         }
 
         .btn-warning:hover {
             background: var(--primary-gradient);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 150, 0, 0.3);
-            color: #fff;
+            box-shadow: 0 4px 15px rgba(151, 37, 41, 0.3);
+            color: #FEFEFE;
         }
 
         .btn-danger {
@@ -605,7 +693,7 @@ $peakHours = $scanner->getPeakHours();
 
         .btn-danger:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(224, 0, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(151, 37, 41, 0.3);
         }
 
         /* Responsive Design */
@@ -618,15 +706,6 @@ $peakHours = $scanner->getPeakHours();
         @media (max-width: 991px) {
             .header-title {
                 font-size: 18px;
-            }
-            
-            .stat-card {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .stat-info h3 {
-                font-size: 24px;
             }
         }
 
@@ -675,71 +754,9 @@ $peakHours = $scanner->getPeakHours();
             .sidebar-toggle {
                 display: none;
             }
-            
-            /* Statistics Overview - Updated styles */
-            .stat-card {
-                border-radius: 12px;
-                padding: 18px;
-                text-align: center;
-                transition: all 0.15s ease;
-                position: relative;
-                overflow: hidden;
-                color: white;
-                margin-bottom: 15px;
-            }
-
-            .stat-card::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-                transform: scale(0);
-                transition: transform 0.3s ease;
-            }
-
-            .stat-card:hover::before {
-                transform: scale(1);
-            }
-
-            .stat-icon {
-                font-size: 28px;
-                margin-bottom: 10px;
-            }
-
-            .stat-info h3 {
-                font-size: 24px;
-                font-weight: 700;
-                margin-bottom: 5px;
-            }
-
-            .stat-info p {
-                margin: 0;
-                opacity: 0.95;
-                font-size: 14px;
-            }
         }
 
         @media (max-width: 576px) {
-            .stat-card {
-                padding: 12px;
-            }
-            
-            .stat-icon {
-                font-size: 28px;
-                margin-bottom: 8px;
-            }
-            
-            .stat-info h3 {
-                font-size: 20px;
-            }
-            
-            .stat-info p {
-                font-size: 12px;
-            }
-            
             .header-actions {
                 gap: 8px;
             }
@@ -757,7 +774,7 @@ $peakHours = $scanner->getPeakHours();
         }
 
         .mobile-toggle:hover {
-            background: rgba(138, 33, 37, 0.1);
+            background: rgba(151, 37, 41, 0.1);
             color: var(--accent-color);
         }
 
@@ -856,7 +873,7 @@ $peakHours = $scanner->getPeakHours();
         /* Form Controls */
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(216, 172, 65, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(151, 37, 41, 0.25);
         }
 
         /* Loading Spinner */
@@ -1007,6 +1024,13 @@ $peakHours = $scanner->getPeakHours();
                 </a>
             </div>
             <div class="nav-item">
+                <a href="visitor_analytics.php" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Visitor Analytics</span>
+                    <div class="nav-link-tooltip">Visitor Analytics</div>
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="#reports" class="nav-link" data-section="reports">
                     <i class="fas fa-file-alt"></i>
                     <span>Reports</span>
@@ -1077,39 +1101,27 @@ $peakHours = $scanner->getPeakHours();
                         <div class="card-body p-3">
                             <div class="row g-3">
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-primary bounce-in" style="background: var(--entries-gradient) !important;">
-                                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                                        <div class="stat-info">
-                                            <h3 data-stat="entries"><?php echo $stats['total_entries']; ?></h3>
-                                            <p>Total Entries</p>
-                                        </div>
+                                    <div class="stat-card entries">
+                                        <h3 data-stat="entries"><?php echo $stats['total_entries']; ?></h3>
+                                        <p><i class="fas fa-sign-in-alt me-1"></i>Total Entries</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-success bounce-in" style="background: var(--student-gradient) !important;">
-                                        <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
-                                        <div class="stat-info">
-                                            <h3 data-stat="student"><?php echo $stats['student_entries']; ?></h3>
-                                            <p>Student Entries</p>
-                                        </div>
+                                    <div class="stat-card peak">
+                                        <h3 data-stat="student"><?php echo $stats['student_entries']; ?></h3>
+                                        <p><i class="fas fa-user-graduate me-1"></i>Student Entries</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-info bounce-in" style="background: var(--faculty-gradient) !important;">
-                                        <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                                        <div class="stat-info">
-                                            <h3 data-stat="faculty"><?php echo $stats['faculty_entries']; ?></h3>
-                                            <p>Faculty Entries</p>
-                                        </div>
+                                    <div class="stat-card peak">
+                                        <h3 data-stat="faculty"><?php echo $stats['faculty_entries']; ?></h3>
+                                        <p><i class="fas fa-chalkboard-user me-1"></i>Faculty Entries</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-md-6">
-                                    <div class="stat-card bg-danger bounce-in" style="background: var(--exits-gradient) !important;">
-                                        <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
-                                        <div class="stat-info">
-                                            <h3 data-stat="exits"><?php echo $stats['total_exits']; ?></h3>
-                                            <p>Total Exits</p>
-                                        </div>
+                                    <div class="stat-card exits">
+                                        <h3 data-stat="exits"><?php echo $stats['total_exits']; ?></h3>
+                                        <p><i class="fas fa-sign-out-alt me-1"></i>Total Exits</p>
                                     </div>
                                 </div>
                             </div>
@@ -1283,6 +1295,7 @@ $peakHours = $scanner->getPeakHours();
                                                 <option value="all">All Users</option>
                                                 <option value="student">Students</option>
                                                 <option value="faculty">Faculty</option>
+                                                <option value="staff">Staff</option>
                                                 <option value="security">Security</option>
                                             </select>
                                         </div>
@@ -1298,73 +1311,31 @@ $peakHours = $scanner->getPeakHours();
 
                 <!-- Dashboard Statistics -->
                 <div class="row mb-4">
-                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
-                        <div class="card stat-card bg-primary text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-sign-in-alt me-1"></i>Total Entries</h6>
-                                        <h2 class="mb-0" id="totalEntries">0</h2>
-                                    </div>
-                                    <i class="fas fa-sign-in-alt fa-2x text-white-50 ms-2"></i>
-                                </div>
-                            </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card entries">
+                            <h3 id="totalEntries">0</h3>
+                            <p><i class="fas fa-sign-in-alt me-1"></i>Total Entries</p>
                         </div>
                     </div>
 
-                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
-                        <div class="card stat-card bg-danger text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-sign-out-alt me-1"></i>Total Exits</h6>
-                                        <h2 class="mb-0" id="totalExits">0</h2>
-                                    </div>
-                                    <i class="fas fa-sign-out-alt fa-2x text-white-50 ms-2"></i>
-                                </div>
-                            </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card exits">
+                            <h3 id="totalExits">0</h3>
+                            <p><i class="fas fa-sign-out-alt me-1"></i>Total Exits</p>
                         </div>
                     </div>
 
-                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
-                        <div class="card stat-card bg-info text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-clock me-1"></i>Peak Hour</h6>
-                                        <h2 class="mb-0" id="peakHour">N/A</h2>
-                                    </div>
-                                    <i class="fas fa-clock fa-2x text-white-50 ms-2"></i>
-                                </div>
-                            </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card peak">
+                            <h3 id="peakHour">N/A</h3>
+                            <p><i class="fas fa-clock me-1"></i>Peak Hour</p>
                         </div>
                     </div>
 
-                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
-                        <div class="card stat-card bg-warning text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-calendar-alt me-1"></i>Busiest Day</h6>
-                                        <h2 class="mb-0" id="busiestDay">N/A</h2>
-                                    </div>
-                                    <i class="fas fa-chart-bar fa-2x text-white-50 ms-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-2-4 col-md-6 col-sm-12 mb-3">
-                        <div class="card stat-card bg-secondary text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <h6 class="text-white-50 mb-2 small"><i class="fas fa-hourglass me-1"></i>Avg Dwell Time</h6>
-                                        <h2 class="mb-0" id="avgDwellTime">0h</h2>
-                                    </div>
-                                    <i class="fas fa-hourglass-end fa-2x text-white-50 ms-2"></i>
-                                </div>
-                            </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card dwell">
+                            <h3 id="avgDwellTime">0h</h3>
+                            <p><i class="fas fa-hourglass-end me-1"></i>Avg Dwell Time</p>
                         </div>
                     </div>
                 </div>
@@ -1603,6 +1574,10 @@ $peakHours = $scanner->getPeakHours();
                                             <i class="fas fa-file-pdf me-2"></i>Export to PDF
                                             <span class="loading-spinner d-none ms-2" id="pdfLoading"></span>
                                         </button>
+                                        <button class="btn btn-info py-3" onclick="printPDF()" style="border-radius: 12px;">
+                                            <i class="fas fa-print me-2"></i>Print Report
+                                            <span class="loading-spinner d-none ms-2" id="printLoading"></span>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -1618,6 +1593,17 @@ $peakHours = $scanner->getPeakHours();
                                                 <input type="date" id="endDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
                                             </div>
                                         </div>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <select id="presetSelect" class="form-select" aria-label="Load preset">
+                                                        <option value="">Load Preset...</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button class="btn btn-outline-secondary w-100" onclick="savePreset()" title="Save current date range as preset">Save Preset</button>
+                                                </div>
+                                            </div>
+                                            <div style="height:8px"></div>
                                         <button class="btn btn-primary w-100 py-3" onclick="generateReport()" style="border-radius: 12px;">
                                             <i class="fas fa-chart-bar me-2"></i>Generate Custom Report
                                             <span class="loading-spinner d-none ms-2" id="reportLoading"></span>
@@ -1642,6 +1628,35 @@ $peakHours = $scanner->getPeakHours();
                             </h5>
                         </div>
                         <div class="card-body p-3">
+                            <!-- User Statistics -->
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stat-card" style="border-left-color: #007bff;">
+                                        <h3><?php echo $totalStudents; ?></h3>
+                                        <p><i class="fas fa-user-graduate me-1"></i>Active Students</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stat-card" style="border-left-color: #28a745;">
+                                        <h3><?php echo $totalFaculty; ?></h3>
+                                        <p><i class="fas fa-chalkboard-teacher me-1"></i>Active Faculty</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stat-card" style="border-left-color: #ffc107;">
+                                        <h3><?php echo $totalSecurity; ?></h3>
+                                        <p><i class="fas fa-shield-alt me-1"></i>Active Security</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="stat-card" style="border-left-color: #17a2b8;">
+                                        <h3><?php echo $totalStaff; ?></h3>
+                                        <p><i class="fas fa-user-tie me-1"></i>Active Staff</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Management Cards -->
                             <div class="row">
                                 <div class="col-lg-4 col-md-6 mb-4">
                                     <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('students')" style="cursor: pointer;">
@@ -1668,6 +1683,15 @@ $peakHours = $scanner->getPeakHours();
                                         </div>
                                         <h6>Manage Security</h6>
                                         <p class="text-muted small">Add, edit, or manage security personnel accounts</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="management-card enhanced-card text-center p-4" onclick="manageUsers('staff')" style="cursor: pointer;">
+                                        <div style="font-size: 42px; color: #17a2b8; margin-bottom: 15px;">
+                                            <i class="fas fa-user-tie"></i>
+                                        </div>
+                                        <h6>Manage Staff</h6>
+                                        <p class="text-muted small">Add, edit, or manage staff accounts and information</p>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-6 mb-4">
@@ -2366,33 +2390,23 @@ $peakHours = $scanner->getPeakHours();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             
+            if (!startDate || !endDate) {
+                showNotification('Please select both start and end dates.', 'warning');
+                return;
+            }
+            
             loading.classList.remove('d-none');
             showNotification('Preparing Excel export...', 'info');
             
             setTimeout(() => {
-                // window.open(`export_excel.php?start_date=${startDate}&end_date=${endDate}`);
+                window.location.href = `export_excel.php?start_date=${startDate}&end_date=${endDate}`;
                 loading.classList.add('d-none');
-                showNotification('Excel file would download here!', 'success');
-            }, 1500);
+                showNotification('Excel file downloading...', 'success');
+            }, 500);
         }
         
         function exportPDF() {
             const loading = document.getElementById('pdfLoading');
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            
-            loading.classList.remove('d-none');
-            showNotification('Preparing PDF export...', 'info');
-            
-            setTimeout(() => {
-                // window.open(`export_pdf.php?start_date=${startDate}&end_date=${endDate}`);
-                loading.classList.add('d-none');
-                showNotification('PDF file would download here!', 'success');
-            }, 1500);
-        }
-        
-        function generateReport() {
-            const loading = document.getElementById('reportLoading');
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             
@@ -2402,12 +2416,133 @@ $peakHours = $scanner->getPeakHours();
             }
             
             loading.classList.remove('d-none');
-            showNotification('Generating custom report...', 'info');
+            showNotification('Preparing PDF export...', 'info');
             
             setTimeout(() => {
-                showNotification(`Custom report generated for ${startDate} to ${endDate}`, 'success');
+                window.location.href = `export_pdf.php?start_date=${startDate}&end_date=${endDate}`;
                 loading.classList.add('d-none');
-            }, 2000);
+                showNotification('PDF file downloading...', 'success');
+            }, 500);
+        }
+        
+        function printPDF() {
+            const loading = document.getElementById('pdfLoading');
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                showNotification('Please select both start and end dates.', 'warning');
+                return;
+            }
+            
+            loading.classList.remove('d-none');
+            showNotification('Opening PDF for printing...', 'info');
+            
+            setTimeout(() => {
+                window.open(`export_pdf.php?start_date=${startDate}&end_date=${endDate}&autoprint=1`, '_blank');
+                loading.classList.add('d-none');
+                showNotification('PDF opened for printing', 'success');
+            }, 500);
+        }
+        
+        let peakChart = null;
+        let deptChart = null;
+
+        function generateReport() {
+            const loading = document.getElementById('reportLoading');
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                showNotification('Please select both start and end dates.', 'warning');
+                return;
+            }
+
+            // update export buttons are already wired to read date inputs
+            loading.classList.remove('d-none');
+            showNotification('Generating custom report...', 'info');
+
+            fetch(`?ajax=2&start_date=${startDate}&end_date=${endDate}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showNotification('Error generating report: ' + data.error, 'error');
+                        return;
+                    }
+
+                    // Update stat cards
+                    const map = {
+                        'entries': data.total_entries ?? 0,
+                        'student': data.student_entries ?? 0,
+                        'faculty': data.faculty_entries ?? 0,
+                        'exits': data.total_exits ?? 0
+                    };
+                    Object.keys(map).forEach(k => {
+                        const el = document.querySelector(`[data-stat="${k}"]`);
+                        if (el) el.textContent = map[k];
+                    });
+
+                    // Update Peak Hours Chart
+                    const peakLabels = [];
+                    const peakData = [];
+                    if (Array.isArray(data.peak_hours)) {
+                        data.peak_hours.forEach(h => {
+                            peakLabels.push(String(h.hour).padStart(2,'0') + ':00');
+                            peakData.push(parseInt(h.count));
+                        });
+                    }
+                    if (peakChart) {
+                        peakChart.data.labels = peakLabels;
+                        peakChart.data.datasets = [{ label: 'Entries', data: peakData, borderColor: '#972529', backgroundColor: 'rgba(151,37,41,0.1)'}];
+                        peakChart.update();
+                    } else {
+                        const peakCtx = document.getElementById('peakHoursChart');
+                        if (peakCtx) {
+                            peakChart = new Chart(peakCtx, {
+                                type: 'bar',
+                                data: { labels: peakLabels, datasets: [{ label: 'Entries', data: peakData, backgroundColor: '#972529' }] },
+                                options: { responsive: true }
+                            });
+                        }
+                    }
+
+                    // Update Department Chart (aggregate duplicates)
+                    const deptMap = {};
+                    if (Array.isArray(data.department_stats)) {
+                        data.department_stats.forEach(d => {
+                            const name = d.Department || 'N/A';
+                            deptMap[name] = (deptMap[name] || 0) + parseInt($d = d.entry_count || 0);
+                        });
+                    }
+                    const deptLabels = Object.keys(deptMap);
+                    const deptCounts = deptLabels.map(l => deptMap[l]);
+                    if (deptChart) {
+                        deptChart.data.labels = deptLabels;
+                        deptChart.data.datasets = [{ data: deptCounts, backgroundColor: ['#972529','#E5C573','#a83531','#eed490','#6c757d'] }];
+                        deptChart.update();
+                    } else {
+                        const deptCtx = document.getElementById('departmentChart');
+                        if (deptCtx) {
+                            deptChart = new Chart(deptCtx, {
+                                type: 'doughnut',
+                                data: { labels: deptLabels, datasets: [{ data: deptCounts, backgroundColor: ['#972529','#E5C573','#a83531','#eed490','#6c757d'] }] },
+                                options: { responsive: true }
+                            });
+                        }
+                    }
+
+                    // Save last used range as recent preset option
+                    addPresetOption(`${startDate} - ${endDate}`, startDate + '|' + endDate);
+
+                    showNotification(`Custom report generated for ${startDate} to ${endDate}`, 'success');
+                })
+                .catch(err => {
+                    console.error(err);
+                    showNotification('Failed to generate report', 'error');
+                })
+                .finally(() => {
+                    loading.classList.add('d-none');
+                });
         }
         
         // Enhanced notification system with faster animations
@@ -2458,40 +2593,84 @@ $peakHours = $scanner->getPeakHours();
         
         // Initialize chart data (placeholder)
         function initializeCharts() {
-            // Peak Hours Chart
+            // Create empty charts if canvas exists; real data will be populated by generateReport
             const peakCtx = document.getElementById('peakHoursChart');
             if (peakCtx) {
-                new Chart(peakCtx, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            borderColor: '#8A2125',
-                            backgroundColor: 'rgba(138, 33, 37, 0.1)',
-                            // ...existing options...
-                        }]
-                    }
+                peakChart = new Chart(peakCtx, {
+                    type: 'bar',
+                    data: { labels: [], datasets: [{ label: 'Entries', data: [], backgroundColor: '#972529' }] },
+                    options: { responsive: true }
                 });
             }
-            
-            // Department Chart
+
             const deptCtx = document.getElementById('departmentChart');
             if (deptCtx) {
-                new Chart(deptCtx, {
-                    data: {
-                        datasets: [{
-                            backgroundColor: [
-                                '#8A2125',
-                                '#DFBB65',
-                                '#9c262b',
-                                '#e6c876',
-                                '#6c757d'
-                            ],
-                            // ...existing options...
-                        }]
-                    }
+                deptChart = new Chart(deptCtx, {
+                    type: 'doughnut',
+                    data: { labels: [], datasets: [{ data: [], backgroundColor: ['#972529','#E5C573','#a83531','#eed490','#6c757d'] }] },
+                    options: { responsive: true }
                 });
             }
         }
+
+        // Preset management
+        function getPresets() {
+            try {
+                return JSON.parse(localStorage.getItem('report_presets') || '[]');
+            } catch (e) { return []; }
+        }
+
+        function savePreset() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            if (!start || !end) { showNotification('Select both dates first', 'warning'); return; }
+            const name = prompt('Preset name:', `${start} to ${end}`) || `${start} to ${end}`;
+            const presets = getPresets();
+            presets.push({ name: name, value: start + '|' + end });
+            localStorage.setItem('report_presets', JSON.stringify(presets));
+            populatePresets();
+            showNotification('Preset saved', 'success');
+        }
+
+        function populatePresets() {
+            const select = document.getElementById('presetSelect');
+            if (!select) return;
+            const presets = getPresets();
+            // clear existing (keep first placeholder)
+            select.innerHTML = '<option value="">Load Preset...</option>';
+            presets.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.value;
+                opt.textContent = p.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function addPresetOption(name, value) {
+            const presets = getPresets();
+            // avoid duplicates
+            if (!presets.find(p => p.value === value)) {
+                presets.push({ name: name, value: value });
+                localStorage.setItem('report_presets', JSON.stringify(presets));
+                populatePresets();
+            }
+        }
+
+        // hook preset select change
+        document.addEventListener('DOMContentLoaded', function() {
+            populatePresets();
+            const sel = document.getElementById('presetSelect');
+            if (sel) {
+                sel.addEventListener('change', function() {
+                    if (!this.value) return;
+                    const parts = this.value.split('|');
+                    if (parts.length === 2) {
+                        document.getElementById('startDate').value = parts[0];
+                        document.getElementById('endDate').value = parts[1];
+                    }
+                });
+            }
+        });
         
                
         // Load saved sidebar state
@@ -2559,10 +2738,6 @@ $peakHours = $scanner->getPeakHours();
             
             .enhanced-card {
                 margin-bottom: 15px;
-            }
-            
-            .stat-card {
-                padding: 15px 10px;
             }
             
             .btn {

@@ -17,7 +17,8 @@ class ImageUploadHelper {
             $this->uploadDir,
             $this->uploadDir . 'students/',
             $this->uploadDir . 'faculty/',
-            $this->uploadDir . 'security/'
+            $this->uploadDir . 'security/',
+            $this->uploadDir . 'staff/'
         ];
 
         foreach ($directories as $dir) {

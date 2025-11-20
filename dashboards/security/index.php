@@ -20,23 +20,23 @@ require_once '../../config/database.php';
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #8A2125;    /* Dark Red */
-            --secondary-color: #DFBB65;  /* Gold */
-            --accent-color: #8A2125;     /* Dark Red for accents */
+            --primary-color: #972529;    /* Dark Red */
+            --secondary-color: #E5C573;  /* Gold */
+            --accent-color: #972529;     /* Dark Red for accents */
             --success-color: #27AE60;    /* Keep standard success */
-            --warning-color: #DFBB65;    /* Gold for warnings */
-            --danger-color: #8A2125;     /* Dark Red for danger */
-            --info-color: #DFBB65;       /* Gold for info */
+            --warning-color: #E5C573;    /* Gold for warnings */
+            --danger-color: #972529;     /* Dark Red for danger */
+            --info-color: #E5C573;       /* Gold for info */
             
             /* Updated Gradients */
-            --primary-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-            --secondary-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
+            --primary-gradient: #972529;
+            --secondary-gradient: #E5C573;
             --success-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
-            --warning-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
-            --danger-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-            --info-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
-            --entries-gradient: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);      /* Dark Red */
-            --exits-gradient: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);        /* Gold */
+            --warning-gradient: #E5C573;
+            --danger-gradient: #972529;
+            --info-gradient: #E5C573;
+            --entries-gradient: #972529;      /* Dark Red */
+            --exits-gradient: #E5C573;        /* Gold */
             --student-gradient: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);      /* Green */
             --faculty-gradient: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);      /* Blue */
         }
@@ -77,77 +77,37 @@ require_once '../../config/database.php';
         }
         
         .stat-card {
-            padding: 25px;
-            border-radius: 15px;
-            color: white;
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-left: 4px solid #972529;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-bottom: 15px;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            pointer-events: none;
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
-            float: right;
-            position: relative;
-            z-index: 2;
-            animation: pulse 2s infinite;
-        }
-        
         .stat-card h3 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 2;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #333;
         }
-        
+
         .stat-card p {
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            color: #666;
             margin: 0;
-            position: relative;
-            z-index: 2;
         }
         
-        .stat-card.bg-success { background: var(--success-gradient); }
-        .stat-card.bg-warning { background: var(--warning-gradient); }
-        .stat-card.bg-info { background: var(--info-gradient); }
-        .stat-card.bg-secondary { background: var(--secondary-gradient); }
-        .stat-card.entries { background: var(--entries-gradient); }
-        .stat-card.exits { background: var(--exits-gradient); }
-        .stat-card.students { background: var(--student-gradient); }
-        .stat-card.faculty { background: var(--faculty-gradient); }
+        .stat-card.entries { border-left-color: #972529; }
+        .stat-card.exits { border-left-color: #E5C573; }
+        .stat-card.students { border-left-color: #28a745; }
+        .stat-card.faculty { border-left-color: #007bff; }
 
         .card {
             border: none;
@@ -290,8 +250,8 @@ require_once '../../config/database.php';
             height: 45px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--gold);
-            box-shadow: 0 3px 10px rgba(216, 172, 65, 0.2);
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 3px 10px rgba(229, 197, 115, 0.2);
             background: #f8f9fa;
         }
 
@@ -299,15 +259,15 @@ require_once '../../config/database.php';
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--dark-red), var(--red));
-            color: white;
+            background: #972529;
+            color: #FEFEFE;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 18px;
             font-weight: bold;
-            border: 2px solid var(--gold);
-            box-shadow: 0 3px 10px rgba(216, 172, 65, 0.2);
+            border: 2px solid var(--secondary-color);
+            box-shadow: 0 3px 10px rgba(229, 197, 115, 0.2);
         }
 
         /* Add hover effect for images */
@@ -327,12 +287,12 @@ require_once '../../config/database.php';
         }
         
         .activity-type.student {
-            background: rgba(138, 33, 37, 0.1);
+            background: rgba(151, 37, 41, 0.1);
             color: var(--primary-color);
         }
         
         .activity-type.faculty {
-            background: rgba(223, 187, 101, 0.1);
+            background: rgba(229, 197, 115, 0.1);
             color: var(--secondary-color);
         }
         
@@ -400,39 +360,75 @@ require_once '../../config/database.php';
                         <div class="row">
                             <div class="col-md-3 col-sm-6">
                                 <div class="stat-card entries">
-                                    <div class="stat-icon"><i class="fas fa-sign-in-alt"></i></div>
-                                    <div class="stat-info">
-                                        <h3 id="todayEntries">-</h3>
-                                        <p>Today's Entries</p>
-                                    </div>
+                                    <h3 id="todayEntries">-</h3>
+                                    <p>Today's Entries</p>
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
                                 <div class="stat-card exits">
-                                    <div class="stat-icon"><i class="fas fa-sign-out-alt"></i></div>
-                                    <div class="stat-info">
-                                        <h3 id="todayExits">-</h3>
-                                        <p>Today's Exits</p>
-                                    </div>
+                                    <h3 id="todayExits">-</h3>
+                                    <p>Today's Exits</p>
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
                                 <div class="stat-card students">
-                                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
-                                    <div class="stat-info">
-                                        <h3 id="studentEntries">-</h3>
-                                        <p>Student Entries</p>
-                                    </div>
+                                    <h3 id="studentEntries">-</h3>
+                                    <p>Student Entries</p>
                                 </div>
                             </div>
                             <div class="col-md-3 col-sm-6">
                                 <div class="stat-card faculty">
-                                    <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                                    <div class="stat-info">
-                                        <h3 id="facultyEntries">-</h3>
-                                        <p>Faculty Entries</p>
-                                    </div>
+                                    <h3 id="facultyEntries">-</h3>
+                                    <p>Faculty Entries</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Visitors Section -->
+        <div class="row mb-4" id="activeVisitorsSection" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-check me-2 text-success"></i>Currently Checked-In Visitors
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadActiveVisitors()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="activeVisitorsContainer">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-hourglass-start fa-3x mb-2 opacity-50"></i>
+                                <p>Loading active visitors...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitor Registration Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-id-card me-2"></i>Visitor Registration
+                        </h5>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#visitorModal">
+                            <i class="fas fa-plus me-1"></i>Register New Visitor
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="visitorListContainer">
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x mb-2 opacity-50"></i>
+                                <p>No visitors registered today</p>
                             </div>
                         </div>
                     </div>
@@ -655,6 +651,336 @@ require_once '../../config/database.php';
                 }
             };
         }
+    </script>
+
+    <!-- Visitor Registration Modal -->
+    <div class="modal fade" id="visitorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-id-card me-2"></i>Register New Visitor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visitorForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" name="middle_name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" name="contact_number" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Company/Organization</label>
+                                <input type="text" class="form-control" name="company">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Purpose of Visit <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="purpose" rows="2" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ID Type</label>
+                                <select class="form-control" name="id_provided_type">
+                                    <option value="">Select ID Type</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Driver's License">Driver's License</option>
+                                    <option value="National ID">National ID</option>
+                                    <option value="School ID">School ID</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ID Number</label>
+                                <input type="text" class="form-control" name="id_provided_number">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Visitor Photo</label>
+                                <input type="file" class="form-control" name="image" accept="image/*">
+                                <small class="text-muted">JPG, PNG, GIF (Max 5MB)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">ID Copy</label>
+                                <input type="file" class="form-control" name="id_image" accept="image/*">
+                                <small class="text-muted">JPG, PNG, GIF (Max 5MB)</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="registerVisitor()">
+                        <i class="fas fa-check me-1"></i>Register Visitor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Visitor registration handler
+        function registerVisitor() {
+            const form = document.getElementById('visitorForm');
+            const formData = new FormData(form);
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Registering...';
+
+            fetch('register_visitor.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.text().then(text => {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    // Try to extract JSON from response
+                    const match = text.match(/\{[\s\S]*\}/);
+                    if (match) {
+                        try {
+                            parsed = JSON.parse(match[0]);
+                        } catch (e2) {
+                            parsed = null;
+                        }
+                    }
+                }
+                return { ok: r.ok, parsed, text };
+            }))
+            .then(result => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check me-1"></i>Register Visitor';
+
+                if (result.parsed && result.parsed.success) {
+                    alert('Visitor registered successfully! Code: ' + result.parsed.visitor.visitor_code);
+                    form.reset();
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('visitorModal'));
+                    modal.hide();
+                    loadVisitors();
+                } else {
+                    const msg = result.parsed?.message || 'Failed to register visitor';
+                    alert('Error: ' + msg);
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check me-1"></i>Register Visitor';
+                console.error('Visitor registration error:', err);
+                alert('Network error occurred');
+            });
+        }
+
+        // Load and display visitors
+        function loadVisitors() {
+            fetch('get_visitors.php')
+            .then(r => r.json())
+            .then(data => {
+                if (data.visitors && data.visitors.length > 0) {
+                    let html = '';
+                    data.visitors.forEach(visitor => {
+                        const fullName = [visitor.first_name, visitor.middle_name, visitor.last_name].filter(Boolean).join(' ');
+                        html += `
+                            <div class="row align-items-center border-bottom py-3">
+                                <div class="col-md-2 text-center">
+                                    ${visitor.image ? `<img src="../../${visitor.image}" class="rounded-circle" width="50" height="50" style="object-fit: cover;">` : `<div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;"><i class="fas fa-user"></i></div>`}
+                                </div>
+                                <div class="col-md-4">
+                                    <div><strong>${fullName}</strong></div>
+                                    <div class="text-muted small">Code: <span class="badge bg-info">${visitor.visitor_code}</span></div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="small"><i class="fas fa-phone me-1"></i>${visitor.contact_number}</div>
+                                    <div class="text-muted small"><i class="fas fa-building me-1"></i>${visitor.company || 'N/A'}</div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button class="btn btn-sm btn-success me-2" onclick="checkInVisitor(${visitor.id})">
+                                        <i class="fas fa-sign-in-alt me-1"></i>Check In
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('visitorListContainer').innerHTML = html;
+                } else {
+                    document.getElementById('visitorListContainer').innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-2 opacity-50"></i>
+                            <p>No visitors registered today</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => {
+                console.error('Load visitors error:', err);
+            });
+        }
+
+        // Load and display active visitors
+        function loadActiveVisitors() {
+            fetch('get_active_visitors.php')
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('activeVisitorsContainer');
+                if (!container) return;
+
+                if (data.active_visitors && data.active_visitors.length > 0) {
+                    let html = '<div class="list-group">';
+                    data.active_visitors.forEach(visitor => {
+                        const fullName = [visitor.first_name, visitor.middle_name, visitor.last_name].filter(Boolean).join(' ');
+                        const checkinTime = new Date(visitor.check_in_time).toLocaleTimeString();
+                        html += `
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2 text-center">
+                                        ${visitor.image ? `<img src="../../${visitor.image}" class="rounded-circle" width="45" height="45" style="object-fit: cover;">` : `<div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;"><i class="fas fa-user"></i></div>`}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div><strong>${fullName}</strong></div>
+                                        <div class="text-muted small">${visitor.company || 'N/A'}</div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="small"><i class="fas fa-clock me-1"></i>In: ${checkinTime}</div>
+                                        <div class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i>${visitor.location}</div>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <button class="btn btn-sm btn-warning" onclick="checkOutVisitor(${visitor.id})">
+                                            <i class="fas fa-sign-out-alt me-1"></i>Check Out
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-check-circle fa-3x mb-2 opacity-50"></i>
+                            <p>No active visitors</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(err => {
+                console.error('Load active visitors error:', err);
+            });
+        }
+        function checkInVisitor(visitorId) {
+            const formData = new FormData();
+            formData.append('action', 'check_in');
+            formData.append('visitor_id', visitorId);
+            formData.append('location', 'Main Entrance');
+
+            fetch('visitor_checkin.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.text().then(text => {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    const match = text.match(/\{[\s\S]*\}/);
+                    if (match) {
+                        try {
+                            parsed = JSON.parse(match[0]);
+                        } catch (e2) {}
+                    }
+                }
+                return { ok: r.ok, parsed };
+            }))
+            .then(result => {
+                if (result.parsed && result.parsed.success) {
+                    alert('Visitor ' + result.parsed.visitor.name + ' checked in successfully!');
+                    loadVisitors();
+                    loadActiveVisitors();
+                } else {
+                    alert('Error: ' + (result.parsed?.message || 'Check-in failed'));
+                }
+            })
+            .catch(err => {
+                console.error('Check-in error:', err);
+                alert('Network error');
+            });
+        }
+
+        // Check out visitor
+        function checkOutVisitor(visitorId) {
+            if (!confirm('Check out this visitor?')) return;
+
+            const formData = new FormData();
+            formData.append('action', 'check_out');
+            formData.append('visitor_id', visitorId);
+
+            fetch('visitor_checkin.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.text().then(text => {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    const match = text.match(/\{[\s\S]*\}/);
+                    if (match) {
+                        try {
+                            parsed = JSON.parse(match[0]);
+                        } catch (e2) {}
+                    }
+                }
+                return { ok: r.ok, parsed };
+            }))
+            .then(result => {
+                if (result.parsed && result.parsed.success) {
+                    alert('Visitor checked out! Dwell time: ' + result.parsed.dwell_time);
+                    loadActiveVisitors();
+                } else {
+                    alert('Error: ' + (result.parsed?.message || 'Check-out failed'));
+                }
+            })
+            .catch(err => {
+                console.error('Check-out error:', err);
+                alert('Network error');
+            });
+        }
+
+        // Load visitors on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVisitors();
+            loadActiveVisitors();
+            // Show active visitors section
+            const section = document.getElementById('activeVisitorsSection');
+            if (section) section.style.display = 'block';
+            // Refresh visitors every 30 seconds
+            setInterval(loadVisitors, 30000);
+            // Refresh active visitors every 15 seconds
+            setInterval(loadActiveVisitors, 15000);
+        });
     </script>
 </body>
 </html>

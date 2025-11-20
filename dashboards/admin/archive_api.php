@@ -64,6 +64,15 @@ try {
                 ");
                 $stmt->execute([$userId]);
                 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("
+                    SELECT StaffID as UserID, StaffFName as FirstName, StaffMName as MiddleName, 
+                           StaffLName as LastName, Position as YearLevelOrPosition, Department, 
+                           Gender, BirthDate, image, created_at
+                    FROM staff WHERE StaffID = ?
+                ");
+                $stmt->execute([$userId]);
+                $userData = $stmt->fetch(PDO::FETCH_ASSOC);
             }
 
             if (!$userData) {
@@ -106,6 +115,8 @@ try {
                     $stmt = $scanner->conn->prepare("DELETE FROM faculty WHERE FacultyID = ?");
                 } elseif ($userType === 'security') {
                     $stmt = $scanner->conn->prepare("DELETE FROM security WHERE SecurityID = ?");
+                } elseif ($userType === 'staff') {
+                    $stmt = $scanner->conn->prepare("DELETE FROM staff WHERE StaffID = ?");
                 }
 
                 if ($stmt->execute([$userId])) {
@@ -143,7 +154,7 @@ try {
             $query = "SELECT * FROM archive WHERE 1=1";
             $params = [];
 
-            if ($typeFilter && in_array($typeFilter, ['students', 'faculty', 'security'])) {
+            if ($typeFilter && in_array($typeFilter, ['students', 'faculty', 'security', 'staff'])) {
                 $query .= " AND OriginalUserType = ?";
                 $params[] = $typeFilter;
             }
@@ -217,10 +228,31 @@ try {
                 echo json_encode(['success' => false, 'message' => 'Archived record not found']);
                 break;
             }
+            
+            // Debug: Log what we got
+            error_log("Archive record data: " . json_encode($archivedUser));
 
             // Restore to original table
-            $userType = $archivedUser['OriginalUserType'];
+            $userType = trim(strtolower($archivedUser['OriginalUserType'] ?? ''));
             $userId = $archivedUser['OriginalUserID'];
+            $result = false;
+            
+            // If userType is empty, try to infer it from the data
+            if (empty($userType)) {
+                // Check if this looks like staff data (has YearLevelOrPosition but no Section/CourseOrSchedule typical for students/faculty)
+                if (!empty($archivedUser['YearLevelOrPosition']) && empty($archivedUser['Section']) && empty($archivedUser['CourseOrSchedule'])) {
+                    $userType = 'staff';
+                } elseif (!empty($archivedUser['Section'])) {
+                    $userType = 'students';
+                } elseif (!empty($archivedUser['CourseOrSchedule']) && empty($archivedUser['Section'])) {
+                    // Could be faculty or security, check the actual value
+                    if (strpos($archivedUser['CourseOrSchedule'], ':') !== false || strpos($archivedUser['CourseOrSchedule'], '-') !== false) {
+                        $userType = 'security'; // Likely a time schedule like "6AM-6PM"
+                    } else {
+                        $userType = 'faculty';
+                    }
+                }
+            }
 
             if ($userType === 'students') {
                 $stmt = $scanner->conn->prepare("
@@ -278,6 +310,27 @@ try {
                     $archivedUser['CourseOrSchedule'],
                     $archivedUser['ImagePath']
                 ]);
+            } elseif ($userType === 'staff') {
+                $stmt = $scanner->conn->prepare("
+                    INSERT INTO staff (
+                        StaffID, StaffFName, StaffMName, StaffLName, 
+                        Gender, BirthDate, Position, Department, image
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $result = $stmt->execute([
+                    $userId,
+                    $archivedUser['FirstName'],
+                    $archivedUser['MiddleName'],
+                    $archivedUser['LastName'],
+                    $archivedUser['Gender'],
+                    $archivedUser['BirthDate'],
+                    $archivedUser['YearLevelOrPosition'],
+                    $archivedUser['Department'],
+                    $archivedUser['ImagePath']
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Invalid or missing user type: "' . $userType . '"']);
+                break;
             }
 
             if ($result) {
@@ -297,7 +350,7 @@ try {
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Failed to restore user'
+                    'message' => 'Failed to restore user: ' . ($stmt ? implode(', ', $stmt->errorInfo()) : 'Database error')
                 ]);
             }
             break;

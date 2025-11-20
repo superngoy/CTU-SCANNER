@@ -7,14 +7,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background-image: url('assets/images/logo.png');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-inline {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+            vertical-align: middle;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+
+        .hero-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 <body>
     <!-- Hero Section -->
     <div class="hero-section">
         <div class="container">
             <h1 class="hero-title">
-                <i class="fas fa-qrcode me-3"></i>
-                CTU Scanner System
+                <img src="assets/images/logo.png" alt="CTU Logo" class="logo-inline">
+                <span>CTU Scanner System</span>
             </h1>
             <p class="hero-subtitle">Advanced QR Code Access Control System</p>
             <p class="hero-description">
@@ -200,57 +242,7 @@
             });
         });
         
-        // Add particle effect on hero section (optional enhancement)
-        function createFloatingElements() {
-            const heroSection = document.querySelector('.hero-section');
-            if (!heroSection) return;
-            
-            for (let i = 0; i < 5; i++) {
-                const element = document.createElement('div');
-                element.className = 'floating-element';
-                element.style.cssText = `
-                    position: absolute;
-                    width: 4px;
-                    height: 4px;
-                    background: rgba(255, 255, 255, 0.6);
-                    border-radius: 50%;
-                    pointer-events: none;
-                    animation: float ${3 + Math.random() * 4}s linear infinite;
-                    left: ${Math.random() * 100}%;
-                    top: 100%;
-                    z-index: 1;
-                `;
-                heroSection.appendChild(element);
-            }
-        }
-        
-        // Add floating animation keyframes
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes float {
-                0% {
-                    transform: translateY(0) translateX(0);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 1;
-                }
-                90% {
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateY(-100vh) translateX(${Math.random() * 200 - 100}px);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Initialize floating elements
-        createFloatingElements();
-        
-        // Recreate floating elements periodically
-        setInterval(createFloatingElements, 3000);
+
     </script>
 </body>
 </html>

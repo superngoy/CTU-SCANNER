@@ -128,26 +128,26 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #972529;
             min-height: 100vh;
             padding: 20px;
         }
         .container {
-            background: white;
+            background: #FEFEFE;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             padding: 0;
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(45deg, #2c3e50, #3498db);
-            color: white;
+            background: #972529;
+            color: #FEFEFE;
             padding: 30px;
             text-align: center;
         }
         .generator-form {
             padding: 30px;
-            background: #f8f9fa;
+            background: #FEFEFE;
         }
         .section {
             margin: 30px;
@@ -159,7 +159,7 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             margin-top: 20px;
         }
         .qr-card {
-            background: white;
+            background: #FEFEFE;
             border: 2px solid #e9ecef;
             border-radius: 15px;
             padding: 20px;
@@ -169,7 +169,7 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
         }
         .qr-card:hover {
             transform: translateY(-5px);
-            border-color: #3498db;
+            border-color: #972529;
         }
         .qr-header h4 {
             color: #2c3e50;
@@ -177,8 +177,8 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             font-size: 1.1rem;
         }
         .id-number {
-            background: #3498db;
-            color: white;
+            background: #972529;
+            color: #FEFEFE;
             padding: 5px 15px;
             border-radius: 20px;
             font-weight: bold;
@@ -197,7 +197,7 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             color: #6c757d;
         }
         .single-qr-result {
-            background: white;
+            background: #FEFEFE;
             border-radius: 15px;
             padding: 30px;
             margin: 20px;
@@ -205,16 +205,16 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .btn-custom {
-            background: linear-gradient(45deg, #3498db, #2c3e50);
+            background: #972529;
             border: none;
-            color: white;
+            color: #FEFEFE;
             padding: 10px 20px;
             border-radius: 25px;
             transition: transform 0.2s;
         }
         .btn-custom:hover {
             transform: translateY(-2px);
-            color: white;
+            color: #FEFEFE;
         }
         .status-indicator {
             display: inline-block;

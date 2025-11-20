@@ -27,7 +27,7 @@ function getUserTypeWhereClause($userType, $tableAlias = 'e') {
     if ($userType === 'all' || empty($userType)) {
         return '';
     }
-    if ($userType === 'student' || $userType === 'faculty') {
+    if ($userType === 'student' || $userType === 'faculty' || $userType === 'staff') {
         return " AND {$tableAlias}.PersonType = '{$userType}'";
     }
     return '';
@@ -46,13 +46,14 @@ try {
                 // Fixed query to properly aggregate department data
                 $stmt = $scanner->conn->prepare("
                     SELECT 
-                        COALESCE(s.Department, f.Department) as Department,
+                        COALESCE(s.Department, f.Department, st.Department) as Department,
                         COUNT(*) as count
                     FROM entrylogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     WHERE e.Date BETWEEN ? AND ?
-                    GROUP BY COALESCE(s.Department, f.Department)
+                    GROUP BY COALESCE(s.Department, f.Department, st.Department)
                 ");
                 $stmt->execute([$startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -76,14 +77,15 @@ try {
                 // Hourly distribution by department
                 $stmt = $scanner->conn->prepare("
                     SELECT 
-                        COALESCE(s.Department, f.Department) as Department,
+                        COALESCE(s.Department, f.Department, st.Department) as Department,
                         HOUR(e.Timestamp) as Hour,
                         COUNT(*) as count
                     FROM entrylogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     WHERE e.Date BETWEEN ? AND ?
-                    GROUP BY COALESCE(s.Department, f.Department), HOUR(e.Timestamp)
+                    GROUP BY COALESCE(s.Department, f.Department, st.Department), HOUR(e.Timestamp)
                     ORDER BY Hour
                 ");
                 $stmt->execute([$startDate, $endDate]);
@@ -102,23 +104,25 @@ try {
                 $stmt = $scanner->conn->prepare("
                     SELECT 
                         'entries' as type,
-                        COALESCE(s.Department, f.Department) as Department,
+                        COALESCE(s.Department, f.Department, st.Department) as Department,
                         COUNT(*) as count
                     FROM entrylogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     WHERE e.Date BETWEEN ? AND ?
-                    GROUP BY COALESCE(s.Department, f.Department)
+                    GROUP BY COALESCE(s.Department, f.Department, st.Department)
                     UNION ALL
                     SELECT 
                         'exits' as type,
-                        COALESCE(s.Department, f.Department) as Department,
+                        COALESCE(s.Department, f.Department, st.Department) as Department,
                         COUNT(*) as count
                     FROM exitlogs ex
                     LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
                     LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
+                    LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
                     WHERE ex.Date BETWEEN ? AND ?
-                    GROUP BY COALESCE(s.Department, f.Department)
+                    GROUP BY COALESCE(s.Department, f.Department, st.Department)
                 ");
                 $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $comparisonResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -197,11 +201,17 @@ try {
                 $stmt->execute([$startDate, $endDate]);
                 $facultyEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
+                // Staff entries
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'staff'");
+                $stmt->execute([$startDate, $endDate]);
+                $staffEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+                
                 echo json_encode([
                     'total_entries' => $totalEntries,
                     'total_exits' => $totalExits,
                     'student_entries' => $studentEntries,
-                    'faculty_entries' => $facultyEntries
+                    'faculty_entries' => $facultyEntries,
+                    'staff_entries' => $staffEntries
                 ]);
             } catch (PDOException $e) {
                 error_log("Custom report error: " . $e->getMessage());
@@ -255,10 +265,11 @@ try {
                 $stmt->execute([$startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
-                $data = ['student_entries' => 0, 'faculty_entries' => 0, 'security_entries' => 0];
+                $data = ['student_entries' => 0, 'faculty_entries' => 0, 'security_entries' => 0, 'staff_entries' => 0];
                 foreach ($results as $row) {
                     $type = $row['PersonType'] === 'student' ? 'student_entries' : 
-                            ($row['PersonType'] === 'faculty' ? 'faculty_entries' : 'security_entries');
+                            ($row['PersonType'] === 'faculty' ? 'faculty_entries' : 
+                            ($row['PersonType'] === 'staff' ? 'staff_entries' : 'security_entries'));
                     $data[$type] = (int)$row['count'];
                 }
                 
@@ -646,12 +657,14 @@ try {
                         CASE 
                             WHEN e.PersonType = 'student' THEN CONCAT(s.StudentFName, ' ', s.StudentLName)
                             WHEN e.PersonType = 'faculty' THEN CONCAT(f.FacultyFName, ' ', f.FacultyLName)
+                            WHEN e.PersonType = 'staff' THEN CONCAT(st.StaffFName, ' ', st.StaffLName)
                             ELSE 'Unknown'
                         END as FullName,
                         e.PersonType
                     FROM entrylogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     " . $whereClause . "
                     ORDER BY e.Timestamp DESC
                     LIMIT " . $limit;
@@ -688,12 +701,14 @@ try {
                         CASE 
                             WHEN ex.PersonType = 'student' THEN CONCAT(s.StudentFName, ' ', s.StudentLName)
                             WHEN ex.PersonType = 'faculty' THEN CONCAT(f.FacultyFName, ' ', f.FacultyLName)
+                            WHEN ex.PersonType = 'staff' THEN CONCAT(st.StaffFName, ' ', st.StaffLName)
                             ELSE 'Unknown'
                         END as FullName,
                         ex.PersonType
                     FROM exitlogs ex
                     LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
                     LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
+                    LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
                     " . $whereClause . "
                     ORDER BY ex.Timestamp DESC
                     LIMIT " . $limit;

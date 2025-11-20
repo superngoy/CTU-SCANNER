@@ -1,0 +1,33 @@
+[20-Nov-2025 10:53:44 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[20-Nov-2025 10:53:44 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[20-Nov-2025 10:53:44 Europe/Berlin] Logging entry for 8221183 (student)
+[20-Nov-2025 10:53:44 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[20-Nov-2025 10:53:53 Europe/Berlin] Scan process - QR Data: FAC-O10, Scanner: SC001
+[20-Nov-2025 10:53:53 Europe/Berlin] QR Code not found or user inactive: FAC-O10
+[20-Nov-2025 10:54:00 Europe/Berlin] Scan process - QR Data: 8111111, Scanner: SC001
+[20-Nov-2025 10:54:00 Europe/Berlin] Person found: {"StudentID":"8111111","StudentFName":"Secret","StudentMName":"S.","StudentLName":"Secret","Gender":"Male","BirthDate":"2002-02-19","Course":"BSED","YearLvl":"4","Section":"B","Department":"COED","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8111111_1763627153.png","created_at":"2025-11-20 15:48:13","type":"student"}
+[20-Nov-2025 10:54:00 Europe/Berlin] Student not enrolled: 8111111
+[20-Nov-2025 10:54:38 Europe/Berlin] Scan process - QR Data: 8111111, Scanner: SC001
+[20-Nov-2025 10:54:38 Europe/Berlin] Person found: {"StudentID":"8111111","StudentFName":"Secret","StudentMName":"S.","StudentLName":"Secret","Gender":"Male","BirthDate":"2002-02-19","Course":"BSED","YearLvl":"4","Section":"B","Department":"COED","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8111111_1763627153.png","created_at":"2025-11-20 15:48:13","type":"student"}
+[20-Nov-2025 10:54:38 Europe/Berlin] Logging entry for 8111111 (student)
+[20-Nov-2025 10:54:38 Europe/Berlin] Entry recorded successfully for Secret S. Secret
+[20-Nov-2025 10:54:46 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[20-Nov-2025 10:54:46 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[20-Nov-2025 10:54:46 Europe/Berlin] Logging entry for 8221183 (student)
+[20-Nov-2025 10:54:46 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[20-Nov-2025 10:54:54 Europe/Berlin] Scan process - QR Data: FAC-003, Scanner: SC001
+[20-Nov-2025 10:54:54 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[20-Nov-2025 10:54:54 Europe/Berlin] Logging entry for FAC-003 (faculty)
+[20-Nov-2025 10:54:54 Europe/Berlin] Entry recorded successfully for Dr. Iris Layon Gulbe
+[20-Nov-2025 10:54:59 Europe/Berlin] Scan process - QR Data: FAC-002, Scanner: SC001
+[20-Nov-2025 10:54:59 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[20-Nov-2025 10:54:59 Europe/Berlin] Logging entry for FAC-002 (faculty)
+[20-Nov-2025 10:54:59 Europe/Berlin] Entry recorded successfully for Prof. Kenneth Roi Novabos
+[20-Nov-2025 10:55:09 Europe/Berlin] Scan process - QR Data: FAC-002, Scanner: SC002
+[20-Nov-2025 10:55:09 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[20-Nov-2025 10:55:09 Europe/Berlin] Logging exit for FAC-002 (faculty)
+[20-Nov-2025 10:55:09 Europe/Berlin] Exit recorded successfully for Prof. Kenneth Roi Novabos
+[20-Nov-2025 10:55:13 Europe/Berlin] Scan process - QR Data: FAC-003, Scanner: SC002
+[20-Nov-2025 10:55:13 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[20-Nov-2025 10:55:13 Europe/Berlin] Logging exit for FAC-003 (faculty)
+[20-Nov-2025 10:55:13 Europe/Berlin] Exit recorded successfully for Dr. Iris Layon Gulbe

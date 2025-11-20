@@ -14,9 +14,44 @@ $scanner = new CTUScanner();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #972529;
+            --secondary-color: #E5C573;
+        }
+
+        body {
+            background: #f5f6fa;
+        }
+
+        .stat-card {
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-card p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+        }
+
         .archive-card {
             transition: all 0.3s ease;
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid #972529;
         }
 
         .archive-card:hover {
@@ -29,7 +64,7 @@ $scanner = new CTUScanner();
         }
 
         .archive-card.resigned {
-            border-left-color: #ffc107;
+            border-left-color: #E5C573;
         }
 
         .archive-card.inactive {
@@ -39,42 +74,6 @@ $scanner = new CTUScanner();
         .badge-reason {
             font-size: 0.85rem;
             padding: 0.5rem 0.75rem;
-        }
-
-        .stats-card {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .stats-card.total {
-            background: linear-gradient(135deg, #8A2125 0%, #9c262b 100%);
-        }
-
-        .stats-card.students {
-            background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
-        }
-
-        .stats-card.faculty {
-            background: linear-gradient(135deg, #2980B9 0%, #3498DB 100%);
-        }
-
-        .stats-card.security {
-            background: linear-gradient(135deg, #DFBB65 0%, #e6c876 100%);
-            color: #333;
-        }
-
-        .stats-number {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .stats-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
         }
 
         .filter-section {
@@ -136,73 +135,83 @@ $scanner = new CTUScanner();
         }
 
         .badge-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #8A2125 0%, #DFBB65 100%);
             color: white !important;
         }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body style="background: #f5f6fa;">
+
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-color);">
         <div class="container-fluid">
-            <button class="navbar-brand btn btn-link" style="text-decoration: none;" onclick="window.history.back();">
-                <i class="fas fa-arrow-left me-2"></i>Back
-            </button>
-            <h4 class="text-white mb-0">Archive Management</h4>
+            <a class="navbar-brand" href="index.php">
+                <i class="fas fa-archive me-2"></i>Archive Management
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" style="color: rgba(255,255,255,0.9);">
+                    <i class="fas fa-box me-1"></i>Archived Records
+                </span>
+                <a class="nav-link" href="logout.php" style="color: rgba(255,255,255,0.9);">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
         </div>
     </nav>
 
     <div class="container-fluid py-4">
         <!-- Statistics -->
         <div class="row mb-4" id="statsContainer">
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card total">
-                    <div class="stats-number" id="totalArchived">0</div>
-                    <div class="stats-label">Total Archived</div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h3 id="totalArchived">0</h3>
+                    <p><i class="fas fa-archive me-1"></i>Total Archived</p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card students">
-                    <div class="stats-number" id="studentArchived">0</div>
-                    <div class="stats-label">Students</div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h3 id="studentArchived">0</h3>
+                    <p><i class="fas fa-graduation-cap me-1"></i>Students</p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card faculty">
-                    <div class="stats-number" id="facultyArchived">0</div>
-                    <div class="stats-label">Faculty</div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h3 id="facultyArchived">0</h3>
+                    <p><i class="fas fa-chalkboard-user me-1"></i>Faculty</p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="stats-card security">
-                    <div class="stats-number" id="securityArchived">0</div>
-                    <div class="stats-label">Security</div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h3 id="securityArchived">0</h3>
+                    <p><i class="fas fa-shield me-1"></i>Security</p>
                 </div>
             </div>
         </div>
 
         <!-- Filters -->
-        <div class="filter-section">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Filter by Type</label>
-                    <select class="form-select" id="typeFilter">
-                        <option value="">All Types</option>
-                        <option value="students">Students</option>
-                        <option value="faculty">Faculty</option>
-                        <option value="security">Security</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Filter by Reason</label>
-                    <select class="form-select" id="reasonFilter">
-                        <option value="">All Reasons</option>
-                        <option value="deleted">Deleted</option>
-                        <option value="graduated">Graduated</option>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Type</label>
+                        <select class="form-select" id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="students">Students</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="security">Security</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Reason</label>
+                        <select class="form-select" id="reasonFilter">
+                            <option value="">All Reasons</option>
+                            <option value="deleted">Deleted</option>
+                            <option value="graduated">Graduated</option>
                         <option value="resigned">Resigned</option>
                         <option value="inactive">Inactive</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Search</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
@@ -210,6 +219,7 @@ $scanner = new CTUScanner();
                         </span>
                         <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Search by name or ID...">
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -464,7 +474,8 @@ $scanner = new CTUScanner();
             const labels = {
                 'students': '<span class="badge bg-primary">Student</span>',
                 'faculty': '<span class="badge bg-info">Faculty</span>',
-                'security': '<span class="badge bg-warning">Security</span>'
+                'security': '<span class="badge bg-warning">Security</span>',
+                'staff': '<span class="badge bg-secondary">Staff</span>'
             };
             return labels[type] || type;
         }

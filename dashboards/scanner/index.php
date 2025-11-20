@@ -6,19 +6,19 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#FF9600">
+    <meta name="theme-color" content="#972529">
     <title>CTU Scanner - QR Code Scanner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-gold: #DBB356;
-            --primary-red: #E00000;
-            --primary-orange: #FF9600;
-            --gold-light: #F5D982;
-            --red-dark: #B30000;
-            --orange-light: #FFB347;
-            --scanner-glow: rgba(219, 179, 86, 0.6);
+            --primary-gold: #E5C573;
+            --primary-red: #972529;
+            --primary-orange: #a83531;
+            --gold-light: #eed490;
+            --red-dark: #7a1d21;
+            --orange-light: #b63d3f;
+            --scanner-glow: rgba(151, 37, 41, 0.6);
             --card-shadow: rgba(0, 0, 0, 0.15);
         }
 
@@ -37,7 +37,7 @@
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--primary-gold);
-    box-shadow: 0 8px 25px rgba(219, 179, 86, 0.4);
+    box-shadow: 0 8px 25px rgba(229, 197, 115, 0.4);
     animation: avatarPulse 0.6s ease-out;
 }
 
@@ -45,15 +45,15 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
-    color: white;
+    background: #972529;
+    color: #FEFEFE;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 28px;
     font-weight: bold;
     border: 4px solid var(--primary-gold);
-    box-shadow: 0 8px 25px rgba(219, 179, 86, 0.4);
+    box-shadow: 0 8px 25px rgba(229, 197, 115, 0.4);
     animation: avatarPulse 0.6s ease-out;
 }
 
@@ -74,8 +74,8 @@
 
 /* Action Badge */
 .scan-action-badge {
-    background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
-    color: white;
+    background: #E5C573;
+    color: #333;
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -84,17 +84,19 @@
     display: inline-block;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(219, 179, 86, 0.3);
+    box-shadow: 0 4px 15px rgba(229, 197, 115, 0.3);
 }
 
 .scan-action-badge.entry {
     background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
     box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
 }
 
 .scan-action-badge.exit {
-    background: linear-gradient(135deg, var(--primary-red), #dc3545);
-    box-shadow: 0 4px 15px rgba(224, 0, 0, 0.3);
+    background: #972529;
+    color: #FEFEFE;
+    box-shadow: 0 4px 15px rgba(151, 37, 41, 0.3);
 }
 
 /* Recent Scans Avatar Styles */
@@ -192,8 +194,8 @@
 }
 
 .scan-action-mini.exit {
-    background: linear-gradient(135deg, var(--primary-red), #dc3545);
-    box-shadow: 0 2px 8px rgba(224, 0, 0, 0.3);
+    background: #972529;
+    box-shadow: 0 2px 8px rgba(151, 37, 41, 0.3);
 }
 
 .scan-item-details {
@@ -458,9 +460,9 @@
             width: 100vw;
             height: 100vh;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(219, 179, 86, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(224, 0, 0, 0.02) 0%, transparent 50%),
-                radial-gradient(circle at 40% 90%, rgba(255, 150, 0, 0.025) 0%, transparent 50%);
+                radial-gradient(circle at 20% 20%, rgba(151, 37, 41, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(151, 37, 41, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(156, 38, 43, 0.025) 0%, transparent 50%);
             z-index: -2;
             pointer-events: none;
         }
@@ -492,7 +494,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 
-                0 10px 30px rgba(219, 179, 86, 0.4),
+                0 10px 30px rgba(229, 197, 115, 0.4),
                 0 0 0 4px rgba(255, 255, 255, 0.1),
                 inset 0 2px 0 rgba(255, 255, 255, 0.3);
             border: 3px solid rgba(255, 255, 255, 0.2);
@@ -547,7 +549,7 @@
             border-radius: 25px;
             box-shadow: 
                 0 30px 60px var(--card-shadow),
-                0 0 0 1px rgba(219, 179, 86, 0.1),
+                0 0 0 1px rgba(151, 37, 41, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(20px);
             flex: 1;
@@ -555,7 +557,7 @@
             flex-direction: column;
             overflow: hidden;
             min-height: 0;
-            border: 2px solid rgba(219, 179, 86, 0.2);
+            border: 2px solid rgba(151, 37, 41, 0.2);
         }
 
         .card-header {
@@ -648,7 +650,7 @@
             flex-shrink: 0;
             box-shadow: 
                 0 20px 40px var(--card-shadow),
-                inset 0 0 0 2px rgba(219, 179, 86, 0.15);
+                inset 0 0 0 2px rgba(151, 37, 41, 0.15);
         }
 
         .qr-reader video {
@@ -691,7 +693,7 @@
             left: -5px;
             border-right: none;
             border-bottom: none;
-            box-shadow: -3px -3px 15px rgba(219, 179, 86, 0.4);
+            box-shadow: -3px -3px 15px rgba(229, 197, 115, 0.4);
         }
 
         .scanner-frame::after {
@@ -699,7 +701,7 @@
             right: -5px;
             border-left: none;
             border-top: none;
-            box-shadow: 3px 3px 15px rgba(219, 179, 86, 0.4);
+            box-shadow: 3px 3px 15px rgba(229, 197, 115, 0.4);
         }
 
         /* Additional corner brackets */
@@ -715,7 +717,7 @@
             border-bottom: none;
             border-radius: 6px;
             animation: cornerPulse 2.5s ease-in-out infinite 0.6s;
-            box-shadow: 3px -3px 15px rgba(255, 150, 0, 0.4);
+            box-shadow: 3px -3px 15px rgba(156, 38, 43, 0.4);
         }
 
         .scanner-frame-extra::after {
@@ -730,7 +732,7 @@
             border-top: none;
             border-radius: 6px;
             animation: cornerPulse 2.5s ease-in-out infinite 0.6s;
-            box-shadow: -3px 3px 15px rgba(224, 0, 0, 0.4);
+            box-shadow: -3px 3px 15px rgba(138, 33, 37, 0.4);
         }
 
         @keyframes cornerPulse {
@@ -866,13 +868,13 @@
         .alert-danger {
             background: linear-gradient(135deg, var(--primary-red), #CC0000);
             color: white;
-            box-shadow: 0 10px 30px rgba(224, 0, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(138, 33, 37, 0.4);
         }
 
         .alert-warning {
             background: linear-gradient(135deg, var(--primary-orange), var(--primary-gold));
             color: white;
-            box-shadow: 0 10px 30px rgba(255, 150, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(223, 187, 101, 0.4);
         }
 
         .alert-info {
@@ -1302,11 +1304,11 @@
             left: 20px;
             right: 20px;
             max-width: 400px;
-            background: linear-gradient(135deg, rgba(224, 0, 0, 0.95), rgba(180, 0, 0, 0.95));
+            background: linear-gradient(135deg, rgba(138, 33, 37, 0.95), rgba(106, 20, 24, 0.95));
             color: white;
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 15px 40px rgba(224, 0, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(138, 33, 37, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(20px);
             z-index: 998;
@@ -1379,7 +1381,7 @@
             font-size: 0.95rem;
             color: var(--primary-orange);
             font-weight: 700;
-            background: rgba(255, 150, 0, 0.1);
+            background: rgba(156, 38, 43, 0.1);
             padding: 5px 15px;
             border-radius: 20px;
             display: inline-block;
@@ -2067,35 +2069,144 @@
                 },
                 body: `action=scan&qr_data=${encodeURIComponent(decodedText)}&scanner_id=${scannerId}`
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showScanResult(data, 'success');
-                    addToRecentScansFromBackend(data.person);
-                    loadRecentScans();
+            .then(response => {
+                // Read as text first because some hosts (e.g., free hosts) may inject HTML into responses
+                return response.text().then(text => {
+                    let parsed = null;
+                    try {
+                        parsed = JSON.parse(text);
+                    } catch (e) {
+                        // not JSON
+                    }
+                    return { ok: response.ok, status: response.status, parsed, text };
+                });
+            })
+            .then(result => {
+                // Log raw response (trimmed) for debugging on hosts that inject HTML
+                try {
+                    console.log('scan response status:', result.status);
+                    console.log('scan response text (first 2000 chars):', result.text ? result.text.substring(0, 2000) : '');
+                } catch (e) {
+                    // ignore logging errors
+                }
+
+                // If server returned JSON, respect its success flag
+                if (result.parsed) {
+                    console.log('Parsed JSON from scan_process.php:', result.parsed);
+                    const data = result.parsed;
+                    console.log('Parsed data.success:', data.success);
+                    if (data.success) {
+                        console.log('Calling showScanResult with parsed person:', data.person);
+                        showScanResult(data, 'success');
+                        addToRecentScansFromBackend(data.person);
+                        loadRecentScans();
+                    } else {
+                        console.log('Parsed response indicates failure:', data);
+                        showScanResult(data, 'error');
+                        if (window.navigator.vibrate) {
+                            window.navigator.vibrate(300);
+                        }
+                    }
+
                 } else {
-                    showScanResult(data, 'error');
-                    if (window.navigator.vibrate) {
-                        window.navigator.vibrate(300);
+                    // Try to extract JSON that may be embedded within HTML wrappers
+                    console.log('No parsed JSON; attempting to extract JSON from response text');
+                    let extractedJson = null;
+                    if (result.text) {
+                        const match = result.text.match(/\{[\s\S]*\}/);
+                        if (match && match[0]) {
+                            try {
+                                extractedJson = JSON.parse(match[0]);
+                                console.log('Extracted JSON from wrapped response:', extractedJson);
+                            } catch (e) {
+                                console.warn('Failed to parse extracted JSON block', e);
+                                extractedJson = null;
+                            }
+                        }
+                    }
+
+                    if (extractedJson) {
+                        const data = extractedJson;
+                        if (data.success) {
+                            showScanResult(data, 'success');
+                            addToRecentScansFromBackend(data.person);
+                            loadRecentScans();
+                        } else {
+                            showScanResult(data, 'error');
+                            if (window.navigator.vibrate) {
+                                window.navigator.vibrate(300);
+                            }
+                        }
+
+                    } else if (result.ok) {
+                        // If not JSON but response is 2xx, attempt to fetch recent scans (no-store) and match by scanned QR
+                        console.log('Response OK but no JSON; fetching recent scans as fallback');
+                        fetch('get_recent_scans.php', { cache: 'no-store' })
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d.scans && d.scans.length) {
+                                // Try to find a scan that matches the scanned ID (decodedText). Use first match, else use latest.
+                                const matched = d.scans.find(s => String(s.id) === String(decodedText) || s.id === decodedText);
+                                const latest = matched || d.scans[0];
+                                if (latest) {
+                                    const personObj = {
+                                        name: latest.name,
+                                        id: latest.id,
+                                        type: latest.type,
+                                        action: latest.action,
+                                        image: latest.image || null,
+                                        firstName: latest.firstName || '',
+                                        middleName: latest.middleName || '',
+                                        lastName: latest.lastName || '',
+                                        department: latest.department || null,
+                                        course: latest.course || null,
+                                        year: latest.year || null,
+                                        section: latest.section || null,
+                                        isEnroll: latest.isEnroll !== undefined ? latest.isEnroll : 1
+                                    };
+
+                                    console.log('Using fallback scan entry for popup:', latest);
+                                    showScanResult({ success: true, person: personObj }, 'success');
+                                    addToRecentScansFromBackend(personObj);
+                                    return;
+                                }
+                            }
+
+                            // Fallback generic message if no scans returned
+                            console.warn('No recent scans returned for fallback; showing generic message');
+                            showScanResult({ message: 'Scan recorded' }, 'success');
+                        })
+                        .catch(err => {
+                            console.warn('Failed to fetch recent scans for popup fallback', err);
+                            showScanResult({ message: 'Scan recorded' }, 'success');
+                        });
+
+                    } else {
+                        // Non-2xx and non-JSON -> show server text or generic error
+                        const msg = result.text ? result.text.replace(/<[^>]*>/g, '').trim() : 'Server error';
+                        showScanResult({ message: msg || 'Server error occurred' }, 'error');
+                        if (window.navigator.vibrate) {
+                            window.navigator.vibrate(300);
+                        }
                     }
                 }
-                
+
                 // Resume scanning after shorter delay
                 setTimeout(() => {
                     if (html5QrcodeScanner && isScanning) {
                         html5QrcodeScanner.resume();
                     }
-                }, 500); // Reduced from 3000ms to 500ms
+                }, 500);
             })
             .catch(error => {
                 console.error('Scan processing error:', error);
-                showScanResult({ message: 'Network error occurred' }, 'error');
-                
+                showScanResult({ message: 'Network error occurred. Check your connection.' }, 'error');
+
                 setTimeout(() => {
                     if (html5QrcodeScanner && isScanning) {
                         html5QrcodeScanner.resume();
                     }
-                }, 500); // Reduced from 3000ms to 500ms
+                }, 500);
             });
         }
 
@@ -2398,8 +2509,10 @@
 
             // Small utility to escape HTML when injecting user text
             function escapeHtml(str) {
-                if (!str) return '';
-                return str.replace(/[&<>"]+/g, function(match) {
+                if (str === null || str === undefined) return '';
+                // Coerce non-string values (numbers, booleans) to string before escaping
+                str = String(str);
+                return str.replace(/[&<>\"]+/g, function(match) {
                     switch (match) {
                         case '&': return '&amp;';
                         case '<': return '&lt;';

@@ -6,7 +6,7 @@ $userType = $_GET['type'] ?? 'students';
 $scanner = new CTUScanner();
 
 // Validate user type
-if (!in_array($userType, ['students', 'faculty', 'security'])) {
+if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
     header('Location: index.php');
     exit();
 }
@@ -21,6 +21,67 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #972529;
+            --secondary-color: #E5C573;
+        }
+
+        body {
+            background: #f5f6fa;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            padding: 1.5rem;
+        }
+
+        .card-header h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .table-responsive {
+            border-radius: 0 0 8px 8px;
+        }
+
+        #usersTable thead {
+            background: var(--secondary-color);
+            color: #333;
+        }
+
+        .stat-card {
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .stat-card p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+        }
+
         .table-actions .btn {
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
@@ -224,13 +285,38 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
         }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body style="background: #f5f6fa;">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--primary-color);">
         <div class="container-fluid">
-            <button class="navbar-brand btn btn-link" style="text-decoration: none;" onclick="window.history.back();">
-                <i class="fas fa-arrow-left me-2"></i>Back
-            </button>
-            <h4 class="text-white mb-0">Manage <?php echo ucfirst($userType); ?></h4>
+            <a class="navbar-brand" href="index.php">
+                <i class="fas fa-<?php echo $userType === 'students' ? 'user-graduate' : ($userType === 'faculty' ? 'chalkboard-teacher' : ($userType === 'security' ? 'shield-alt' : 'user-tie')); ?> me-2"></i>Manage <?php echo ucfirst($userType); ?>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" style="color: rgba(255,255,255,0.9);">
+                    <i class="fas fa-users me-1"></i><?php echo ucfirst($userType); ?> Management
+                </span>
+                <a class="nav-link" href="logout.php" style="color: rgba(255,255,255,0.9);">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Type Navigation Tabs -->
+    <nav style="background: #fff; border-bottom: 2px solid #e9ecef; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div class="container-fluid d-flex" style="overflow-x: auto; padding: 0;">
+            <a href="manage_users.php?type=students" class="nav-link" style="border-bottom: 3px solid <?php echo $userType === 'students' ? '#972529' : 'transparent'; ?>; padding: 1rem 1.5rem; color: <?php echo $userType === 'students' ? '#972529' : '#666'; ?>; text-decoration: none; font-weight: <?php echo $userType === 'students' ? '600' : '500'; ?>;">
+                <i class="fas fa-user-graduate me-2"></i>Students
+            </a>
+            <a href="manage_users.php?type=faculty" class="nav-link" style="border-bottom: 3px solid <?php echo $userType === 'faculty' ? '#972529' : 'transparent'; ?>; padding: 1rem 1.5rem; color: <?php echo $userType === 'faculty' ? '#972529' : '#666'; ?>; text-decoration: none; font-weight: <?php echo $userType === 'faculty' ? '600' : '500'; ?>;">
+                <i class="fas fa-chalkboard-teacher me-2"></i>Faculty
+            </a>
+            <a href="manage_users.php?type=security" class="nav-link" style="border-bottom: 3px solid <?php echo $userType === 'security' ? '#972529' : 'transparent'; ?>; padding: 1rem 1.5rem; color: <?php echo $userType === 'security' ? '#972529' : '#666'; ?>; text-decoration: none; font-weight: <?php echo $userType === 'security' ? '600' : '500'; ?>;">
+                <i class="fas fa-shield-alt me-2"></i>Security
+            </a>
+            <a href="manage_users.php?type=staff" class="nav-link" style="border-bottom: 3px solid <?php echo $userType === 'staff' ? '#972529' : 'transparent'; ?>; padding: 1rem 1.5rem; color: <?php echo $userType === 'staff' ? '#972529' : '#666'; ?>; text-decoration: none; font-weight: <?php echo $userType === 'staff' ? '600' : '500'; ?>;">
+                <i class="fas fa-user-tie me-2"></i>Staff
+            </a>
         </div>
     </nav>
 
@@ -240,7 +326,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-<?php echo $userType === 'students' ? 'user-graduate' : ($userType === 'faculty' ? 'chalkboard-teacher' : 'shield-alt'); ?> me-2"></i>
+                            <i class="fas fa-<?php echo $userType === 'students' ? 'user-graduate' : ($userType === 'faculty' ? 'chalkboard-teacher' : ($userType === 'security' ? 'shield-alt' : 'user-tie')); ?> me-2"></i>
                             <?php echo ucfirst($userType); ?> Management
                         </h5>
                         <div class="d-flex gap-2 align-items-center">
@@ -274,7 +360,7 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                         </div>
                         <div class="table-responsive" id="tableContainer" style="display: none;">
                             <table class="table table-striped table-hover" id="usersTable">
-                                <thead class="table-dark">
+                                <thead style="background: var(--secondary-color); color: #333;">
                                     <tr id="tableHeaders">
                                         <!-- Headers will be populated by JavaScript -->
                                     </tr>
@@ -661,6 +747,18 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     <th>Status</th>
                     <th>Actions</th>
                 `;
+            } else if (userType === 'staff') {
+                headers = `
+                    <th>Photo</th>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Gender</th>
+                    <th>Birth Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                `;
             }
             
             headersRow.innerHTML = headers;
@@ -699,6 +797,17 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     { label: 'Name (A-Z)', value: 'name_asc' },
                     { label: 'Name (Z-A)', value: 'name_desc' },
                     { label: 'Schedule (A-Z)', value: 'schedule_asc' },
+                    { label: 'Birth Date (Newest)', value: 'birthdate_desc' },
+                    { label: 'Birth Date (Oldest)', value: 'birthdate_asc' }
+                ];
+            } else if (userType === 'staff') {
+                sortOptions = [
+                    { label: 'Staff ID (A-Z)', value: 'staff_id_asc' },
+                    { label: 'Staff ID (Z-A)', value: 'staff_id_desc' },
+                    { label: 'Name (A-Z)', value: 'name_asc' },
+                    { label: 'Name (Z-A)', value: 'name_desc' },
+                    { label: 'Position (A-Z)', value: 'position_asc' },
+                    { label: 'Department (A-Z)', value: 'department_asc' },
                     { label: 'Birth Date (Newest)', value: 'birthdate_desc' },
                     { label: 'Birth Date (Oldest)', value: 'birthdate_asc' }
                 ];
@@ -827,6 +936,31 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                         case 'schedule':
                             aValue = a.TimeSched;
                             bValue = b.TimeSched;
+                            break;
+                        case 'birthdate':
+                            aValue = new Date(a.BirthDate);
+                            bValue = new Date(b.BirthDate);
+                            break;
+                        default:
+                            return 0;
+                    }
+                } else if (userType === 'staff') {
+                    switch (field) {
+                        case 'staff':
+                            aValue = a.StaffID;
+                            bValue = b.StaffID;
+                            break;
+                        case 'name':
+                            aValue = `${a.StaffFName} ${a.StaffLName}`;
+                            bValue = `${b.StaffFName} ${b.StaffLName}`;
+                            break;
+                        case 'position':
+                            aValue = a.Position;
+                            bValue = b.Position;
+                            break;
+                        case 'department':
+                            aValue = a.Department;
+                            bValue = b.Department;
                             break;
                         case 'birthdate':
                             aValue = new Date(a.BirthDate);
@@ -1064,6 +1198,70 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                         </div>
                     </div>
                 `;
+            } else if (userType === 'staff') {
+                formHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="staff_id" required>
+                                <label>Staff ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="position" required placeholder="e.g., Registrar, Librarian">
+                                <label>Position</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="COTE">COTE</option>
+                                    <option value="COED">COED</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Support">Support</option>
+                                </select>
+                                <label>Department</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="first_name" required>
+                                <label>First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="middle_name">
+                                <label>Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="last_name" required>
+                                <label>Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthdate" required>
+                                <label>Birth Date</label>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
 
             modalFormFields.innerHTML = formHTML;
@@ -1177,6 +1375,18 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                     <td>${user.Gender}</td>
                     <td>${user.BirthDate}</td>
                     <td>${user.TimeSched}</td>
+                    <td><span class="badge ${user.isActive == 1 ? 'bg-success' : 'bg-danger'}">${user.isActive == 1 ? 'Active' : 'Inactive'}</span></td>
+                `;
+            } else if (userType === 'staff') {
+                userId = user.StaffID;
+                fullName = `${user.StaffFName} ${user.StaffMName || ''} ${user.StaffLName}`.replace(/\s+/g, ' ').trim();
+                additionalCells = `
+                    <td>${user.StaffID}</td>
+                    <td>${fullName}</td>
+                    <td>${user.Position}</td>
+                    <td><span class="badge bg-${user.Department === 'Admin' ? 'warning' : (user.Department === 'Support' ? 'info' : 'primary')}">${user.Department}</span></td>
+                    <td>${user.Gender}</td>
+                    <td>${user.BirthDate}</td>
                     <td><span class="badge ${user.isActive == 1 ? 'bg-success' : 'bg-danger'}">${user.isActive == 1 ? 'Active' : 'Inactive'}</span></td>
                 `;
             }
@@ -1534,6 +1744,70 @@ if (!in_array($userType, ['students', 'faculty', 'security'])) {
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" name="password" minlength="6" placeholder="Leave empty to keep current password">
                                 <label>New Password (leave empty to keep current)</label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (userType === 'staff') {
+                formHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="staff_id" value="${userData.StaffID}" readonly style="background-color: #f8f9fa;">
+                                <label>Staff ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="position" value="${userData.Position || ''}" required placeholder="e.g., Registrar, Librarian">
+                                <label>Position</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="COTE" ${userData.Department === 'COTE' ? 'selected' : ''}>COTE</option>
+                                    <option value="COED" ${userData.Department === 'COED' ? 'selected' : ''}>COED</option>
+                                    <option value="Admin" ${userData.Department === 'Admin' ? 'selected' : ''}>Admin</option>
+                                    <option value="Support" ${userData.Department === 'Support' ? 'selected' : ''}>Support</option>
+                                </select>
+                                <label>Department</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${userData.Gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${userData.Gender === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${userData.Gender === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                                <label>Gender</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="first_name" value="${userData.StaffFName || ''}" required>
+                                <label>First Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="middle_name" value="${userData.StaffMName || ''}">
+                                <label>Middle Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="last_name" value="${userData.StaffLName || ''}" required>
+                                <label>Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthdate" value="${userData.BirthDate || ''}" required>
+                                <label>Birth Date</label>
                             </div>
                         </div>
                     </div>
