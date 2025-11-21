@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Add authentication check for admin
+if (!isset($_SESSION['admin_id']) || $_SESSION['user_type'] !== 'admin') {
+    header('Location: login.php');
+    exit();
+}
+
 require_once '../../includes/functions.php';
 
 $scanner = new CTUScanner();

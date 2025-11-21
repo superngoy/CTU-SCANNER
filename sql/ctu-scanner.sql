@@ -81,7 +81,7 @@ CREATE TABLE `archive` (
 CREATE TABLE `entrylogs` (
   `EntryID` int(11) NOT NULL,
   `PersonID` varchar(20) NOT NULL,
-  `PersonType` enum('student','faculty') NOT NULL,
+  `PersonType` enum('student','faculty','staff') NOT NULL,
   `Date` date NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `ScannerID` varchar(20) DEFAULT NULL
@@ -135,7 +135,7 @@ INSERT INTO `entrylogs` (`EntryID`, `PersonID`, `PersonType`, `Date`, `Timestamp
 CREATE TABLE `exitlogs` (
   `ExitID` int(11) NOT NULL,
   `PersonID` varchar(20) NOT NULL,
-  `PersonType` enum('student','faculty') NOT NULL,
+  `PersonType` enum('student','faculty','staff') NOT NULL,
   `Date` date NOT NULL,
   `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `ScannerID` varchar(20) DEFAULT NULL

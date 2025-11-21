@@ -1,24 +1,49 @@
 <?php
-header('Content-Type: application/json');
+session_start();
+
+// Add authentication check for admin
+if (!isset($_SESSION['admin_id']) || $_SESSION['user_type'] !== 'admin') {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized access']);
+    exit();
+}
+
+// Prevent caching - critical for real-time stats
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: ' . gmdate('D, d M Y H:i:s', time() - 3600) . ' GMT');
 require_once '../../includes/functions.php';
 
 // Helper function to get date range based on filter
 function getDateRange($dateRange) {
     $today = date('Y-m-d');
+    $now = time();
+    
     switch ($dateRange) {
         case 'today':
-            return [$today, $today];
+            // Include yesterday, today, and tomorrow to account for timezone differences
+            $yesterday = date('Y-m-d', $now - 86400);
+            $tomorrow = date('Y-m-d', $now + 86400);
+            return [$yesterday, $tomorrow];
         case 'week':
             $startOfWeek = date('Y-m-d', strtotime('monday this week'));
-            return [$startOfWeek, $today];
+            $tomorrow = date('Y-m-d', $now + 86400);
+            return [$startOfWeek, $tomorrow];
         case 'month':
             $startOfMonth = date('Y-m-01');
-            return [$startOfMonth, $today];
+            $tomorrow = date('Y-m-d', $now + 86400);
+            return [$startOfMonth, $tomorrow];
         case 'year':
             $startOfYear = date('Y-01-01');
-            return [$startOfYear, $today];
+            $tomorrow = date('Y-m-d', $now + 86400);
+            return [$startOfYear, $tomorrow];
         default:
-            return [$today, $today];
+            // For 'today', include timezone buffer
+            $yesterday = date('Y-m-d', $now - 86400);
+            $tomorrow = date('Y-m-d', $now + 86400);
+            return [$yesterday, $tomorrow];
     }
 }
 
@@ -33,6 +58,17 @@ function getUserTypeWhereClause($userType, $tableAlias = 'e') {
     return '';
 }
 
+// Helper function to build WHERE clause for department filter
+function getDepartmentWhereClause($department, $tableAlias = 'e') {
+    if ($department === 'all' || empty($department)) {
+        return '';
+    }
+    if ($department === 'COTE' || $department === 'COED') {
+        return " AND (s.Department = '{$department}' OR f.Department = '{$department}' OR st.Department = '{$department}')";
+    }
+    return '';
+}
+
 try {
     $scanner = new CTUScanner();
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -41,7 +77,13 @@ try {
         case 'department':
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
+                $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
+                
+                // Build user type filter
+                $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 // Fixed query to properly aggregate department data
                 $stmt = $scanner->conn->prepare("
@@ -52,10 +94,11 @@ try {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
-                    WHERE e.Date BETWEEN ? AND ?
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY COALESCE(s.Department, f.Department, st.Department)
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 $data = [
@@ -84,11 +127,12 @@ try {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
-                    WHERE e.Date BETWEEN ? AND ?
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY COALESCE(s.Department, f.Department, st.Department), HOUR(e.Timestamp)
                     ORDER BY Hour
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $hourlyResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($hourlyResults as $row) {
@@ -101,6 +145,8 @@ try {
                 }
 
                 // Entry/Exit comparison
+                $userTypeFilterExit = getUserTypeWhereClause($userType, 'ex');
+                $departmentFilterExit = getDepartmentWhereClause($department, 'ex');
                 $stmt = $scanner->conn->prepare("
                     SELECT 
                         'entries' as type,
@@ -110,7 +156,8 @@ try {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
-                    WHERE e.Date BETWEEN ? AND ?
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY COALESCE(s.Department, f.Department, st.Department)
                     UNION ALL
                     SELECT 
@@ -121,10 +168,11 @@ try {
                     LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
                     LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
                     LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
-                    WHERE ex.Date BETWEEN ? AND ?
+                    WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?) {$userTypeFilterExit}
+                    {$departmentFilterExit}
                     GROUP BY COALESCE(s.Department, f.Department, st.Department)
                 ");
-                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate, $startDate, $endDate, $startDate, $endDate]);
                 $comparisonResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($comparisonResults as $row) {
@@ -143,16 +191,25 @@ try {
         case 'weekly':
             try {
                 $dateRange = $_GET['dateRange'] ?? 'week';
+                $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
+                $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
+                
                 $stmt = $scanner->conn->prepare("
-                    SELECT DAYOFWEEK(Date) as day, COUNT(*) as count
-                    FROM entrylogs
-                    WHERE Date BETWEEN ? AND ?
-                    GROUP BY DAYOFWEEK(Date)
+                    SELECT DAYOFWEEK(DATE(e.Timestamp)) as day, COUNT(*) as count
+                    FROM entrylogs e
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter}
+                    {$departmentFilter}
+                    GROUP BY DAYOFWEEK(DATE(e.Timestamp))
                     ORDER BY day
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Convert to proper format
@@ -182,28 +239,28 @@ try {
             
             try {
                 // Total entries
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ?");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE (DATE(Timestamp) BETWEEN ? AND ? OR Date BETWEEN ? AND ?)");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $totalEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Total exits
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM exitlogs WHERE Date BETWEEN ? AND ?");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM exitlogs WHERE (DATE(Timestamp) BETWEEN ? AND ? OR Date BETWEEN ? AND ?)");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $totalExits = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Student entries
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'student'");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE (DATE(Timestamp) BETWEEN ? AND ? OR Date BETWEEN ? AND ?) AND PersonType = 'student'");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $studentEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Faculty entries
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'faculty'");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE (DATE(Timestamp) BETWEEN ? AND ? OR Date BETWEEN ? AND ?) AND PersonType = 'faculty'");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $facultyEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Staff entries
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE Date BETWEEN ? AND ? AND PersonType = 'staff'");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs WHERE (DATE(Timestamp) BETWEEN ? AND ? OR Date BETWEEN ? AND ?) AND PersonType = 'staff'");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $staffEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 echo json_encode([
@@ -223,17 +280,20 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
                 $userTypeFilterExit = getUserTypeWhereClause($userType, 'ex');
+                $departmentFilter = getDepartmentWhereClause($department);
+                $departmentFilterExit = getDepartmentWhereClause($department, 'ex');
                 
                 $stmt = $scanner->conn->prepare("
                     SELECT 
-                        (SELECT COUNT(*) FROM entrylogs e WHERE e.Date BETWEEN ? AND ? {$userTypeFilter}) as total_entries,
-                        (SELECT COUNT(*) FROM exitlogs ex WHERE ex.Date BETWEEN ? AND ? {$userTypeFilterExit}) as total_exits
+                        (SELECT COUNT(*) FROM entrylogs e LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student' LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty' LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff' WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter} {$departmentFilter}) as total_entries,
+                        (SELECT COUNT(*) FROM exitlogs ex LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student' LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty' LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff' WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?) {$userTypeFilterExit} {$departmentFilterExit}) as total_exits
                 ");
-                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate, $startDate, $endDate, $startDate, $endDate]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 
                 echo json_encode($result);
@@ -247,30 +307,38 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 $query = "
                     SELECT 
                         PersonType,
                         COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
                     {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY PersonType
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
-                $data = ['student_entries' => 0, 'faculty_entries' => 0, 'security_entries' => 0, 'staff_entries' => 0];
+                $data = ['student_entries' => 0, 'faculty_entries' => 0, 'staff_entries' => 0];
                 foreach ($results as $row) {
                     $type = $row['PersonType'] === 'student' ? 'student_entries' : 
                             ($row['PersonType'] === 'faculty' ? 'faculty_entries' : 
-                            ($row['PersonType'] === 'staff' ? 'staff_entries' : 'security_entries'));
-                    $data[$type] = (int)$row['count'];
+                            'staff_entries');
+                    if ($row['PersonType'] === 'student' || $row['PersonType'] === 'faculty' || $row['PersonType'] === 'staff') {
+                        $data[$type] = (int)$row['count'];
+                    }
                 }
                 
                 echo json_encode($data);
@@ -284,9 +352,11 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 $stmt = $scanner->conn->prepare("
                     SELECT 
@@ -294,12 +364,16 @@ try {
                         s.Location,
                         COUNT(*) as scan_count
                     FROM entrylogs e
+                    LEFT JOIN students st ON e.PersonID = st.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff staff ON e.PersonID = staff.StaffID AND e.PersonType = 'staff'
                     JOIN scanner s ON e.ScannerID = s.ScannerID
-                    WHERE e.Date BETWEEN ? AND ? AND s.isActive = 1 {$userTypeFilter}
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) AND s.isActive = 1 {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY s.ScannerID, s.Location
                     ORDER BY scan_count DESC
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 echo json_encode(['scanners' => $results]);
@@ -313,49 +387,58 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
                 $userTypeFilterExit = getUserTypeWhereClause($userType, 'ex');
+                $departmentFilter = getDepartmentWhereClause($department);
+                $departmentFilterExit = getDepartmentWhereClause($department, 'ex');
                 
-                // Total entries
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs e WHERE e.Date BETWEEN ? AND ? {$userTypeFilter}");
-                $stmt->execute([$startDate, $endDate]);
+                // Total entries - timezone safe
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM entrylogs e LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student' LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty' LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff' WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter} {$departmentFilter}");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $totalEntries = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Total exits
-                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM exitlogs ex WHERE ex.Date BETWEEN ? AND ? {$userTypeFilterExit}");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(*) as count FROM exitlogs ex LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student' LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty' LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff' WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?) {$userTypeFilterExit} {$departmentFilterExit}");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $totalExits = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Unique visitors
-                $stmt = $scanner->conn->prepare("SELECT COUNT(DISTINCT e.PersonID) as count FROM entrylogs e WHERE e.Date BETWEEN ? AND ? {$userTypeFilter}");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt = $scanner->conn->prepare("SELECT COUNT(DISTINCT e.PersonID) as count FROM entrylogs e LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student' LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty' LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff' WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter} {$departmentFilter}");
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $uniqueVisitors = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
                 
                 // Peak hour
                 $stmt = $scanner->conn->prepare("
                     SELECT HOUR(e.Timestamp) as hour, COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ? {$userTypeFilter}
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter} {$departmentFilter}
                     GROUP BY HOUR(e.Timestamp)
                     ORDER BY count DESC
                     LIMIT 1
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $peakHourResult = $stmt->fetch(PDO::FETCH_ASSOC);
                 $peakHour = $peakHourResult ? $peakHourResult['hour'] . ':00' : 'N/A';
                 
                 // Busiest day
                 $stmt = $scanner->conn->prepare("
-                    SELECT DAYNAME(e.Date) as day, COUNT(*) as count
+                    SELECT DAYNAME(DATE(e.Timestamp)) as day, COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ? {$userTypeFilter}
-                    GROUP BY DATE(e.Date)
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) {$userTypeFilter} {$departmentFilter}
+                    GROUP BY DATE(e.Timestamp)
                     ORDER BY count DESC
                     LIMIT 1
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $busiestDayResult = $stmt->fetch(PDO::FETCH_ASSOC);
                 $busiestDay = $busiestDayResult ? $busiestDayResult['day'] : 'N/A';
                 
@@ -363,10 +446,13 @@ try {
                 $stmt = $scanner->conn->prepare("
                     SELECT AVG(TIMESTAMPDIFF(MINUTE, e.Timestamp, ex.Timestamp)) as avg_minutes
                     FROM entrylogs e
-                    JOIN exitlogs ex ON e.PersonID = ex.PersonID AND DATE(e.Date) = DATE(ex.Date)
-                    WHERE e.Date BETWEEN ? AND ? AND TIMESTAMPDIFF(MINUTE, e.Timestamp, ex.Timestamp) > 0 {$userTypeFilter}
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    JOIN exitlogs ex ON e.PersonID = ex.PersonID AND DATE(e.Timestamp) = DATE(ex.Timestamp)
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?) AND TIMESTAMPDIFF(MINUTE, e.Timestamp, ex.Timestamp) > 0 {$userTypeFilter} {$departmentFilter}
                 ");
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $dwellResult = $stmt->fetch(PDO::FETCH_ASSOC);
                 $avgDwellTime = $dwellResult && $dwellResult['avg_minutes'] ? round($dwellResult['avg_minutes'] / 60, 1) . 'h' : '0h';
                 
@@ -388,24 +474,30 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 $query = "
                     SELECT 
-                        DATE(e.Date) as date,
+                        DATE(e.Timestamp) as date,
                         HOUR(e.Timestamp) as hour,
                         COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
                     {$userTypeFilter}
-                    GROUP BY DATE(e.Date), HOUR(e.Timestamp)
-                    ORDER BY DATE(e.Date), HOUR(e.Timestamp)
+                    {$departmentFilter}
+                    GROUP BY DATE(e.Timestamp), HOUR(e.Timestamp)
+                    ORDER BY DATE(e.Timestamp), HOUR(e.Timestamp)
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Format data grouped by date
@@ -429,6 +521,7 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
 
                 $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
@@ -437,8 +530,14 @@ try {
                     $typeFilter = " AND person_type = ? ";
                     $params[] = $userType;
                 }
+                
+                $departmentFilter = '';
+                if ($department !== 'all') {
+                    $departmentFilter = " AND person_department = ? ";
+                    $params[] = $department;
+                }
 
-                $stmt = $scanner->conn->prepare("SELECT status, COUNT(*) as cnt FROM scan_attempts WHERE scanned_at BETWEEN ? AND ? {$typeFilter} GROUP BY status");
+                $stmt = $scanner->conn->prepare("SELECT status, COUNT(*) as cnt FROM scan_attempts WHERE scanned_at BETWEEN ? AND ? {$typeFilter}{$departmentFilter} GROUP BY status");
                 $stmt->execute($params);
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -461,6 +560,7 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
 
                 $params = [$startDate . ' 00:00:00', $endDate . ' 23:59:59'];
@@ -469,9 +569,15 @@ try {
                     $typeFilter = " AND person_type = ? ";
                     $params[] = $userType;
                 }
+                
+                $departmentFilter = '';
+                if ($department !== 'all') {
+                    $departmentFilter = " AND person_department = ? ";
+                    $params[] = $department;
+                }
 
                 // Get failed attempts by reason (excluding NULL reasons which are successful scans)
-                $stmt = $scanner->conn->prepare("SELECT reason, COUNT(*) as cnt FROM scan_attempts WHERE status = 'failed' AND reason IS NOT NULL AND scanned_at BETWEEN ? AND ? {$typeFilter} GROUP BY reason ORDER BY cnt DESC");
+                $stmt = $scanner->conn->prepare("SELECT reason, COUNT(*) as cnt FROM scan_attempts WHERE status = 'failed' AND reason IS NOT NULL AND scanned_at BETWEEN ? AND ? {$typeFilter}{$departmentFilter} GROUP BY reason ORDER BY cnt DESC");
                 $stmt->execute($params);
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -512,23 +618,29 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 $query = "
                     SELECT 
                         HOUR(e.Timestamp) as hour,
                         COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
                     {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY HOUR(e.Timestamp)
                     ORDER BY HOUR(e.Timestamp)
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Convert to array of objects
@@ -551,23 +663,29 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'ex');
+                $departmentFilter = getDepartmentWhereClause($department);
                 
                 $query = "
                     SELECT 
                         HOUR(ex.Timestamp) as hour,
                         COUNT(*) as count
                     FROM exitlogs ex
-                    WHERE ex.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
+                    LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
+                    LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
+                    WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?)
                     {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY HOUR(ex.Timestamp)
                     ORDER BY HOUR(ex.Timestamp)
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Convert to array of objects
@@ -590,10 +708,13 @@ try {
             try {
                 $dateRange = $_GET['dateRange'] ?? 'today';
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
                 list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $userTypeFilter = getUserTypeWhereClause($userType, 'e');
                 $userTypeFilterExit = getUserTypeWhereClause($userType, 'ex');
+                $departmentFilter = getDepartmentWhereClause($department);
+                $departmentFilterExit = getDepartmentWhereClause($department, 'ex');
                 
                 // Get entry data
                 $query = "
@@ -602,13 +723,17 @@ try {
                         'entry' as type,
                         COUNT(*) as count
                     FROM entrylogs e
-                    WHERE e.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
+                    LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
                     {$userTypeFilter}
+                    {$departmentFilter}
                     GROUP BY HOUR(e.Timestamp)
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $entryResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Get exit data
@@ -618,13 +743,17 @@ try {
                         'exit' as type,
                         COUNT(*) as count
                     FROM exitlogs ex
-                    WHERE ex.Date BETWEEN ? AND ?
+                    LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
+                    LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
+                    LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
+                    WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?)
                     {$userTypeFilterExit}
+                    {$departmentFilterExit}
                     GROUP BY HOUR(ex.Timestamp)
                 ";
                 
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute([$startDate, $endDate]);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
                 $exitResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Merge results
@@ -642,12 +771,10 @@ try {
                 $limit = $_GET['limit'] ?? 10;
                 $limit = (int)$limit;
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
+                $dateRange = $_GET['dateRange'] ?? 'today';
                 
-                // LIMIT cannot use parameter placeholders in MySQL, must use string concatenation
-                $whereClause = '';
-                if ($userType !== 'all') {
-                    $whereClause = " WHERE e.PersonType = '" . $scanner->conn->quote($userType) . "'";
-                }
+                list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $query = "
                     SELECT 
@@ -655,9 +782,9 @@ try {
                         e.PersonType,
                         e.Timestamp,
                         CASE 
-                            WHEN e.PersonType = 'student' THEN CONCAT(s.StudentFName, ' ', s.StudentLName)
-                            WHEN e.PersonType = 'faculty' THEN CONCAT(f.FacultyFName, ' ', f.FacultyLName)
-                            WHEN e.PersonType = 'staff' THEN CONCAT(st.StaffFName, ' ', st.StaffLName)
+                            WHEN e.PersonType = 'student' THEN CONCAT(COALESCE(s.StudentFName, ''), ' ', COALESCE(s.StudentLName, ''))
+                            WHEN e.PersonType = 'faculty' THEN CONCAT(COALESCE(f.FacultyFName, ''), ' ', COALESCE(f.FacultyLName, ''))
+                            WHEN e.PersonType = 'staff' THEN CONCAT(COALESCE(st.StaffFName, ''), ' ', COALESCE(st.StaffLName, ''))
                             ELSE 'Unknown'
                         END as FullName,
                         e.PersonType
@@ -665,12 +792,27 @@ try {
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                     LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
-                    " . $whereClause . "
-                    ORDER BY e.Timestamp DESC
-                    LIMIT " . $limit;
+                    WHERE (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
+                ";
+                
+                $params = [$startDate, $endDate, $startDate, $endDate];
+                
+                if ($userType !== 'all' && !empty($userType)) {
+                    $query .= " AND e.PersonType = ?";
+                    $params[] = $userType;
+                }
+                if ($department !== 'all' && !empty($department)) {
+                    $query .= " AND (s.Department = ? OR f.Department = ? OR st.Department = ?)";
+                    $params[] = $department;
+                    $params[] = $department;
+                    $params[] = $department;
+                }
+                
+                $query .= " ORDER BY e.Timestamp DESC LIMIT ?";
+                $params[] = $limit;
                     
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute();
+                $stmt->execute($params);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 error_log("Recent entries query returned " . count($results) . " results");
@@ -686,12 +828,10 @@ try {
                 $limit = $_GET['limit'] ?? 10;
                 $limit = (int)$limit;
                 $userType = $_GET['userType'] ?? 'all';
+                $department = $_GET['department'] ?? 'all';
+                $dateRange = $_GET['dateRange'] ?? 'today';
                 
-                // LIMIT cannot use parameter placeholders in MySQL, must use string concatenation
-                $whereClause = '';
-                if ($userType !== 'all') {
-                    $whereClause = " WHERE ex.PersonType = '" . $scanner->conn->quote($userType) . "'";
-                }
+                list($startDate, $endDate) = getDateRange($dateRange);
                 
                 $query = "
                     SELECT 
@@ -699,9 +839,9 @@ try {
                         ex.PersonType,
                         ex.Timestamp,
                         CASE 
-                            WHEN ex.PersonType = 'student' THEN CONCAT(s.StudentFName, ' ', s.StudentLName)
-                            WHEN ex.PersonType = 'faculty' THEN CONCAT(f.FacultyFName, ' ', f.FacultyLName)
-                            WHEN ex.PersonType = 'staff' THEN CONCAT(st.StaffFName, ' ', st.StaffLName)
+                            WHEN ex.PersonType = 'student' THEN CONCAT(COALESCE(s.StudentFName, ''), ' ', COALESCE(s.StudentLName, ''))
+                            WHEN ex.PersonType = 'faculty' THEN CONCAT(COALESCE(f.FacultyFName, ''), ' ', COALESCE(f.FacultyLName, ''))
+                            WHEN ex.PersonType = 'staff' THEN CONCAT(COALESCE(st.StaffFName, ''), ' ', COALESCE(st.StaffLName, ''))
                             ELSE 'Unknown'
                         END as FullName,
                         ex.PersonType
@@ -709,12 +849,27 @@ try {
                     LEFT JOIN students s ON ex.PersonID = s.StudentID AND ex.PersonType = 'student'
                     LEFT JOIN faculty f ON ex.PersonID = f.FacultyID AND ex.PersonType = 'faculty'
                     LEFT JOIN staff st ON ex.PersonID = st.StaffID AND ex.PersonType = 'staff'
-                    " . $whereClause . "
-                    ORDER BY ex.Timestamp DESC
-                    LIMIT " . $limit;
+                    WHERE (DATE(ex.Timestamp) BETWEEN ? AND ? OR ex.Date BETWEEN ? AND ?)
+                ";
+                
+                $params = [$startDate, $endDate, $startDate, $endDate];
+                
+                if ($userType !== 'all' && !empty($userType)) {
+                    $query .= " AND ex.PersonType = ?";
+                    $params[] = $userType;
+                }
+                if ($department !== 'all' && !empty($department)) {
+                    $query .= " AND (s.Department = ? OR f.Department = ? OR st.Department = ?)";
+                    $params[] = $department;
+                    $params[] = $department;
+                    $params[] = $department;
+                }
+                
+                $query .= " ORDER BY ex.Timestamp DESC LIMIT ?";
+                $params[] = $limit;
                     
                 $stmt = $scanner->conn->prepare($query);
-                $stmt->execute();
+                $stmt->execute($params);
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 error_log("Recent exits query returned " . count($results) . " results");

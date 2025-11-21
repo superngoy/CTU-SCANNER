@@ -108,6 +108,7 @@ require_once '../../config/database.php';
         .stat-card.exits { border-left-color: #E5C573; }
         .stat-card.students { border-left-color: #28a745; }
         .stat-card.faculty { border-left-color: #007bff; }
+        .stat-card.staff { border-left-color: #17a2b8; }
 
         .card {
             border: none;
@@ -155,6 +156,7 @@ require_once '../../config/database.php';
             max-height: 600px;
             overflow-y: auto;
             padding-right: 5px;
+            padding: 0;
         }
         
         .activity-feed::-webkit-scrollbar {
@@ -169,6 +171,89 @@ require_once '../../config/database.php';
         .activity-feed::-webkit-scrollbar-thumb {
             background: var(--primary-color);
             border-radius: 3px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            transition: all 0.2s ease;
+            animation: none;
+        }
+
+        .activity-item:hover {
+            background: #f9f9f9;
+            border-color: #d0d0d0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .activity-item.border-success {
+            border-left: 3px solid #972529 !important;
+            border-radius: 8px;
+        }
+
+        .activity-item.border-primary {
+            border-left: 3px solid #E5C573 !important;
+            border-radius: 8px;
+        }
+
+        .activity-item.border-info {
+            border-left: 3px solid #17a2b8 !important;
+            border-radius: 8px;
+        }
+
+        .activity-user-image-container {
+            position: relative;
+            flex-shrink: 0;
+            width: 45px;
+            height: 45px;
+        }
+
+        .activity-user-image-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-user-avatar-default {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-user-avatar-default.student {
+            background: linear-gradient(135deg, #972529, #c44536);
+        }
+
+        .activity-user-avatar-default.faculty {
+            background: linear-gradient(135deg, #E5C573, #f5deba);
+            color: #333;
+        }
+
+        .activity-user-avatar-default.staff {
+            background: linear-gradient(135deg, #72a89e, #8fb5a8);
+        }
+
+        .activity-user-image-container:hover img,
+        .activity-user-avatar-default:hover {
+            transform: scale(1.05);
+            transition: transform 0.15s ease;
         }
         
         .status-indicator {
@@ -296,6 +381,54 @@ require_once '../../config/database.php';
             color: var(--secondary-color);
         }
         
+        .activity-type.staff {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .activity-user-image-container {
+            position: relative;
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+        }
+
+        .activity-user-image-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 3px 10px rgba(229, 197, 115, 0.2);
+        }
+
+        .activity-user-avatar-default {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 3px 10px rgba(229, 197, 115, 0.2);
+        }
+
+        .activity-user-avatar-default.student {
+            background: linear-gradient(135deg, #27AE60, #2ECC71);
+        }
+
+        .activity-user-avatar-default.faculty {
+            background: linear-gradient(135deg, #2980B9, #3498DB);
+        }
+
+        .activity-user-avatar-default.staff {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+        }
+        
         .container-fluid {
             max-width: 1400px;
         }
@@ -380,6 +513,12 @@ require_once '../../config/database.php';
                                 <div class="stat-card faculty">
                                     <h3 id="facultyEntries">-</h3>
                                     <p>Faculty Entries</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="stat-card staff">
+                                    <h3 id="staffEntries">-</h3>
+                                    <p>Staff Entries</p>
                                 </div>
                             </div>
                         </div>

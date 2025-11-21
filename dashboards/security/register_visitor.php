@@ -1,4 +1,14 @@
 <?php
+session_start();
+
+// Add authentication check for security
+if (!isset($_SESSION['security_id']) || $_SESSION['user_type'] !== 'security') {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit();
+}
+
 // Suppress direct error output to the browser (prevents injected warnings on free hosts)
 error_reporting(0);
 ini_set('display_errors', 0);

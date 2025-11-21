@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Add authentication check for admin
+if (!isset($_SESSION['admin_id']) || $_SESSION['user_type'] !== 'admin') {
+    header('Location: login.php');
+    exit();
+}
+
 require_once '../../includes/functions.php';
 
 // Determine the base path for assets and API calls
@@ -1239,14 +1246,19 @@ try {
                             
                             <!-- Batch Generation Options -->
                             <div class="row mb-4">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <button class="btn btn-success w-100 py-3" onclick="generateAll('students')" style="border-radius: 12px;">
                                         <i class="fas fa-user-graduate me-2"></i>Generate All Student QR Codes
                                     </button>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <button class="btn btn-info w-100 py-3" onclick="generateAll('faculty')" style="border-radius: 12px;">
                                         <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty QR Codes
+                                    </button>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button class="btn btn-warning w-100 py-3" onclick="generateAll('staff')" style="border-radius: 12px;">
+                                        <i class="fas fa-user-tie me-2"></i>Generate All Staff QR Codes
                                     </button>
                                 </div>
                             </div>
@@ -1296,7 +1308,6 @@ try {
                                                 <option value="student">Students</option>
                                                 <option value="faculty">Faculty</option>
                                                 <option value="staff">Staff</option>
-                                                <option value="security">Security</option>
                                             </select>
                                         </div>
                                         <button class="btn btn-sm btn-primary" onclick="refreshAnalytics()" title="Refresh analytics data">

@@ -1,4 +1,14 @@
 <?php
+session_start();
+
+// Add authentication check for security
+if (!isset($_SESSION['security_id']) || $_SESSION['user_type'] !== 'security') {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized access']);
+    exit();
+}
+
 header('Content-Type: application/json');
 require_once '../../config/database.php';
 

@@ -28,6 +28,13 @@ class QRCodeGenerator {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
         }
         
+        if (!$result) {
+            // Check if it's staff
+            $stmt = $this->conn->prepare("SELECT StaffID as ID, StaffFName as FName, StaffMName as MName, StaffLName as LName, 'Staff' as Type, Department FROM staff WHERE StaffID = ? AND isActive = 1");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        
         return $result;
     }
     
@@ -88,6 +95,34 @@ class QRCodeGenerator {
         echo "</div>";
         echo "</div>";
     }
+    
+    public function generateStaffQRCodes() {
+        $stmt = $this->conn->prepare("SELECT StaffID, StaffFName, StaffMName, StaffLName, Department FROM staff WHERE isActive = 1 ORDER BY StaffID");
+        $stmt->execute();
+        $staff = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo "<div class='section'>";
+        echo "<h2><i class='fas fa-user-tie'></i> Staff QR Codes</h2>";
+        echo "<div class='qr-grid'>";
+        foreach ($staff as $stf) {
+            $qrUrl = $this->generateQRCodeURL($stf['StaffID'], 150);
+            echo "<div class='qr-card'>";
+            echo "<div class='qr-header'>";
+            echo "<h4>{$stf['StaffFName']} " . ($stf['StaffMName'] ? $stf['StaffMName'][0] . '. ' : '') . "{$stf['StaffLName']}</h4>";
+            echo "<p class='id-number'>{$stf['StaffID']}</p>";
+            echo "</div>";
+            echo "<div class='qr-code'>";
+            echo "<img src='{$qrUrl}' alt='QR Code for {$stf['StaffID']}' loading='lazy'>";
+            echo "</div>";
+            echo "<div class='qr-details'>";
+            echo "<small>Department: {$stf['Department']}</small>";
+            echo "</div>";
+            echo "<button class='btn btn-sm btn-outline-primary' onclick='downloadQR(\"{$stf['StaffID']}\", \"{$stf['StaffFName']} {$stf['StaffLName']}\")'>Download</button>";
+            echo "</div>";
+        }
+        echo "</div>";
+        echo "</div>";
+    }
 }
 
 // Handle different actions
@@ -113,6 +148,21 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             'message' => 'ID not found in database'
         ]);
     }
+    exit;
+}
+
+if ($action === 'students') {
+    $generator->generateStudentQRCodes();
+    exit;
+}
+
+if ($action === 'faculty') {
+    $generator->generateFacultyQRCodes();
+    exit;
+}
+
+if ($action === 'staff') {
+    $generator->generateStaffQRCodes();
     exit;
 }
 
@@ -255,10 +305,10 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
                                     <div class="col-md-8">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="idInput" placeholder="Enter ID" required>
-                                            <label for="idInput">Enter Student ID or Faculty ID</label>
+                                            <label for="idInput">Enter Student, Faculty, or Staff ID</label>
                                         </div>
                                         <small class="text-muted">
-                                            Examples: 2024-001, FAC-001, or create your own test ID
+                                            Examples: 2024-001, FAC-001, STF-001, or create your own test ID
                                         </small>
                                     </div>
                                     <div class="col-md-4">
@@ -280,14 +330,19 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             
             <!-- Batch Generation Options -->
             <div class="row mt-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <button class="btn btn-success w-100 py-3" onclick="generateAll('students')">
                         <i class="fas fa-user-graduate me-2"></i>Generate All Student QR Codes
                     </button>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <button class="btn btn-info w-100 py-3" onclick="generateAll('faculty')">
                         <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty QR Codes
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-warning w-100 py-3" onclick="generateAll('staff')">
+                        <i class="fas fa-user-tie me-2"></i>Generate All Staff QR Codes
                     </button>
                 </div>
             </div>
@@ -419,8 +474,10 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
             // Load the appropriate generator
             if (type === 'students') {
                 loadStudentCodes();
-            } else {
+            } else if (type === 'faculty') {
                 loadFacultyCodes();
+            } else if (type === 'staff') {
+                loadStaffCodes();
             }
         }
         
@@ -443,6 +500,17 @@ if ($action === 'generate_by_id' && isset($_GET['id'])) {
                 })
                 .catch(error => {
                     document.getElementById('resultsArea').innerHTML = '<div class="alert alert-danger">Error loading faculty codes</div>';
+                });
+        }
+        
+        function loadStaffCodes() {
+            fetch('qr_generator.php?action=staff')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('resultsArea').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('resultsArea').innerHTML = '<div class="alert alert-danger">Error loading staff codes</div>';
                 });
         }
         

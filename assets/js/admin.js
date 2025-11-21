@@ -166,18 +166,18 @@ class AdminDashboard {
             this.charts.userType = new Chart(userTypeCtx, {
                 type: 'pie',
                 data: {
-                    labels: ['Students', 'Faculty', 'Security'],
+                    labels: ['Students', 'Faculty', 'Staff'],
                     datasets: [{
                         data: [0, 0, 0],
                         backgroundColor: [
                             'rgba(52, 152, 219, 0.7)',
                             'rgba(155, 89, 182, 0.7)',
-                            'rgba(26, 188, 156, 0.7)'
+                            'rgba(23, 162, 184, 0.7)'
                         ],
                         borderColor: [
                             'rgba(52, 152, 219, 1)',
                             'rgba(155, 89, 182, 1)',
-                            'rgba(26, 188, 156, 1)'
+                            'rgba(23, 162, 184, 1)'
                         ],
                         borderWidth: 2
                     }]
@@ -482,21 +482,24 @@ class AdminDashboard {
             })
             .then(data => {
                 console.log('Peak hours data received:', data);
-                if (this.charts.peakHours && data && Object.keys(data).length > 0) {
-                    const hourlyData = new Array(24).fill(0);
-                    
-                    // Aggregate data across all days
-                    Object.values(data).forEach(dayData => {
-                        Object.entries(dayData).forEach(([hour, count]) => {
-                            hourlyData[parseInt(hour)] += count;
+                if (this.charts.peakHours) {
+                    if (data && Object.keys(data).length > 0) {
+                        const hourlyData = new Array(24).fill(0);
+                        
+                        // Aggregate data across all days
+                        Object.values(data).forEach(dayData => {
+                            Object.entries(dayData).forEach(([hour, count]) => {
+                                hourlyData[parseInt(hour)] += count;
+                            });
                         });
-                    });
-                    
-                    console.log('Processed hourly data:', hourlyData);
-                    this.charts.peakHours.data.datasets[0].data = hourlyData;
+                        
+                        console.log('Processed hourly data:', hourlyData);
+                        this.charts.peakHours.data.datasets[0].data = hourlyData;
+                    } else {
+                        // Clear chart when no data
+                        this.charts.peakHours.data.datasets[0].data = new Array(24).fill(0);
+                    }
                     this.charts.peakHours.update();
-                } else {
-                    console.warn('No peak hours data available');
                 }
             })
             .catch(error => {
@@ -555,27 +558,27 @@ class AdminDashboard {
             })
             .then(data => {
                 console.log('Weekly data received:', data);
-                if (this.charts.weekly && Array.isArray(data) && data.length > 0) {
+                if (this.charts.weekly) {
                     const weeklyData = new Array(7).fill(0);
                     
-                    data.forEach(item => {
-                        const mysqlDay = parseInt(item.day);
-                        const count = parseInt(item.count);
-                        
-                        let arrayIndex;
-                        if (mysqlDay === 1) arrayIndex = 6;
-                        else arrayIndex = mysqlDay - 2;
-                        
-                        if (arrayIndex >= 0 && arrayIndex <= 6) {
-                            weeklyData[arrayIndex] = count;
-                        }
-                    });
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            const mysqlDay = parseInt(item.day);
+                            const count = parseInt(item.count);
+                            
+                            let arrayIndex;
+                            if (mysqlDay === 1) arrayIndex = 6;
+                            else arrayIndex = mysqlDay - 2;
+                            
+                            if (arrayIndex >= 0 && arrayIndex <= 6) {
+                                weeklyData[arrayIndex] = count;
+                            }
+                        });
+                    }
                     
                     console.log('Processed weekly data:', weeklyData);
                     this.charts.weekly.data.datasets[0].data = weeklyData;
                     this.charts.weekly.update();
-                } else {
-                    console.warn('No weekly data available');
                 }
             })
             .catch(error => {
@@ -626,7 +629,7 @@ class AdminDashboard {
                     const chartData = [
                         data.student_entries || 0,
                         data.faculty_entries || 0,
-                        data.security_entries || 0
+                        data.staff_entries || 0
                     ];
                     console.log('Updating user type chart with data:', chartData);
                     this.charts.userType.data.datasets[0].data = chartData;
@@ -650,15 +653,19 @@ class AdminDashboard {
             })
             .then(data => {
                 console.log('Scanner activity data received:', data);
-                if (this.charts.scanner && data.scanners && Array.isArray(data.scanners) && data.scanners.length > 0) {
-                    const labels = data.scanners.map(s => s.location || `Scanner ${s.scanner_id}`);
-                    const chartData = data.scanners.map(s => s.scan_count || 0);
-                    console.log('Updating scanner chart with data:', { labels, chartData });
-                    this.charts.scanner.data.labels = labels;
-                    this.charts.scanner.data.datasets[0].data = chartData;
+                if (this.charts.scanner) {
+                    if (data.scanners && Array.isArray(data.scanners) && data.scanners.length > 0) {
+                        const labels = data.scanners.map(s => s.location || `Scanner ${s.scanner_id}`);
+                        const chartData = data.scanners.map(s => s.scan_count || 0);
+                        console.log('Updating scanner chart with data:', { labels, chartData });
+                        this.charts.scanner.data.labels = labels;
+                        this.charts.scanner.data.datasets[0].data = chartData;
+                    } else {
+                        // Clear chart when no data
+                        this.charts.scanner.data.labels = [];
+                        this.charts.scanner.data.datasets[0].data = [];
+                    }
                     this.charts.scanner.update();
-                } else {
-                    console.warn('No scanner data available');
                 }
             })
             .catch(error => {
@@ -918,16 +925,18 @@ class AdminDashboard {
             })
             .then(data => {
                 console.log('Entry logs data received:', data);
-                if (this.charts.entryLogs && Array.isArray(data) && data.length > 0) {
+                if (this.charts.entryLogs) {
                     const entryData = new Array(24).fill(0);
                     
-                    data.forEach(item => {
-                        const hour = parseInt(item.hour);
-                        const count = parseInt(item.count);
-                        if (hour >= 0 && hour <= 23) {
-                            entryData[hour] = count;
-                        }
-                    });
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            const hour = parseInt(item.hour);
+                            const count = parseInt(item.count);
+                            if (hour >= 0 && hour <= 23) {
+                                entryData[hour] = count;
+                            }
+                        });
+                    }
                     
                     console.log('Processed entry logs data:', entryData);
                     this.charts.entryLogs.data.datasets[0].data = entryData;
@@ -951,16 +960,18 @@ class AdminDashboard {
             })
             .then(data => {
                 console.log('Exit logs data received:', data);
-                if (this.charts.exitLogs && Array.isArray(data) && data.length > 0) {
+                if (this.charts.exitLogs) {
                     const exitData = new Array(24).fill(0);
                     
-                    data.forEach(item => {
-                        const hour = parseInt(item.hour);
-                        const count = parseInt(item.count);
-                        if (hour >= 0 && hour <= 23) {
-                            exitData[hour] = count;
-                        }
-                    });
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            const hour = parseInt(item.hour);
+                            const count = parseInt(item.count);
+                            if (hour >= 0 && hour <= 23) {
+                                exitData[hour] = count;
+                            }
+                        });
+                    }
                     
                     console.log('Processed exit logs data:', exitData);
                     this.charts.exitLogs.data.datasets[0].data = exitData;
@@ -1153,6 +1164,19 @@ class AdminDashboard {
         const tbody = document.getElementById('entriesTableBody');
         if (!tbody) return;
 
+        // Check if data contains error
+        if (data && data.error) {
+            console.error('API Error in recent entries:', data.error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-danger py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error: ${data.error}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         if (!data || data.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -1173,13 +1197,32 @@ class AdminDashboard {
                 hour12: true
             });
 
-            const personType = entry.PersonType === 'student' ? 'Student' : 'Faculty';
+            let personType, typeColor, typeBgColor, typeIcon;
+            
+            if (entry.PersonType === 'student') {
+                personType = 'Student';
+                typeColor = '#27AE60';
+                typeBgColor = 'rgba(39, 174, 96, 0.1)';
+                typeIcon = 'fa-user-graduate';
+            } else if (entry.PersonType === 'faculty') {
+                personType = 'Faculty';
+                typeColor = '#2980B9';
+                typeBgColor = 'rgba(41, 128, 185, 0.1)';
+                typeIcon = 'fa-chalkboard-teacher';
+            } else if (entry.PersonType === 'staff') {
+                personType = 'Staff';
+                typeColor = '#17a2b8';
+                typeBgColor = 'rgba(23, 162, 184, 0.1)';
+                typeIcon = 'fa-user-tie';
+            } else {
+                personType = 'Other';
+                typeColor = '#7f8c8d';
+                typeBgColor = 'rgba(127, 140, 141, 0.1)';
+                typeIcon = 'fa-user';
+            }
+            
             const fullName = entry.FullName || 'Unknown';
             const personId = entry.PersonID;
-
-            const typeColor = entry.PersonType === 'student' ? '#27AE60' : '#2980B9';
-            const typeBgColor = entry.PersonType === 'student' ? 'rgba(39, 174, 96, 0.1)' : 'rgba(41, 128, 185, 0.1)';
-            const typeIcon = entry.PersonType === 'student' ? 'fa-user-graduate' : 'fa-chalkboard-teacher';
 
             return `
                 <tr style="border-bottom: 1px solid #ecf0f1; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8f9fa';" onmouseout="this.style.backgroundColor='transparent';">
@@ -1215,6 +1258,19 @@ class AdminDashboard {
         const tbody = document.getElementById('exitsTableBody');
         if (!tbody) return;
 
+        // Check if data contains error
+        if (data && data.error) {
+            console.error('API Error in recent exits:', data.error);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-danger py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error: ${data.error}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         if (!data || data.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -1235,13 +1291,32 @@ class AdminDashboard {
                 hour12: true
             });
 
-            const personType = exit.PersonType === 'student' ? 'Student' : 'Faculty';
+            let personType, typeColor, typeBgColor, typeIcon;
+            
+            if (exit.PersonType === 'student') {
+                personType = 'Student';
+                typeColor = '#27AE60';
+                typeBgColor = 'rgba(39, 174, 96, 0.1)';
+                typeIcon = 'fa-user-graduate';
+            } else if (exit.PersonType === 'faculty') {
+                personType = 'Faculty';
+                typeColor = '#2980B9';
+                typeBgColor = 'rgba(41, 128, 185, 0.1)';
+                typeIcon = 'fa-chalkboard-teacher';
+            } else if (exit.PersonType === 'staff') {
+                personType = 'Staff';
+                typeColor = '#17a2b8';
+                typeBgColor = 'rgba(23, 162, 184, 0.1)';
+                typeIcon = 'fa-user-tie';
+            } else {
+                personType = 'Other';
+                typeColor = '#7f8c8d';
+                typeBgColor = 'rgba(127, 140, 141, 0.1)';
+                typeIcon = 'fa-user';
+            }
+            
             const fullName = exit.FullName || 'Unknown';
             const personId = exit.PersonID;
-
-            const typeColor = exit.PersonType === 'student' ? '#27AE60' : '#2980B9';
-            const typeBgColor = exit.PersonType === 'student' ? 'rgba(39, 174, 96, 0.1)' : 'rgba(41, 128, 185, 0.1)';
-            const typeIcon = exit.PersonType === 'student' ? 'fa-user-graduate' : 'fa-chalkboard-teacher';
 
             return `
                 <tr style="border-bottom: 1px solid #ecf0f1; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8f9fa';" onmouseout="this.style.backgroundColor='transparent';">

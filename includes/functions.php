@@ -28,6 +28,13 @@ class CTUScanner {
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
+            if (!$result) {
+                // Check if it's staff
+                $stmt = $this->conn->prepare("SELECT *, 'staff' as type FROM staff WHERE StaffID = ? AND isActive = 1");
+                $stmt->execute([$qr_data]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
             return $result;
         } catch(PDOException $e) {
             error_log("verifyQRCode error: " . $e->getMessage());
@@ -38,7 +45,7 @@ class CTUScanner {
     // Log Entry
     public function logEntry($person_id, $person_type, $scanner_id) {
         try {
-            $stmt = $this->conn->prepare("INSERT INTO entrylogs (PersonID, PersonType, Date, ScannerID) VALUES (?, ?, CURDATE(), ?)");
+            $stmt = $this->conn->prepare("INSERT INTO entrylogs (PersonID, PersonType, Date, ScannerID) VALUES (?, ?, DATE(NOW()), ?)");
             return $stmt->execute([$person_id, $person_type, $scanner_id]);
         } catch(PDOException $e) {
             error_log("logEntry error: " . $e->getMessage());
@@ -49,7 +56,7 @@ class CTUScanner {
     // Log Exit
     public function logExit($person_id, $person_type, $scanner_id) {
         try {
-            $stmt = $this->conn->prepare("INSERT INTO exitlogs (PersonID, PersonType, Date, ScannerID) VALUES (?, ?, CURDATE(), ?)");
+            $stmt = $this->conn->prepare("INSERT INTO exitlogs (PersonID, PersonType, Date, ScannerID) VALUES (?, ?, DATE(NOW()), ?)");
             return $stmt->execute([$person_id, $person_type, $scanner_id]);
         } catch(PDOException $e) {
             error_log("logExit error: " . $e->getMessage());

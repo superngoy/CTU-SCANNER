@@ -87,7 +87,8 @@ if ($_POST['action'] === 'scan') {
             }
             
             $person_id = $person['type'] === 'student' ? $person['StudentID'] : 
-                        ($person['type'] === 'faculty' ? $person['FacultyID'] : $person['SecurityID']);
+                        ($person['type'] === 'faculty' ? $person['FacultyID'] : 
+                        ($person['type'] === 'staff' ? $person['StaffID'] : $person['SecurityID']));
             
             // Get person's profile image
             $image_path = null;
@@ -95,6 +96,8 @@ if ($_POST['action'] === 'scan') {
                 $stmt = $conn->prepare("SELECT image FROM students WHERE StudentID = ?");
             } elseif ($person['type'] === 'faculty') {
                 $stmt = $conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
+            } elseif ($person['type'] === 'staff') {
+                $stmt = $conn->prepare("SELECT image FROM staff WHERE StaffID = ?");
             } elseif ($person['type'] === 'security') {
                 $stmt = $conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
             }
@@ -128,6 +131,10 @@ if ($_POST['action'] === 'scan') {
                     $firstName = $person['FacultyFName'];
                     $middleName = $person['FacultyMName'] ?? '';
                     $lastName = $person['FacultyLName'];
+                } elseif ($person['type'] === 'staff') {
+                    $firstName = $person['StaffFName'];
+                    $middleName = $person['StaffMName'] ?? '';
+                    $lastName = $person['StaffLName'];
                 } elseif ($person['type'] === 'security') {
                     $firstName = $person['SecurityFName'];
                     $middleName = $person['SecurityMName'] ?? '';
@@ -172,6 +179,10 @@ if ($_POST['action'] === 'scan') {
                         'isEnroll' => $person['IsEnroll'] ?? 1
                     ];
                 } elseif ($person['type'] === 'faculty') {
+                    $additionalInfo = [
+                        'department' => $person['Department'] ?? 'N/A'
+                    ];
+                } elseif ($person['type'] === 'staff') {
                     $additionalInfo = [
                         'department' => $person['Department'] ?? 'N/A'
                     ];
@@ -232,6 +243,13 @@ if ($_POST['action'] === 'scan') {
             if (!$inactiveUser) {
                 // Check if it's an inactive faculty
                 $stmt = $conn->prepare("SELECT 'faculty' as type, FacultyID as id FROM faculty WHERE FacultyID = ? AND isActive = 0");
+                $stmt->execute([$qr_data]);
+                $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
+            if (!$inactiveUser) {
+                // Check if it's an inactive staff
+                $stmt = $conn->prepare("SELECT 'staff' as type, StaffID as id FROM staff WHERE StaffID = ? AND isActive = 0");
                 $stmt->execute([$qr_data]);
                 $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
             }

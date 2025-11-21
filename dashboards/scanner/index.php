@@ -2263,6 +2263,13 @@
                             <div class="scan-info-value">${escapeHtml(data.person.department) || 'N/A'}</div>
                         </div>
                     `;
+                } else if (data.person.type === 'Staff') {
+                    additionalInfoHtml = `
+                        <div class="scan-person-additional">
+                            <div class="scan-info-label"><i class="fas fa-building"></i> department</div>
+                            <div class="scan-info-value">${escapeHtml(data.person.department) || 'N/A'}</div>
+                        </div>
+                    `;
                 }
                 
                 resultDiv.innerHTML = `

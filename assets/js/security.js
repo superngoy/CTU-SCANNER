@@ -63,6 +63,7 @@ class SecurityDashboard {
             this.updateElement('todayExits', data.total_exits || 0);
             this.updateElement('studentEntries', data.student_entries || 0);
             this.updateElement('facultyEntries', data.faculty_entries || 0);
+            this.updateElement('staffEntries', data.staff_entries || 0);
             
             this.retryCount = 0; // Reset retry count on success
         })
@@ -73,6 +74,8 @@ class SecurityDashboard {
     }
 
     refreshEntries() {
+        const container = document.getElementById('recentEntries');
+        
         fetch('realtime_data.php?action=entries', {
             method: 'GET',
             credentials: 'same-origin',
@@ -93,7 +96,6 @@ class SecurityDashboard {
                 throw new Error(data.error);
             }
             
-            const container = document.getElementById('recentEntries');
             if (!container) {
                 throw new Error('Recent entries container not found');
             }
@@ -106,7 +108,7 @@ class SecurityDashboard {
                     container.appendChild(item);
                 });
             } else {
-                container.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>No recent entries</div>';
+                container.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2"></i><div>No recent entries</div></div>';
             }
         })
         .catch(error => {
@@ -116,6 +118,8 @@ class SecurityDashboard {
     }
 
     refreshExits() {
+        const container = document.getElementById('recentExits');
+        
         fetch('realtime_data.php?action=exits', {
             method: 'GET',
             credentials: 'same-origin',
@@ -149,7 +153,7 @@ class SecurityDashboard {
                     container.appendChild(item);
                 });
             } else {
-                container.innerHTML = '<div class="text-center text-muted py-3"><i class="fas fa-info-circle me-2"></i>No recent exits</div>';
+                container.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2"></i><div>No recent exits</div></div>';
             }
         })
         .catch(error => {
@@ -160,49 +164,92 @@ class SecurityDashboard {
 
     createActivityItem(data, type) {
         const item = document.createElement('div');
-        item.className = 'activity-item fade-in mb-2 p-3 border rounded';
         
-        // Handle both student and faculty data with fallbacks
-        const firstName = data.StudentFName || data.FacultyFName || 'Unknown';
-        const lastName = data.StudentLName || data.FacultyLName || 'User';
-        const name = `${firstName} ${lastName}`;
+        // Handle student, faculty, and staff data with fallbacks
+        const firstName = data.StudentFName || 'Unknown';
+        const lastName = data.StudentLName || '';
+        const name = `${firstName} ${lastName}`.trim();
         const avatar = this.getInitials(name);
         
-        // Format timestamp
+        // Format timestamp - just time
         let time = 'Unknown time';
         if (data.Timestamp || data.timestamp || data.Time) {
             const timestamp = data.Timestamp || data.timestamp || data.Time;
             try {
-                time = new Date(timestamp).toLocaleTimeString();
+                const dateObj = new Date(timestamp);
+                time = dateObj.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
             } catch (e) {
                 console.warn('Invalid timestamp:', timestamp);
-                time = timestamp; // Use as-is if parsing fails
+                time = timestamp;
             }
         }
         
-        const bgColor = type === 'entry' ? '#27ae60' : '#f39c12';
-        const personId = data.PersonID || data.person_id || data.StudentID || data.FacultyID || 'N/A';
+        const personId = data.PersonID || data.person_id || data.StudentID || data.FacultyID || data.StaffID || 'N/A';
         const category = data.PersonCategory || data.person_category || 'Unknown';
         
+        // Determine styling based on category
+        let avatarClass = 'activity-user-avatar-default ' + category;
+        let borderColor = category === 'student' ? 'border-success' : 
+                         category === 'faculty' ? 'border-primary' : 'border-info';
+        
+        let profileImageHtml = '';
+        
+        // Handle image display
+        if (data.image && data.image.trim()) {
+            const escapedImage = this.escapeHtml(data.image);
+            profileImageHtml = `<img src="${escapedImage}" alt="${this.escapeHtml(name)}" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="${avatarClass}" style="display:none;">${avatar}</div>`;
+        } else {
+            profileImageHtml = `<div class="${avatarClass}">${avatar}</div>`;
+        }
+        
+        item.className = `activity-item ${borderColor}`;
+        
+        // Get user type display name
+        const userTypeDisplay = category.charAt(0).toUpperCase() + category.slice(1);
+        const userTypeBadgeColor = category === 'student' ? '#972529' : 
+                                   category === 'faculty' ? '#E5C573' : '#72a89e';
+        const userTypeTextColor = category === 'faculty' ? '#333' : '#fff';
+        
         item.innerHTML = `
-            <div class="d-flex align-items-center">
-                <div class="activity-avatar rounded-circle d-flex align-items-center justify-content-center me-3" 
-                     style="background-color: ${bgColor}; width: 40px; height: 40px; color: white; font-weight: bold;">
-                    ${avatar}
-                </div>
-                <div class="activity-details flex-grow-1">
-                    <h6 class="mb-0">${name}</h6>
-                    <small class="text-muted">${personId} - ${category}</small>
-                </div>
-                <div class="activity-time text-end">
-                    <small class="text-muted">
-                        <i class="fas fa-clock me-1"></i>${time}
-                    </small>
+            <div class="activity-user-image-container">
+                ${profileImageHtml}
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 0.95rem; font-weight: 500; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${this.escapeHtml(name)}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+                            <span style="font-size: 0.75rem; padding: 2px 8px; background-color: ${userTypeBadgeColor}; color: ${userTypeTextColor}; border-radius: 12px; font-weight: 500;">
+                                ${userTypeDisplay}
+                            </span>
+                            <span style="font-size: 0.75rem; color: #999;">
+                                ${this.escapeHtml(personId)}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #666; white-space: nowrap; text-align: right;">
+                        ${time}
+                    </div>
                 </div>
             </div>
         `;
         
         return item;
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     updateElement(elementId, value) {
@@ -401,7 +448,7 @@ class SecurityDashboard {
         const today = new Date().toISOString().split('T')[0];
         
         // Load entry logs
-        fetch(`../admin/analytics.php?action=entry_logs_hourly&dateRange=today`, {
+        fetch(`realtime_data.php?action=entry_logs_hourly&dateRange=today`, {
             method: 'GET',
             credentials: 'same-origin'
         })
@@ -423,7 +470,7 @@ class SecurityDashboard {
         .catch(error => console.error('Error loading entry logs:', error));
 
         // Load exit logs
-        fetch(`../admin/analytics.php?action=exit_logs_hourly&dateRange=today`, {
+        fetch(`realtime_data.php?action=exit_logs_hourly&dateRange=today`, {
             method: 'GET',
             credentials: 'same-origin'
         })
@@ -445,7 +492,7 @@ class SecurityDashboard {
         .catch(error => console.error('Error loading exit logs:', error));
 
         // Load entry/exit hourly comparison
-        fetch(`../admin/analytics.php?action=entry_exit_hourly&dateRange=today`, {
+        fetch(`realtime_data.php?action=entry_exit_hourly&dateRange=today`, {
             method: 'GET',
             credentials: 'same-origin'
         })

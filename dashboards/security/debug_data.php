@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Add authentication check for security
+if (!isset($_SESSION['security_id']) || $_SESSION['user_type'] !== 'security') {
+    header('Location: login.php');
+    exit();
+}
+
 // Save this as dashboards/security/debug_data.php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

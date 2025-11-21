@@ -28,6 +28,13 @@ class QRCodeGenerator {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
         }
         
+        if (!$result) {
+            // Check if it's staff
+            $stmt = $this->conn->prepare("SELECT StaffID as ID, StaffFName as FName, StaffMName as MName, StaffLName as LName, 'Staff' as Type, Department FROM staff WHERE StaffID = ? AND isActive = 1");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        
         return $result;
     }
     
@@ -119,6 +126,50 @@ class QRCodeGenerator {
         
         echo "</div>";
     }
+    
+    public function generateStaffQRCodes() {
+        $stmt = $this->conn->prepare("SELECT StaffID, StaffFName, StaffMName, StaffLName, Department FROM staff WHERE isActive = 1 ORDER BY StaffID LIMIT 50");
+        $stmt->execute();
+        $staff = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo "<div class='section'>";
+        echo "<div class='d-flex justify-content-between align-items-center mb-4'>";
+        echo "<h4><i class='fas fa-user-tie me-2'></i>Staff QR Codes</h4>";
+        echo "<button class='btn btn-primary' onclick='printQRCodes()'><i class='fas fa-print me-1'></i>Print All</button>";
+        echo "</div>";
+        echo "<div class='qr-grid'>";
+        
+        foreach ($staff as $stf) {
+            $qrUrl = $this->generateQRCodeURL($stf['StaffID'], 150);
+            echo "<div class='qr-card'>";
+            echo "<div class='qr-header'>";
+            echo "<h5>{$stf['StaffFName']} " . ($stf['StaffMName'] ? $stf['StaffMName'][0] . '. ' : '') . "{$stf['StaffLName']}</h5>";
+            echo "<p class='id-number'>{$stf['StaffID']}</p>";
+            echo "</div>";
+            echo "<div class='qr-code'>";
+            echo "<img src='{$qrUrl}' alt='QR Code for {$stf['StaffID']}' loading='lazy'>";
+            echo "</div>";
+            echo "<div class='qr-details'>";
+            echo "<small class='text-warning'><strong>Staff Member</strong></small><br>";
+            echo "<small class='text-muted'>Department: {$stf['Department']}</small>";
+            echo "</div>";
+            echo "<div class='mt-2'>";
+            echo "<button class='btn btn-sm btn-primary me-1' onclick='downloadQR(\"{$stf['StaffID']}\", \"{$stf['StaffFName']} {$stf['StaffLName']}\")'>Download</button>";
+            echo "<button class='btn btn-sm btn-success' onclick='testScanner(\"{$stf['StaffID']}\")'>Test</button>";
+            echo "</div>";
+            echo "</div>";
+        }
+        echo "</div>";
+        
+        if (count($staff) >= 50) {
+            echo "<div class='alert alert-info mt-3'>";
+            echo "<i class='fas fa-info-circle me-2'></i>";
+            echo "Showing first 50 staff members. Use search or filters for more specific results.";
+            echo "</div>";
+        }
+        
+        echo "</div>";
+    }
 }
 
 // Handle different actions
@@ -154,6 +205,11 @@ if ($action === 'students') {
 
 if ($action === 'faculty') {
     $generator->generateFacultyQRCodes();
+    exit;
+}
+
+if ($action === 'staff') {
+    $generator->generateStaffQRCodes();
     exit;
 }
 

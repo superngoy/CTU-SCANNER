@@ -31,3 +31,103 @@
 [20-Nov-2025 10:55:13 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
 [20-Nov-2025 10:55:13 Europe/Berlin] Logging exit for FAC-003 (faculty)
 [20-Nov-2025 10:55:13 Europe/Berlin] Exit recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 04:11:52 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:11:52 Europe/Berlin] QR Code not found or user inactive: STF-002
+[21-Nov-2025 04:17:31 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:17:31 Europe/Berlin] Person found: {"StaffID":"STF-002","StaffFName":"Liza","StaffMName":"S.","StaffLName":"Sobirano","Gender":"Female","BirthDate":"2025-11-05","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-002_1763641107.png","created_at":"2025-11-20 20:19:41","updated_at":"2025-11-20 20:19:41","type":"staff"}
+[21-Nov-2025 04:17:31 Europe/Berlin] Logging entry for STF-002 (staff)
+[21-Nov-2025 04:17:31 Europe/Berlin] Entry recorded successfully for Liza S. Sobirano
+[21-Nov-2025 04:22:55 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:22:55 Europe/Berlin] Person found: {"StaffID":"STF-002","StaffFName":"Liza","StaffMName":"S.","StaffLName":"Sobirano","Gender":"Female","BirthDate":"2025-11-05","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-002_1763641107.png","created_at":"2025-11-20 20:19:41","updated_at":"2025-11-20 20:19:41","type":"staff"}
+[21-Nov-2025 04:22:55 Europe/Berlin] Logging entry for STF-002 (staff)
+[21-Nov-2025 04:22:55 Europe/Berlin] Entry recorded successfully for Liza S. Sobirano
+[21-Nov-2025 04:23:55 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 04:23:55 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 04:23:55 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 04:23:55 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 04:26:07 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:26:07 Europe/Berlin] Person found: {"StaffID":"STF-002","StaffFName":"Liza","StaffMName":"S.","StaffLName":"Sobirano","Gender":"Female","BirthDate":"2025-11-05","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-002_1763641107.png","created_at":"2025-11-20 20:19:41","updated_at":"2025-11-20 20:19:41","type":"staff"}
+[21-Nov-2025 04:26:07 Europe/Berlin] Logging entry for STF-002 (staff)
+[21-Nov-2025 04:26:07 Europe/Berlin] Entry recorded successfully for Liza S. Sobirano
+[21-Nov-2025 04:30:42 Europe/Berlin] Scan process - QR Data: STF-001, Scanner: SC001
+[21-Nov-2025 04:30:42 Europe/Berlin] Person found: {"StaffID":"STF-001","StaffFName":"Secret","StaffMName":"S.","StaffLName":"Secret","Gender":"Female","BirthDate":"2025-11-13","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-001_1763695757.jpg","created_at":"2025-11-21 11:29:17","updated_at":"2025-11-21 11:29:17","type":"staff"}
+[21-Nov-2025 04:30:42 Europe/Berlin] Logging entry for STF-001 (staff)
+[21-Nov-2025 04:30:42 Europe/Berlin] Entry recorded successfully for Secret S. Secret
+[21-Nov-2025 04:35:56 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:35:56 Europe/Berlin] Person found: {"StaffID":"STF-002","StaffFName":"Liza","StaffMName":"S.","StaffLName":"Sobirano","Gender":"Female","BirthDate":"2025-11-05","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-002_1763641107.png","created_at":"2025-11-20 20:19:41","updated_at":"2025-11-20 20:19:41","type":"staff"}
+[21-Nov-2025 04:35:56 Europe/Berlin] Logging entry for STF-002 (staff)
+[21-Nov-2025 04:35:56 Europe/Berlin] Entry recorded successfully for Liza S. Sobirano
+[21-Nov-2025 04:40:41 Europe/Berlin] Scan process - QR Data: STF-002, Scanner: SC001
+[21-Nov-2025 04:40:41 Europe/Berlin] Person found: {"StaffID":"STF-002","StaffFName":"Liza","StaffMName":"S.","StaffLName":"Sobirano","Gender":"Female","BirthDate":"2025-11-05","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-002_1763641107.png","created_at":"2025-11-20 20:19:41","updated_at":"2025-11-20 20:19:41","type":"staff"}
+[21-Nov-2025 04:40:41 Europe/Berlin] Logging entry for STF-002 (staff)
+[21-Nov-2025 04:40:41 Europe/Berlin] Entry recorded successfully for Liza S. Sobirano
+[21-Nov-2025 04:41:02 Europe/Berlin] Scan process - QR Data: STF-001, Scanner: SC001
+[21-Nov-2025 04:41:02 Europe/Berlin] Person found: {"StaffID":"STF-001","StaffFName":"Secret","StaffMName":"S.","StaffLName":"Secret","Gender":"Female","BirthDate":"2025-11-13","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-001_1763695757.jpg","created_at":"2025-11-21 11:29:17","updated_at":"2025-11-21 11:29:17","type":"staff"}
+[21-Nov-2025 04:41:02 Europe/Berlin] Logging entry for STF-001 (staff)
+[21-Nov-2025 04:41:02 Europe/Berlin] Entry recorded successfully for Secret S. Secret
+[21-Nov-2025 04:41:21 Europe/Berlin] Scan process - QR Data: STF-001, Scanner: SC002
+[21-Nov-2025 04:41:21 Europe/Berlin] Person found: {"StaffID":"STF-001","StaffFName":"Secret","StaffMName":"S.","StaffLName":"Secret","Gender":"Female","BirthDate":"2025-11-13","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-001_1763695757.jpg","created_at":"2025-11-21 11:29:17","updated_at":"2025-11-21 11:29:17","type":"staff"}
+[21-Nov-2025 04:41:21 Europe/Berlin] Logging exit for STF-001 (staff)
+[21-Nov-2025 04:41:21 Europe/Berlin] Exit recorded successfully for Secret S. Secret
+[21-Nov-2025 04:55:51 Europe/Berlin] Scan process - QR Data: STF-001, Scanner: SC002
+[21-Nov-2025 04:55:51 Europe/Berlin] Person found: {"StaffID":"STF-001","StaffFName":"Secret","StaffMName":"S.","StaffLName":"Secret","Gender":"Female","BirthDate":"2025-11-13","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-001_1763695757.jpg","created_at":"2025-11-21 11:29:17","updated_at":"2025-11-21 11:29:17","type":"staff"}
+[21-Nov-2025 04:55:51 Europe/Berlin] Logging exit for STF-001 (staff)
+[21-Nov-2025 04:55:51 Europe/Berlin] Exit recorded successfully for Secret S. Secret
+[21-Nov-2025 04:56:28 Europe/Berlin] Scan process - QR Data: STF-001, Scanner: SC001
+[21-Nov-2025 04:56:28 Europe/Berlin] Person found: {"StaffID":"STF-001","StaffFName":"Secret","StaffMName":"S.","StaffLName":"Secret","Gender":"Female","BirthDate":"2025-11-13","Position":"Secret","Department":"Support","isActive":"1","image":"uploads\/staff\/STF-001_1763695757.jpg","created_at":"2025-11-21 11:29:17","updated_at":"2025-11-21 11:29:17","type":"staff"}
+[21-Nov-2025 04:56:28 Europe/Berlin] Logging entry for STF-001 (staff)
+[21-Nov-2025 04:56:28 Europe/Berlin] Entry recorded successfully for Secret S. Secret
+[21-Nov-2025 04:59:42 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 04:59:42 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 04:59:42 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 04:59:42 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 05:31:20 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:31:20 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:31:20 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:32:06 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:32:06 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:32:06 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:37:46 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:37:46 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:37:46 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:41:33 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:41:33 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:41:33 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:43:32 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:43:32 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:43:32 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:43:59 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:43:59 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:43:59 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:46:42 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:46:42 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:46:42 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:47:16 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:47:16 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:47:16 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 05:49:54 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 05:49:54 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 05:49:54 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 06:12:49 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 06:12:49 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 06:12:49 Europe/Berlin] Student not enrolled: 8221183
+[21-Nov-2025 06:13:06 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 06:13:06 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 06:13:06 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 06:13:06 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 06:13:45 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 06:13:45 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 06:13:45 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 06:13:45 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 06:19:17 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 06:19:17 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 06:19:17 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 06:19:17 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 06:53:24 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 06:53:24 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 06:53:24 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 06:53:24 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 08:29:45 Europe/Berlin] Scan process - QR Data: 8221183, Scanner: SC001
+[21-Nov-2025 08:29:45 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 08:29:45 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 08:29:45 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan

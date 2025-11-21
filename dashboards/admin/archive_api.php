@@ -1,4 +1,14 @@
 <?php
+session_start();
+
+// Add authentication check for admin
+if (!isset($_SESSION['admin_id']) || $_SESSION['user_type'] !== 'admin') {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['error' => 'Unauthorized access']);
+    exit();
+}
+
 header('Content-Type: application/json');
 require_once '../../includes/functions.php';
 require_once '../../includes/image_upload_helper.php';
