@@ -1143,11 +1143,11 @@ try {
                     <a href="#qr-generator" class="quick-action-btn" data-section="qr-generator">
                         <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
-                                <i class="fas fa-qrcode" style="font-size: 24px; color: var(--primary-color);"></i>
+                                <i class="fas fa-barcode" style="font-size: 24px; color: var(--primary-color);"></i>
                             </div>
                             <div class="ms-3">
-                                <h6 class="mb-0">Generate QR</h6>
-                                <small class="text-muted">Create QR codes</small>
+                                <h6 class="mb-0">Generate Barcode</h6>
+                                <small class="text-muted">Create Code 39 barcodes</small>
                             </div>
                         </div>
                     </a>
@@ -1201,7 +1201,7 @@ try {
                     <div class="enhanced-card fade-in-up">
                         <div class="card-header p-3">
                             <h5 class="mb-0">
-                                <i class="fas fa-qrcode me-2"></i>QR Code Generator & Management
+                                <i class="fas fa-barcode me-2"></i>Code 39 Barcode Generator & Management
                             </h5>
                         </div>
                         <div class="card-body p-3">
@@ -1211,7 +1211,7 @@ try {
                                     <div class="enhanced-card" style="border: 2px solid var(--primary-color) !important;">
                                         <div class="card-header bg-light p-3">
                                             <h6 class="mb-0">
-                                                <i class="fas fa-magic me-2"></i>Quick QR Generator
+                                                <i class="fas fa-magic me-2"></i>Quick Barcode Generator
                                             </h6>
                                         </div>
                                         <div class="card-body p-3">
@@ -1228,7 +1228,7 @@ try {
                                                     </div>
                                                     <div class="col-md-4">
                                                         <button type="submit" class="btn btn-primary w-100 py-3">
-                                                            <i class="fas fa-qrcode me-2"></i>Generate QR
+                                                            <i class="fas fa-barcode me-2"></i>Generate Barcode
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1248,24 +1248,24 @@ try {
                             <div class="row mb-4">
                                 <div class="col-md-4 mb-3">
                                     <button class="btn btn-success w-100 py-3" onclick="generateAll('students')" style="border-radius: 12px;">
-                                        <i class="fas fa-user-graduate me-2"></i>Generate All Student QR Codes
+                                        <i class="fas fa-user-graduate me-2"></i>Generate All Student Barcodes
                                     </button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <button class="btn btn-info w-100 py-3" onclick="generateAll('faculty')" style="border-radius: 12px;">
-                                        <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty QR Codes
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>Generate All Faculty Barcodes
                                     </button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <button class="btn btn-warning w-100 py-3" onclick="generateAll('staff')" style="border-radius: 12px;">
-                                        <i class="fas fa-user-tie me-2"></i>Generate All Staff QR Codes
+                                        <i class="fas fa-user-tie me-2"></i>Generate All Staff Barcodes
                                     </button>
                                 </div>
                             </div>
                             
-                            <!-- QR Results Area -->
+                            <!-- Barcode Results Area -->
                             <div id="qrResultsArea">
-                                <!-- Generated QR codes will appear here -->
+                                <!-- Generated barcodes will appear here -->
                             </div>
                         </div>
                     </div>
@@ -1421,6 +1421,26 @@ try {
                             </div>
                             <div class="card-body d-flex justify-content-center" style="height: 350px;">
                                 <canvas id="scannerChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Distribution Row -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card enhanced-card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Students by Course Distribution</h5>
+                            </div>
+                            <div class="card-body" style="height: 450px;">
+                                <div id="courseDistributionContainer">
+                                    <div class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2144,7 +2164,7 @@ try {
             resultDiv.innerHTML = `
                 <div class="text-center p-4">
                     <div class="spinner-border text-primary mb-3"></div>
-                    <p class="mb-0">Generating QR code...</p>
+                    <p class="mb-0">Generating barcode...</p>
                 </div>
             `;
             resultDiv.style.display = 'block';
@@ -2152,7 +2172,7 @@ try {
             
             // Simulate API call
             setTimeout(() => {
-                fetch(getAPIPath('qr_generator_api.php?action=generate_by_id&id=' + encodeURIComponent(id)))
+                fetch(getAPIPath('barcode_generator_api.php?action=generate_by_id&id=' + encodeURIComponent(id)))
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -2168,7 +2188,7 @@ try {
                                                     </div>
                                                     <div>
                                                         <h6 class="mb-0">${person.FName} ${person.MName ? person.MName + ' ' : ''}${person.LName}</h6>
-                                                        <small class="text-muted">QR Code Generated</small>
+                                                        <small class="text-muted">Code 39 Barcode Generated</small>
                                                     </div>
                                                 </div>
                                                 
@@ -2195,7 +2215,7 @@ try {
                                             </div>
                                             <div class="col-md-6 text-center">
                                                 <div class="qr-container" style="background: var(--primary-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
-                                                    <img src="${data.qr_url}" alt="QR Code" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
+                                                    <img src="${data.barcode_url}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
                                                 </div>
                                                 <p class="mt-2 small text-muted">
                                                     <i class="fas fa-mobile-alt me-1"></i>Scan with CTU Scanner
@@ -2205,7 +2225,7 @@ try {
                                     </div>
                                 </div>
                             `;
-                            showNotification('QR Code generated successfully!', 'success');
+                            showNotification('Code 39 Barcode generated successfully!', 'success');
                         } else {
                             resultDiv.innerHTML = `
                                 <div class="enhanced-card border-warning" style="border-width: 2px !important;">
@@ -2223,7 +2243,7 @@ try {
                                         <div class="alert alert-info border-0 p-3" style="background: rgba(13, 202, 240, 0.1);">
                                             <p class="mb-2 small"><strong>Testing Mode:</strong> Generate QR for testing purposes.</p>
                                             <button class="btn btn-warning btn-sm" onclick="generateTestQR('${id}')">
-                                                <i class="fas fa-vial me-1"></i>Generate Test QR
+                                                <i class="fas fa-vial me-1"></i>Generate Test Barcode
                                             </button>
                                         </div>
                                     </div>
@@ -2241,13 +2261,13 @@ try {
                                         </div>
                                         <div>
                                             <h6 class="mb-0">Error</h6>
-                                            <p class="mb-0 small">Error generating QR code: ${error.message}</p>
+                                            <p class="mb-0 small">Error generating barcode: ${error.message}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         `;
-                        showNotification('Error generating QR code', 'error');
+                        showNotification('Error generating barcode', 'error');
                     });
             }, 800);
         }
@@ -2266,7 +2286,7 @@ try {
                                         <i class="fas fa-vial"></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">Test QR Code</h6>
+                                        <h6 class="mb-0">Test Code 39 Barcode</h6>
                                         <small class="text-muted">Generated for testing</small>
                                     </div>
                                 </div>
@@ -2294,17 +2314,17 @@ try {
                             </div>
                             <div class="col-md-6 text-center">
                                 <div class="qr-container" style="background: var(--warning-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
-                                    <img src="${qrUrl}" alt="QR Code" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
+                                    <img src="${barcodeUrl}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
                                 </div>
                                 <p class="mt-2 small text-muted">
-                                    <i class="fas fa-flask me-1"></i>Test QR Code
+                                    <i class="fas fa-flask me-1"></i>Test Code 39 Barcode
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            showNotification('Test QR Code generated!', 'warning');
+            showNotification('Test Code 39 Barcode generated!', 'warning');
         }
         
         function generateAll(type) {
@@ -2312,18 +2332,18 @@ try {
             resultsArea.innerHTML = `
                 <div class="text-center p-4">
                     <div class="spinner-border text-primary mb-3" style="width: 2rem; height: 2rem;"></div>
-                    <h6>Loading all ${type} QR codes...</h6>
+                    <h6>Loading all ${type} barcodes...</h6>
                     <p class="text-muted small">This may take a moment</p>
                 </div>
             `;
             
             setTimeout(() => {
-                fetch(getAPIPath('qr_generator_api.php?action=' + type))
+                fetch(getAPIPath('barcode_generator_api.php?action=' + type))
                     .then(response => response.text())
                     .then(html => {
                         resultsArea.innerHTML = html;
                         resultsArea.classList.add('fade-in-up');
-                        showNotification(`${type} QR codes loaded successfully!`, 'success');
+                        showNotification(`${type} barcodes loaded successfully!`, 'success');
                     })
                     .catch(error => {
                         resultsArea.innerHTML = `
@@ -2345,7 +2365,7 @@ try {
         function downloadQR(id, name) {
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(id)}`;
             
-            showNotification('Downloading QR code...', 'info');
+            showNotification('Downloading barcode...', 'info');
             
             fetch(qrUrl)
                 .then(response => response.blob())
@@ -2358,11 +2378,11 @@ try {
                     link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
-                    showNotification('QR code downloaded successfully!', 'success');
+                    showNotification('Barcode downloaded successfully!', 'success');
                 })
                 .catch(error => {
                     console.error('Download failed:', error);
-                    showNotification('Download failed. Right-click the QR code to save manually.', 'error');
+                    showNotification('Download failed. Right-click the barcode to save manually.', 'error');
                 });
         }
         
@@ -2371,13 +2391,13 @@ try {
             
             if (navigator.share) {
                 navigator.share({
-                    title: `QR Code for ${id}`,
-                    text: `QR Code for ID: ${id}`,
+                    title: `Code 39 Barcode for ${id}`,
+                    text: `Code 39 Barcode for ID: ${id}`,
                     url: qrUrl
                 });
             } else {
                 navigator.clipboard.writeText(qrUrl).then(() => {
-                    showNotification('QR code URL copied to clipboard!', 'success');
+                    showNotification('Barcode URL copied to clipboard!', 'success');
                 });
             }
         }

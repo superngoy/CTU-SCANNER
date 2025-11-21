@@ -808,8 +808,7 @@ try {
                     $params[] = $department;
                 }
                 
-                $query .= " ORDER BY e.Timestamp DESC LIMIT ?";
-                $params[] = $limit;
+                $query .= " ORDER BY e.Timestamp DESC LIMIT " . intval($limit);
                     
                 $stmt = $scanner->conn->prepare($query);
                 $stmt->execute($params);
@@ -865,8 +864,7 @@ try {
                     $params[] = $department;
                 }
                 
-                $query .= " ORDER BY ex.Timestamp DESC LIMIT ?";
-                $params[] = $limit;
+                $query .= " ORDER BY ex.Timestamp DESC LIMIT " . intval($limit);
                     
                 $stmt = $scanner->conn->prepare($query);
                 $stmt->execute($params);
@@ -876,6 +874,65 @@ try {
                 echo json_encode($results);
             } catch (PDOException $e) {
                 error_log("Recent exits error: " . $e->getMessage());
+                echo json_encode(['error' => $e->getMessage()]);
+            }
+            break;
+            
+        case 'course_distribution':
+            try {
+                $dateRange = $_GET['dateRange'] ?? 'today';
+                $userType = $_GET['userType'] ?? 'all';
+                
+                list($startDate, $endDate) = getDateRange($dateRange);
+                
+                $query = "
+                    SELECT 
+                        s.Course,
+                        COUNT(DISTINCT s.StudentID) as student_count,
+                        COUNT(CASE WHEN e.EntryID IS NOT NULL THEN 1 END) as entry_count,
+                        COUNT(DISTINCT e.PersonID) as unique_entries
+                    FROM students s
+                    LEFT JOIN entrylogs e ON s.StudentID = e.PersonID 
+                        AND e.PersonType = 'student' 
+                        AND (DATE(e.Timestamp) BETWEEN ? AND ? OR e.Date BETWEEN ? AND ?)
+                    WHERE s.isActive = 1
+                    GROUP BY s.Course
+                    ORDER BY student_count DESC
+                ";
+                
+                $stmt = $scanner->conn->prepare($query);
+                $stmt->execute([$startDate, $endDate, $startDate, $endDate]);
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                // Format results
+                $data = [
+                    'courses' => [],
+                    'totalStudents' => 0,
+                    'totalEntries' => 0
+                ];
+                
+                foreach ($results as $row) {
+                    $data['courses'][] = [
+                        'course' => $row['Course'],
+                        'studentCount' => (int)$row['student_count'],
+                        'entryCount' => (int)$row['entry_count'],
+                        'uniqueEntries' => (int)$row['unique_entries'],
+                        'percentage' => 0 // Will be calculated client-side
+                    ];
+                    $data['totalStudents'] += (int)$row['student_count'];
+                    $data['totalEntries'] += (int)$row['entry_count'];
+                }
+                
+                // Calculate percentages
+                foreach ($data['courses'] as &$course) {
+                    if ($data['totalStudents'] > 0) {
+                        $course['percentage'] = round(($course['studentCount'] / $data['totalStudents']) * 100, 2);
+                    }
+                }
+                
+                echo json_encode($data);
+            } catch (PDOException $e) {
+                error_log("Course distribution error: " . $e->getMessage());
                 echo json_encode(['error' => $e->getMessage()]);
             }
             break;

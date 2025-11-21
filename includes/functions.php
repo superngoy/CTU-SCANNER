@@ -13,25 +13,25 @@ class CTUScanner {
         }
     }
     
-    // Verify QR Code and get person info
-    public function verifyQRCode($qr_data) {
+    // Verify Barcode/QR Code and get person info
+    public function verifyQRCode($barcode_data) {
         try {
             // Check if it's a student
             $stmt = $this->conn->prepare("SELECT *, 'student' as type FROM students WHERE StudentID = ? AND isActive = 1");
-            $stmt->execute([$qr_data]);
+            $stmt->execute([$barcode_data]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$result) {
                 // Check if it's faculty
                 $stmt = $this->conn->prepare("SELECT *, 'faculty' as type FROM faculty WHERE FacultyID = ? AND isActive = 1");
-                $stmt->execute([$qr_data]);
+                $stmt->execute([$barcode_data]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
             if (!$result) {
                 // Check if it's staff
                 $stmt = $this->conn->prepare("SELECT *, 'staff' as type FROM staff WHERE StaffID = ? AND isActive = 1");
-                $stmt->execute([$qr_data]);
+                $stmt->execute([$barcode_data]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             

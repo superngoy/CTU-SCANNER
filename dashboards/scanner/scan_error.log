@@ -131,3 +131,168 @@
 [21-Nov-2025 08:29:45 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
 [21-Nov-2025 08:29:45 Europe/Berlin] Logging entry for 8221183 (student)
 [21-Nov-2025 08:29:45 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 09:18:58 Europe/Berlin] Scan process - QR Data: 8221182, Scanner: SC001
+[21-Nov-2025 09:18:58 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 09:18:58 Europe/Berlin] Logging entry for 8221182 (student)
+[21-Nov-2025 09:18:58 Europe/Berlin] Entry recorded successfully for Angelica Joy Coyoca
+[21-Nov-2025 09:28:52 Europe/Berlin] Scan process - QR Data: 8221182, Scanner: SC001
+[21-Nov-2025 09:28:52 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 09:28:52 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:21:30 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:21:30 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:21:30 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:21:30 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:21:31 Europe/Berlin] Scan process - Barcode Data: 82211, Scanner: SC001
+[21-Nov-2025 14:21:31 Europe/Berlin] Barcode not found or user inactive: 82211
+[21-Nov-2025 14:22:21 Europe/Berlin] Scan process - Barcode Data: B221183, Scanner: SC001
+[21-Nov-2025 14:22:21 Europe/Berlin] Barcode not found or user inactive: B221183
+[21-Nov-2025 14:22:26 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:22:26 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:22:26 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:22:26 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:23:15 Europe/Berlin] Scan process - Barcode Data: L220469, Scanner: SC001
+[21-Nov-2025 14:23:15 Europe/Berlin] Barcode not found or user inactive: L220469
+[21-Nov-2025 14:23:20 Europe/Berlin] Scan process - Barcode Data: B220469, Scanner: SC001
+[21-Nov-2025 14:23:20 Europe/Berlin] Barcode not found or user inactive: B220469
+[21-Nov-2025 14:23:36 Europe/Berlin] Scan process - Barcode Data: 8220469, Scanner: SC001
+[21-Nov-2025 14:23:36 Europe/Berlin] Person found: {"StudentID":"8220469","StudentFName":"Siara Lee","StudentMName":"Sericon","StudentLName":"Conde","Gender":"Female","BirthDate":"1885-07-23","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-09-20 08:38:31","type":"student"}
+[21-Nov-2025 14:23:36 Europe/Berlin] Logging entry for 8220469 (student)
+[21-Nov-2025 14:23:36 Europe/Berlin] Entry recorded successfully for Siara Lee Sericon Conde
+[21-Nov-2025 14:23:45 Europe/Berlin] Scan process - Barcode Data: 822081, Scanner: SC001
+[21-Nov-2025 14:23:45 Europe/Berlin] Barcode not found or user inactive: 822081
+[21-Nov-2025 14:25:29 Europe/Berlin] Scan process - Barcode Data: 822183, Scanner: SC001
+[21-Nov-2025 14:25:29 Europe/Berlin] Barcode not found or user inactive: 822183
+[21-Nov-2025 14:25:30 Europe/Berlin] Scan process - Barcode Data: VF1., Scanner: SC001
+[21-Nov-2025 14:25:30 Europe/Berlin] Barcode not found or user inactive: VF1.
+[21-Nov-2025 14:25:33 Europe/Berlin] Scan process - Barcode Data: 822183, Scanner: SC001
+[21-Nov-2025 14:25:33 Europe/Berlin] Barcode not found or user inactive: 822183
+[21-Nov-2025 14:25:34 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:25:34 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:25:34 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:25:34 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:25:35 Europe/Berlin] Scan process - Barcode Data: 822183, Scanner: SC001
+[21-Nov-2025 14:25:35 Europe/Berlin] Barcode not found or user inactive: 822183
+[21-Nov-2025 14:26:09 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:26:09 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:26:09 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:26:10 Europe/Berlin] Scan process - Barcode Data: 822182, Scanner: SC001
+[21-Nov-2025 14:26:10 Europe/Berlin] Barcode not found or user inactive: 822182
+[21-Nov-2025 14:26:11 Europe/Berlin] Scan process - Barcode Data: 822182, Scanner: SC001
+[21-Nov-2025 14:26:11 Europe/Berlin] Barcode not found or user inactive: 822182
+[21-Nov-2025 14:26:12 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:26:12 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:26:12 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:26:13 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:26:13 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:26:13 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:26:14 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:26:14 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:26:14 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:26:15 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:26:15 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:26:15 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:27:29 Europe/Berlin] Scan process - Barcode Data: FAC-002, Scanner: SC001
+[21-Nov-2025 14:27:29 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[21-Nov-2025 14:27:29 Europe/Berlin] Logging entry for FAC-002 (faculty)
+[21-Nov-2025 14:27:29 Europe/Berlin] Entry recorded successfully for Prof. Kenneth Roi Novabos
+[21-Nov-2025 14:27:30 Europe/Berlin] Scan process - Barcode Data: FAC-002, Scanner: SC001
+[21-Nov-2025 14:27:30 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[21-Nov-2025 14:27:30 Europe/Berlin] Logging entry for FAC-002 (faculty)
+[21-Nov-2025 14:27:30 Europe/Berlin] Entry recorded successfully for Prof. Kenneth Roi Novabos
+[21-Nov-2025 14:28:30 Europe/Berlin] Scan process - Barcode Data: F1C-002, Scanner: SC001
+[21-Nov-2025 14:28:30 Europe/Berlin] Barcode not found or user inactive: F1C-002
+[21-Nov-2025 14:29:13 Europe/Berlin] Scan process - Barcode Data: FBC-003, Scanner: SC001
+[21-Nov-2025 14:29:13 Europe/Berlin] Barcode not found or user inactive: FBC-003
+[21-Nov-2025 14:29:17 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC001
+[21-Nov-2025 14:29:17 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:29:17 Europe/Berlin] Logging entry for FAC-003 (faculty)
+[21-Nov-2025 14:29:17 Europe/Berlin] Entry recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:30:09 Europe/Berlin] Scan process - Barcode Data: F1C-003, Scanner: SC001
+[21-Nov-2025 14:30:09 Europe/Berlin] Barcode not found or user inactive: F1C-003
+[21-Nov-2025 14:30:14 Europe/Berlin] Scan process - Barcode Data: 177003, Scanner: SC001
+[21-Nov-2025 14:30:14 Europe/Berlin] Barcode not found or user inactive: 177003
+[21-Nov-2025 14:30:15 Europe/Berlin] Scan process - Barcode Data: 077003, Scanner: SC001
+[21-Nov-2025 14:30:15 Europe/Berlin] Barcode not found or user inactive: 077003
+[21-Nov-2025 14:30:17 Europe/Berlin] Scan process - Barcode Data: F1C-003, Scanner: SC001
+[21-Nov-2025 14:30:17 Europe/Berlin] Barcode not found or user inactive: F1C-003
+[21-Nov-2025 14:30:18 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC001
+[21-Nov-2025 14:30:18 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:30:18 Europe/Berlin] Logging entry for FAC-003 (faculty)
+[21-Nov-2025 14:30:18 Europe/Berlin] Entry recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:30:20 Europe/Berlin] Scan process - Barcode Data: 277003, Scanner: SC001
+[21-Nov-2025 14:30:20 Europe/Berlin] Barcode not found or user inactive: 277003
+[21-Nov-2025 14:30:22 Europe/Berlin] Scan process - Barcode Data: 277003, Scanner: SC001
+[21-Nov-2025 14:30:22 Europe/Berlin] Barcode not found or user inactive: 277003
+[21-Nov-2025 14:30:23 Europe/Berlin] Scan process - Barcode Data: 277003, Scanner: SC001
+[21-Nov-2025 14:30:23 Europe/Berlin] Barcode not found or user inactive: 277003
+[21-Nov-2025 14:30:25 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC001
+[21-Nov-2025 14:30:25 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:30:25 Europe/Berlin] Logging entry for FAC-003 (faculty)
+[21-Nov-2025 14:30:25 Europe/Berlin] Entry recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:30:27 Europe/Berlin] Scan process - Barcode Data: TBC-003, Scanner: SC001
+[21-Nov-2025 14:30:27 Europe/Berlin] Barcode not found or user inactive: TBC-003
+[21-Nov-2025 14:30:46 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC002
+[21-Nov-2025 14:30:46 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:30:46 Europe/Berlin] Logging exit for FAC-003 (faculty)
+[21-Nov-2025 14:30:46 Europe/Berlin] Exit recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:30:47 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC002
+[21-Nov-2025 14:30:47 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:30:47 Europe/Berlin] Logging exit for FAC-003 (faculty)
+[21-Nov-2025 14:30:47 Europe/Berlin] Exit recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:36:20 Europe/Berlin] Scan process - Barcode Data: FAC-002, Scanner: SC002
+[21-Nov-2025 14:36:20 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[21-Nov-2025 14:36:20 Europe/Berlin] Logging exit for FAC-002 (faculty)
+[21-Nov-2025 14:36:20 Europe/Berlin] Exit recorded successfully for Prof. Kenneth Roi Novabos
+[21-Nov-2025 14:36:42 Europe/Berlin] Scan process - Barcode Data: FAC-002, Scanner: SC001
+[21-Nov-2025 14:36:42 Europe/Berlin] Person found: {"FacultyID":"FAC-002","FacultyFName":"Prof. Kenneth Roi","FacultyMName":"","FacultyLName":"Novabos","Gender":"Male","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 09:39:52","type":"faculty"}
+[21-Nov-2025 14:36:42 Europe/Berlin] Logging entry for FAC-002 (faculty)
+[21-Nov-2025 14:36:42 Europe/Berlin] Entry recorded successfully for Prof. Kenneth Roi Novabos
+[21-Nov-2025 14:36:47 Europe/Berlin] Scan process - Barcode Data: FAC-003, Scanner: SC001
+[21-Nov-2025 14:36:47 Europe/Berlin] Person found: {"FacultyID":"FAC-003","FacultyFName":"Dr. Iris","FacultyMName":"Layon","FacultyLName":"Gulbe","Gender":"Female","Birthdate":"1975-11-30","Department":"COTE","isActive":"1","image":null,"created_at":"2025-08-30 17:54:09","type":"faculty"}
+[21-Nov-2025 14:36:47 Europe/Berlin] Logging entry for FAC-003 (faculty)
+[21-Nov-2025 14:36:47 Europe/Berlin] Entry recorded successfully for Dr. Iris Layon Gulbe
+[21-Nov-2025 14:37:57 Europe/Berlin] Scan process - Barcode Data: 8220469, Scanner: SC001
+[21-Nov-2025 14:37:57 Europe/Berlin] Person found: {"StudentID":"8220469","StudentFName":"Siara Lee","StudentMName":"Sericon","StudentLName":"Conde","Gender":"Female","BirthDate":"1885-07-23","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-09-20 08:38:31","type":"student"}
+[21-Nov-2025 14:37:58 Europe/Berlin] Logging entry for 8220469 (student)
+[21-Nov-2025 14:37:58 Europe/Berlin] Entry recorded successfully for Siara Lee Sericon Conde
+[21-Nov-2025 14:38:15 Europe/Berlin] Scan process - Barcode Data: 8220811, Scanner: SC001
+[21-Nov-2025 14:38:15 Europe/Berlin] Person found: {"StudentID":"8220811","StudentFName":"Reil","StudentMName":"","StudentLName":"Canete","Gender":"Male","BirthDate":"2003-10-02","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-09-20 08:41:26","type":"student"}
+[21-Nov-2025 14:38:15 Europe/Berlin] Logging entry for 8220811 (student)
+[21-Nov-2025 14:38:15 Europe/Berlin] Entry recorded successfully for Reil Canete
+[21-Nov-2025 14:38:28 Europe/Berlin] Scan process - Barcode Data: 8221882, Scanner: SC001
+[21-Nov-2025 14:38:28 Europe/Berlin] Barcode not found or user inactive: 8221882
+[21-Nov-2025 14:39:00 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:39:00 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:39:00 Europe/Berlin] Student not enrolled: 8221182
+[21-Nov-2025 14:39:06 Europe/Berlin] Scan process - Barcode Data: 8220811, Scanner: SC001
+[21-Nov-2025 14:39:06 Europe/Berlin] Person found: {"StudentID":"8220811","StudentFName":"Reil","StudentMName":"","StudentLName":"Canete","Gender":"Male","BirthDate":"2003-10-02","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-09-20 08:41:26","type":"student"}
+[21-Nov-2025 14:39:06 Europe/Berlin] Logging entry for 8220811 (student)
+[21-Nov-2025 14:39:06 Europe/Berlin] Entry recorded successfully for Reil Canete
+[21-Nov-2025 14:39:39 Europe/Berlin] Scan process - Barcode Data: 8221182, Scanner: SC001
+[21-Nov-2025 14:39:39 Europe/Berlin] Person found: {"StudentID":"8221182","StudentFName":"Angelica Joy","StudentMName":"","StudentLName":"Coyoca","Gender":"Female","BirthDate":"2004-01-04","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":null,"created_at":"2025-08-30 07:12:50","type":"student"}
+[21-Nov-2025 14:39:39 Europe/Berlin] Logging entry for 8221182 (student)
+[21-Nov-2025 14:39:39 Europe/Berlin] Entry recorded successfully for Angelica Joy Coyoca
+[21-Nov-2025 14:40:23 Europe/Berlin] Scan process - Barcode Data: 8921783, Scanner: SC001
+[21-Nov-2025 14:40:23 Europe/Berlin] Barcode not found or user inactive: 8921783
+[21-Nov-2025 14:40:30 Europe/Berlin] Scan process - Barcode Data: 8221113, Scanner: SC001
+[21-Nov-2025 14:40:30 Europe/Berlin] Barcode not found or user inactive: 8221113
+[21-Nov-2025 14:40:36 Europe/Berlin] Scan process - Barcode Data: 822183, Scanner: SC001
+[21-Nov-2025 14:40:36 Europe/Berlin] Barcode not found or user inactive: 822183
+[21-Nov-2025 14:40:39 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:40:39 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:40:39 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:40:39 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:40:46 Europe/Berlin] Scan process - Barcode Data: 822113, Scanner: SC001
+[21-Nov-2025 14:40:46 Europe/Berlin] Barcode not found or user inactive: 822113
+[21-Nov-2025 14:40:58 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:40:58 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:40:58 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:40:58 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:41:00 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:41:00 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:41:00 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:41:00 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan
+[21-Nov-2025 14:41:12 Europe/Berlin] Scan process - Barcode Data: 8221183, Scanner: SC001
+[21-Nov-2025 14:41:12 Europe/Berlin] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1763556870.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[21-Nov-2025 14:41:13 Europe/Berlin] Logging entry for 8221183 (student)
+[21-Nov-2025 14:41:13 Europe/Berlin] Entry recorded successfully for Deonan Leo D. Baslan

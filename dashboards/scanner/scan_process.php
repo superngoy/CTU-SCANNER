@@ -22,10 +22,10 @@ function send_json($arr) {
 
 if ($_POST['action'] === 'scan') {
     $scanner = new CTUScanner();
-    $qr_data = $_POST['qr_data'] ?? '';
+    $barcode_data = $_POST['barcode_data'] ?? $_POST['qr_data'] ?? ''; // Support both barcode and legacy qr_data
     $scanner_id = $_POST['scanner_id'] ?? '';
     
-    error_log("Scan process - QR Data: $qr_data, Scanner: $scanner_id");
+    error_log("Scan process - Barcode Data: $barcode_data, Scanner: $scanner_id");
     
     try {
         // Get database connection early - we'll need it for logging
@@ -40,8 +40,8 @@ if ($_POST['action'] === 'scan') {
             throw new Exception('Cannot find database connection method');
         }
         
-        // Verify QR Code
-        $person = $scanner->verifyQRCode($qr_data);
+        // Verify Barcode
+        $person = $scanner->verifyQRCode($barcode_data);
         
         if ($person) {
             error_log("Person found: " . json_encode($person));
@@ -63,7 +63,7 @@ if ($_POST['action'] === 'scan') {
                     VALUES (NOW(), ?, ?, 'student', ?, ?, 'failed', 'not_enrolled', ?)
                 ");
                 $stmtAttempts->execute([
-                    $qr_data,
+                    $barcode_data,
                     $person_id,
                     $scanner_id,
                     $scanner_info['Location'] ?? 'Unknown',
@@ -159,7 +159,7 @@ if ($_POST['action'] === 'scan') {
                     VALUES (NOW(), ?, ?, ?, ?, ?, 'success', NULL, ?, ?)
                 ");
                 $stmtAttempts->execute([
-                    $qr_data,
+                    $barcode_data,
                     $person_id,
                     $person['type'],
                     $scanner_id,
@@ -213,7 +213,7 @@ if ($_POST['action'] === 'scan') {
                     VALUES (NOW(), ?, ?, ?, ?, ?, 'failed', 'log_failed', ?)
                 ");
                 $stmtAttempts->execute([
-                    $qr_data,
+                    $barcode_data,
                     $person_id,
                     $person['type'],
                     $scanner_id,
@@ -224,7 +224,7 @@ if ($_POST['action'] === 'scan') {
                 send_json(['success' => false, 'message' => 'Failed to record ' . strtolower($action)]);
             }
         } else {
-            error_log("QR Code not found or user inactive: $qr_data");
+            error_log("Barcode not found or user inactive: $barcode_data");
             
             // Get scanner location for logging
             $stmt = $conn->prepare("SELECT Location FROM scanner WHERE ScannerID = ?");
@@ -237,27 +237,27 @@ if ($_POST['action'] === 'scan') {
             
             // Check if it's an inactive student
             $stmt = $conn->prepare("SELECT 'student' as type, StudentID as id FROM students WHERE StudentID = ? AND isActive = 0");
-            $stmt->execute([$qr_data]);
+            $stmt->execute([$barcode_data]);
             $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$inactiveUser) {
                 // Check if it's an inactive faculty
                 $stmt = $conn->prepare("SELECT 'faculty' as type, FacultyID as id FROM faculty WHERE FacultyID = ? AND isActive = 0");
-                $stmt->execute([$qr_data]);
+                $stmt->execute([$barcode_data]);
                 $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
             if (!$inactiveUser) {
                 // Check if it's an inactive staff
                 $stmt = $conn->prepare("SELECT 'staff' as type, StaffID as id FROM staff WHERE StaffID = ? AND isActive = 0");
-                $stmt->execute([$qr_data]);
+                $stmt->execute([$barcode_data]);
                 $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
             if (!$inactiveUser) {
                 // Check if it's an inactive security
                 $stmt = $conn->prepare("SELECT 'security' as type, SecurityID as id FROM security WHERE SecurityID = ? AND isActive = 0");
-                $stmt->execute([$qr_data]);
+                $stmt->execute([$barcode_data]);
                 $inactiveUser = $stmt->fetch(PDO::FETCH_ASSOC);
             }
             
@@ -275,7 +275,7 @@ if ($_POST['action'] === 'scan') {
                     VALUES (NOW(), ?, ?, ?, ?, ?, 'failed', ?, ?)
                 ");
                 $stmtAttempts->execute([
-                    $qr_data,
+                    $barcode_data,
                     $log_person_id,
                     $log_person_type,
                     $scanner_id,
@@ -289,7 +289,7 @@ if ($_POST['action'] === 'scan') {
                     VALUES (NOW(), ?, ?, ?, 'failed', ?, ?)
                 ");
                 $stmtAttempts->execute([
-                    $qr_data,
+                    $barcode_data,
                     $scanner_id,
                     $scanner_info['Location'] ?? 'Unknown',
                     $reason,
@@ -299,7 +299,7 @@ if ($_POST['action'] === 'scan') {
             
             send_json([
                 'success' => false,
-                'message' => $reason === 'inactive' ? 'Account is inactive' : 'Invalid QR Code',
+                'message' => $reason === 'inactive' ? 'Account is inactive' : 'Invalid Barcode',
                 'reason' => $reason
             ]);
         }

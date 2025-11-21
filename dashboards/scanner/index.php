@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#972529">
-    <title>CTU Scanner - QR Code Scanner</title>
+    <title>CTU Scanner - Code 39 Barcode Scanner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -1575,13 +1575,13 @@
                 <img src="/assets/images/logo.png" alt="CTU Logo" style="width: 65px; height: 65px; object-fit: contain;">
             </div>
             <h1>CTU Access Control</h1>
-            <p>Scan QR Code to Enter/Exit</p>
+            <p>Scan Code 39 Barcode to Enter/Exit</p>
         </div>
         
         <div class="scanner-card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                    <h4><i class="fas fa-qrcode me-2"></i>QR Scanner</h4>
+                    <h4><i class="fas fa-barcode me-2"></i>Code 39 Barcode Scanner</h4>
                     <div class="scanner-controls">
                         <select id="scannerSelect" class="form-select form-select-sm">
                             <option value="SC001">Main Entrance</option>
@@ -1762,19 +1762,19 @@
                     }
                 }
 
-                // Enhanced config for better mobile performance
+                // Enhanced config for better barcode scanning performance
                 const config = {
                     fps: isMobile ? 15 : 20,
                     qrbox: function(viewfinderWidth, viewfinderHeight) {
-                        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        const qrboxSize = Math.floor(minEdge * (isMobile ? 0.75 : 0.7));
-                        console.log('QR box size:', qrboxSize, 'Viewfinder:', viewfinderWidth, 'x', viewfinderHeight);
+                        const qrboxWidth = Math.floor(viewfinderWidth * 0.9);
+                        const qrboxHeight = Math.floor(qrboxWidth / 3.5); // Optimized aspect ratio for Code 39
+                        console.log('Barcode box size:', qrboxWidth, 'x', qrboxHeight);
                         return {
-                            width: qrboxSize,
-                            height: qrboxSize
+                            width: qrboxWidth,
+                            height: qrboxHeight
                         };
                     },
-                    aspectRatio: 1.777778, // 16:9
+                    aspectRatio: 3.5, // Optimized for Code 39 barcodes
                     showTorchButtonIfSupported: true,
                     showZoomSliderIfSupported: true,
                     defaultZoomValueIfSupported: 1,
@@ -1870,9 +1870,9 @@
                 const devices = await Html5Qrcode.getCameras();
                 if (devices && devices.length > 0) {
                     const simpleConfig = {
-                        fps: 10,
-                        qrbox: { width: 200, height: 200 },
-                        aspectRatio: 1.0
+                        fps: 15,
+                        qrbox: { width: 350, height: 120 }, // Optimized for Code 39 barcode
+                        aspectRatio: 3.5 // Barcode aspect ratio
                     };
                     
                     html5QrcodeScanner = new Html5Qrcode("reader");
@@ -2012,11 +2012,11 @@
                         const config = {
                             fps: isMobile ? 15 : 20,
                             qrbox: function(viewfinderWidth, viewfinderHeight) {
-                                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                                const qrboxSize = Math.floor(minEdge * 0.7);
-                                return { width: qrboxSize, height: qrboxSize };
+                                const qrboxWidth = Math.floor(viewfinderWidth * 0.9);
+                                const qrboxHeight = Math.floor(qrboxWidth / 3.5); // Optimized for Code 39
+                                return { width: qrboxWidth, height: qrboxHeight };
                             },
-                            aspectRatio: 1.777778,
+                            aspectRatio: 3.5, // Optimized for Code 39 barcodes
                             showTorchButtonIfSupported: true,
                             showZoomSliderIfSupported: true
                         };

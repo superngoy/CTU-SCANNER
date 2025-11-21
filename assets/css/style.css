@@ -572,16 +572,16 @@ body {
     background: #972529;
     border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
     background: #E5C573;
 }
 
-/* QR Generator Styles (for admin dashboard integration) */
-.qr-generator-section {
+/* Code 39 Barcode Generator Styles (for admin dashboard integration) */
+.barcode-generator-section {
     margin-top: 30px;
 }
 
+.barcode-grid,
 .qr-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -589,6 +589,7 @@ body {
     margin-top: 20px;
 }
 
+.barcode-card,
 .qr-card {
     background: #FEFEFE;
     border: 2px solid rgba(151, 37, 41, 0.2);
@@ -599,12 +600,14 @@ body {
     transition: all 0.3s ease;
 }
 
+.barcode-card:hover,
 .qr-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary-color);
     box-shadow: 0 10px 25px var(--shadow-medium);
 }
 
+.barcode-code img,
 .qr-code img {
     border: 2px solid #e9ecef;
     border-radius: 10px;

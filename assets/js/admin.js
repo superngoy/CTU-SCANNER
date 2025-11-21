@@ -438,7 +438,8 @@ class AdminDashboard {
             this.loadExitLogsData(params),
             this.loadEntryExitHourlyData(params),
             this.loadAttemptsSummaryData(params),
-            this.loadAttemptsReasonData(params)
+            this.loadAttemptsReasonData(params),
+            this.loadCourseDistribution(params)
         ];
         
         console.log(`Starting ${promises.length} analytics data loading operations...`);
@@ -1078,6 +1079,106 @@ class AdminDashboard {
                 console.error('Error loading attempts reason data:', error);
                 throw error;
             });
+    }
+
+    loadCourseDistribution(params) {
+        const url = `analytics.php?action=course_distribution&${params}`;
+        console.log('Fetching course distribution from:', url);
+        
+        return fetch(url)
+            .then(response => {
+                console.log('Course distribution response status:', response.status);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Course distribution data received:', data);
+                const container = document.getElementById('courseDistributionContainer');
+                
+                if (!container) {
+                    console.warn('Course distribution container not found');
+                    return;
+                }
+
+                if (!data.courses || data.courses.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info">No course data available</div>';
+                    return;
+                }
+
+                // Create table with course distribution
+                let html = `
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Course</th>
+                                    <th class="text-center">Total Students</th>
+                                    <th class="text-center">Entries (${data.totalEntries || 0})</th>
+                                    <th class="text-center">Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                data.courses.forEach((course, index) => {
+                    const color = this.getColorForIndex(index);
+                    html += `
+                        <tr>
+                            <td>
+                                <span style="display: inline-block; width: 12px; height: 12px; background-color: ${color}; border-radius: 3px; margin-right: 8px;"></span>
+                                <strong>${this.escapeHtml(course.course)}</strong>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary">${course.studentCount}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-info">${course.entryCount}</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" style="width: ${course.percentage}%; background-color: ${color};">
+                                        ${course.percentage}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading course distribution:', error);
+                const container = document.getElementById('courseDistributionContainer');
+                if (container) {
+                    container.innerHTML = '<div class="alert alert-danger">Error loading course data</div>';
+                }
+                throw error;
+            });
+    }
+
+    getColorForIndex(index) {
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B88B', '#82E0AA',
+            '#F1948A', '#A3E4D7', '#F9B9B7', '#A9DFBF', '#F5B7B1'
+        ];
+        return colors[index % colors.length];
+    }
+
+    escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     loadRecentEntries(params) {

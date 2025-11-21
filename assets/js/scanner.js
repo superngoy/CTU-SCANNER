@@ -1,9 +1,9 @@
-class QRScanner {
+class BarcodeScanner {
     constructor() {
         this.html5QrCode = null;
         this.isScanning = false;
         this.lastScanTime = 0;
-        this.scanCooldown = 3000; // 3 seconds between scans
+        this.scanCooldown = 1500; // 1.5 seconds between scans
         this.init();
     }
 
@@ -15,10 +15,11 @@ class QRScanner {
 
     initializeScanner() {
         const config = {
-            fps: 10,
-            qrbox: { width: 300, height: 300 },
-            aspectRatio: 1.0,
+            fps: 15, // Increased from 10 for better frame capture
+            qrbox: { width: 350, height: 120 }, // Optimized for Code 39 barcode
+            aspectRatio: 3.0, // Wider for barcodes
             showTorchButtonIfSupported: true,
+            disableFlip: false,
             supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
         };
 
@@ -64,13 +65,13 @@ class QRScanner {
         const scannerSelect = document.getElementById('scannerSelect');
         const scannerId = scannerSelect.value;
         
-        // Send scan data to backend
+        // Send scan data to backend - use barcode_data instead of qr_data
         fetch('scan_process.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=scan&qr_data=${encodeURIComponent(decodedText)}&scanner_id=${scannerId}`
+            body: `action=scan&barcode_data=${encodeURIComponent(decodedText)}&scanner_id=${scannerId}`
         })
         .then(response => {
             if (!response.ok) {
@@ -231,7 +232,7 @@ class QRScanner {
 
 // Initialize scanner when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    const scanner = new QRScanner();
+    const scanner = new BarcodeScanner();
     
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {

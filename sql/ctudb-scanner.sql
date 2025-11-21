@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 20, 2025 at 12:11 PM
+-- Generation Time: Nov 21, 2025 at 03:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -92,39 +92,40 @@ CREATE TABLE `entrylogs` (
 --
 
 INSERT INTO `entrylogs` (`EntryID`, `PersonID`, `PersonType`, `Date`, `Timestamp`, `ScannerID`) VALUES
-(1, '8221183', 'student', '2025-11-19', '2025-11-19 14:55:22', 'SC001'),
-(2, '8221183', 'student', '2025-11-19', '2025-11-19 14:59:29', 'SC001'),
-(3, '8111111', 'student', '2025-11-19', '2025-11-19 15:08:55', 'SC001'),
-(4, '8111111', 'student', '2025-11-20', '2025-11-20 07:01:09', 'SC001'),
-(5, '8221183', 'student', '2025-11-20', '2025-11-20 07:01:19', 'SC001'),
-(6, '8221183', 'student', '2025-11-20', '2025-11-20 07:04:04', 'SC001'),
-(7, '8221183', 'student', '2025-11-20', '2025-11-20 07:04:11', 'SC001'),
-(8, '8221183', 'student', '2025-11-20', '2025-11-20 07:04:21', 'SC001'),
-(9, '8220469', 'student', '2025-11-20', '2025-11-20 07:04:33', 'SC001'),
-(10, '8221182', 'student', '2025-11-20', '2025-11-20 07:04:35', 'SC001'),
-(11, '8111111', 'student', '2025-11-20', '2025-11-20 07:04:38', 'SC001'),
-(12, '8221363', 'student', '2025-11-20', '2025-11-20 07:04:47', 'SC001'),
-(13, '8221183', 'student', '2025-11-20', '2025-11-20 07:04:52', 'SC001'),
-(14, '8221366', 'student', '2025-11-20', '2025-11-20 07:04:54', 'SC001'),
-(15, '8221366', 'student', '2025-11-20', '2025-11-20 07:04:55', 'SC001'),
-(16, '8221425', 'student', '2025-11-20', '2025-11-20 07:04:57', 'SC001'),
-(17, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 07:05:52', 'SC001'),
-(18, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 07:06:22', 'SC001'),
-(19, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 07:06:29', 'SC001'),
-(20, '8221183', 'student', '2025-11-20', '2025-11-20 09:03:26', 'SC001'),
-(21, '8221183', 'student', '2025-11-20', '2025-11-20 09:13:09', 'SC001'),
-(22, '8221183', 'student', '2025-11-20', '2025-11-20 09:20:00', 'SC001'),
-(23, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 09:20:10', 'SC001'),
-(24, 'FAC-003', 'faculty', '2025-11-20', '2025-11-20 09:20:25', 'SC001'),
-(25, 'FAC-003', 'faculty', '2025-11-20', '2025-11-20 09:27:44', 'SC001'),
-(26, '8221183', 'student', '2025-11-20', '2025-11-20 09:27:54', 'SC001'),
-(27, '8221183', 'student', '2025-11-20', '2025-11-20 09:28:15', 'SC001'),
-(28, '8221183', 'student', '2025-11-20', '2025-11-20 09:36:29', 'SC001'),
-(29, '8221183', 'student', '2025-11-20', '2025-11-20 09:53:44', 'SC001'),
-(30, '8111111', 'student', '2025-11-20', '2025-11-20 09:54:38', 'SC001'),
-(31, '8221183', 'student', '2025-11-20', '2025-11-20 09:54:46', 'SC001'),
-(32, 'FAC-003', 'faculty', '2025-11-20', '2025-11-20 09:54:54', 'SC001'),
-(33, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 09:54:59', 'SC001');
+(1, 'STF-001', 'staff', '2025-11-21', '2025-11-21 03:56:28', 'SC001'),
+(2, '8221183', 'student', '2025-11-21', '2025-11-21 03:59:42', 'SC001'),
+(3, '999999', 'student', '2025-11-21', '2025-11-20 21:34:14', NULL),
+(4, '8111111', 'student', '2025-11-21', '2025-11-20 21:34:14', NULL),
+(5, 'INVALID-053447', 'student', '2025-11-21', '2025-11-20 21:34:47', NULL),
+(6, '8111111', 'student', '2025-11-21', '2025-11-20 21:34:47', NULL),
+(7, 'FAKE-20251121053529', 'student', '2025-11-21', '2025-11-21 04:35:29', NULL),
+(8, '8111111', 'student', '2025-11-21', '2025-11-21 04:35:29', NULL),
+(9, '8111111', 'student', '2025-11-21', '2025-11-21 04:39:20', NULL),
+(10, '8221183', 'student', '2025-11-21', '2025-11-21 05:13:06', 'SC001'),
+(11, '8221183', 'student', '2025-11-21', '2025-11-21 05:13:45', 'SC001'),
+(12, '8221183', 'student', '2025-11-21', '2025-11-21 05:19:17', 'SC001'),
+(13, '8221183', 'student', '2025-11-21', '2025-11-21 05:53:24', 'SC001'),
+(14, '8221183', 'student', '2025-11-21', '2025-11-21 07:29:45', 'SC001'),
+(15, '8221182', 'student', '2025-11-21', '2025-11-21 08:18:58', 'SC001'),
+(16, '8221183', 'student', '2025-11-21', '2025-11-21 13:21:30', 'SC001'),
+(17, '8221183', 'student', '2025-11-21', '2025-11-21 13:22:26', 'SC001'),
+(18, '8220469', 'student', '2025-11-21', '2025-11-21 13:23:36', 'SC001'),
+(19, '8221183', 'student', '2025-11-21', '2025-11-21 13:25:34', 'SC001'),
+(20, 'FAC-002', 'faculty', '2025-11-21', '2025-11-21 13:27:29', 'SC001'),
+(21, 'FAC-002', 'faculty', '2025-11-21', '2025-11-21 13:27:30', 'SC001'),
+(22, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:29:17', 'SC001'),
+(23, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:30:18', 'SC001'),
+(24, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:30:25', 'SC001'),
+(25, 'FAC-002', 'faculty', '2025-11-21', '2025-11-21 13:36:42', 'SC001'),
+(26, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:36:47', 'SC001'),
+(27, '8220469', 'student', '2025-11-21', '2025-11-21 13:37:58', 'SC001'),
+(28, '8220811', 'student', '2025-11-21', '2025-11-21 13:38:15', 'SC001'),
+(29, '8220811', 'student', '2025-11-21', '2025-11-21 13:39:06', 'SC001'),
+(30, '8221182', 'student', '2025-11-21', '2025-11-21 13:39:39', 'SC001'),
+(31, '8221183', 'student', '2025-11-21', '2025-11-21 13:40:39', 'SC001'),
+(32, '8221183', 'student', '2025-11-21', '2025-11-21 13:40:58', 'SC001'),
+(33, '8221183', 'student', '2025-11-21', '2025-11-21 13:41:00', 'SC001'),
+(34, '8221183', 'student', '2025-11-21', '2025-11-21 13:41:12', 'SC001');
 
 -- --------------------------------------------------------
 
@@ -146,8 +147,10 @@ CREATE TABLE `exitlogs` (
 --
 
 INSERT INTO `exitlogs` (`ExitID`, `PersonID`, `PersonType`, `Date`, `Timestamp`, `ScannerID`) VALUES
-(1, 'FAC-002', 'faculty', '2025-11-20', '2025-11-20 09:55:09', 'SC002'),
-(2, 'FAC-003', 'faculty', '2025-11-20', '2025-11-20 09:55:13', 'SC002');
+(1, 'STF-001', 'staff', '2025-11-21', '2025-11-21 03:55:51', 'SC002'),
+(2, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:30:46', 'SC002'),
+(3, 'FAC-003', 'faculty', '2025-11-21', '2025-11-21 13:30:47', 'SC002'),
+(4, 'FAC-002', 'faculty', '2025-11-21', '2025-11-21 13:36:20', 'SC002');
 
 -- --------------------------------------------------------
 
@@ -273,7 +276,91 @@ INSERT INTO `scan_attempts` (`id`, `scanned_at`, `qr_data`, `person_id`, `person
 (44, '2025-11-20 17:54:54', 'FAC-003', 'FAC-003', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.105', NULL, '2025-11-20 09:54:54'),
 (45, '2025-11-20 17:54:59', 'FAC-002', 'FAC-002', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.105', NULL, '2025-11-20 09:54:59'),
 (46, '2025-11-20 17:55:09', 'FAC-002', 'FAC-002', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.105', NULL, '2025-11-20 09:55:09'),
-(47, '2025-11-20 17:55:13', 'FAC-003', 'FAC-003', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.105', NULL, '2025-11-20 09:55:13');
+(47, '2025-11-20 17:55:13', 'FAC-003', 'FAC-003', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.105', NULL, '2025-11-20 09:55:13'),
+(48, '2025-11-21 11:11:52', 'STF-002', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.102', NULL, '2025-11-21 03:11:52'),
+(49, '2025-11-21 11:17:31', 'STF-002', 'STF-002', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:17:31'),
+(50, '2025-11-21 11:22:55', 'STF-002', 'STF-002', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:22:55'),
+(51, '2025-11-21 11:23:55', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 03:23:55'),
+(52, '2025-11-21 11:26:07', 'STF-002', 'STF-002', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:26:07'),
+(53, '2025-11-21 11:30:42', 'STF-001', 'STF-001', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:30:42'),
+(54, '2025-11-21 11:35:56', 'STF-002', 'STF-002', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:35:56'),
+(55, '2025-11-21 11:40:41', 'STF-002', 'STF-002', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:40:41'),
+(56, '2025-11-21 11:41:02', 'STF-001', 'STF-001', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:41:02'),
+(57, '2025-11-21 11:41:21', 'STF-001', 'STF-001', '', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:41:21'),
+(58, '2025-11-21 11:55:51', 'STF-001', 'STF-001', '', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:55:51'),
+(59, '2025-11-21 11:56:28', 'STF-001', 'STF-001', '', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"Support\"}', '192.168.254.102', NULL, '2025-11-21 03:56:28'),
+(60, '2025-11-21 11:59:42', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 03:59:42'),
+(61, '2025-11-21 12:31:20', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:31:20'),
+(62, '2025-11-21 12:32:06', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:32:06'),
+(63, '2025-11-21 12:37:46', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:37:46'),
+(64, '2025-11-21 12:41:33', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:41:33'),
+(65, '2025-11-21 12:43:32', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:43:32'),
+(66, '2025-11-21 12:43:59', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:43:59'),
+(67, '2025-11-21 12:46:42', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:46:42'),
+(68, '2025-11-21 12:47:16', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:47:16'),
+(69, '2025-11-21 12:49:54', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 04:49:54'),
+(70, '2025-11-21 13:12:49', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.102', NULL, '2025-11-21 05:12:49'),
+(71, '2025-11-21 13:13:06', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 05:13:06'),
+(72, '2025-11-21 13:13:45', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 05:13:45'),
+(73, '2025-11-21 13:19:17', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 05:19:17'),
+(74, '2025-11-21 13:53:24', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.102', NULL, '2025-11-21 05:53:24'),
+(75, '2025-11-21 15:29:45', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '10.246.62.163', NULL, '2025-11-21 07:29:45'),
+(76, '2025-11-21 16:18:58', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '10.246.62.197', NULL, '2025-11-21 08:18:58'),
+(77, '2025-11-21 16:28:52', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '10.246.62.215', NULL, '2025-11-21 08:28:52'),
+(78, '2025-11-21 21:21:30', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:21:30'),
+(79, '2025-11-21 21:21:31', '82211', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:21:31'),
+(80, '2025-11-21 21:22:21', 'B221183', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:22:21'),
+(81, '2025-11-21 21:22:26', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:22:26'),
+(82, '2025-11-21 21:23:15', 'L220469', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:23:15'),
+(83, '2025-11-21 21:23:20', 'B220469', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:23:20'),
+(84, '2025-11-21 21:23:36', '8220469', '8220469', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:23:36'),
+(85, '2025-11-21 21:23:45', '822081', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:23:45'),
+(86, '2025-11-21 21:25:29', '822183', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:25:29'),
+(87, '2025-11-21 21:25:30', 'VF1.', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:25:30'),
+(88, '2025-11-21 21:25:33', '822183', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:25:33'),
+(89, '2025-11-21 21:25:34', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:25:34'),
+(90, '2025-11-21 21:25:35', '822183', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:25:35'),
+(91, '2025-11-21 21:26:09', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:09'),
+(92, '2025-11-21 21:26:10', '822182', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:10'),
+(93, '2025-11-21 21:26:11', '822182', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:11'),
+(94, '2025-11-21 21:26:12', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:12'),
+(95, '2025-11-21 21:26:13', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:13'),
+(96, '2025-11-21 21:26:14', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:14'),
+(97, '2025-11-21 21:26:15', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:26:15'),
+(98, '2025-11-21 21:27:29', 'FAC-002', 'FAC-002', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:27:29'),
+(99, '2025-11-21 21:27:30', 'FAC-002', 'FAC-002', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:27:30'),
+(100, '2025-11-21 21:28:30', 'F1C-002', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:28:30'),
+(101, '2025-11-21 21:29:13', 'FBC-003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:29:13'),
+(102, '2025-11-21 21:29:17', 'FAC-003', 'FAC-003', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:29:17'),
+(103, '2025-11-21 21:30:09', 'F1C-003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:09'),
+(104, '2025-11-21 21:30:14', '177003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:14'),
+(105, '2025-11-21 21:30:15', '077003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:15'),
+(106, '2025-11-21 21:30:17', 'F1C-003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:17'),
+(107, '2025-11-21 21:30:18', 'FAC-003', 'FAC-003', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:30:18'),
+(108, '2025-11-21 21:30:20', '277003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:20'),
+(109, '2025-11-21 21:30:22', '277003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:22'),
+(110, '2025-11-21 21:30:23', '277003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:23'),
+(111, '2025-11-21 21:30:25', 'FAC-003', 'FAC-003', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:30:25'),
+(112, '2025-11-21 21:30:27', 'TBC-003', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:30:27'),
+(113, '2025-11-21 21:30:46', 'FAC-003', 'FAC-003', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:30:46'),
+(114, '2025-11-21 21:30:47', 'FAC-003', 'FAC-003', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:30:47'),
+(115, '2025-11-21 21:36:20', 'FAC-002', 'FAC-002', 'faculty', 'SC002', 'Main Exit Gate', 'success', NULL, '{\"action\":\"Exit\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:36:20'),
+(116, '2025-11-21 21:36:42', 'FAC-002', 'FAC-002', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:36:42'),
+(117, '2025-11-21 21:36:47', 'FAC-003', 'FAC-003', 'faculty', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:36:47'),
+(118, '2025-11-21 21:37:58', '8220469', '8220469', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:37:58'),
+(119, '2025-11-21 21:38:15', '8220811', '8220811', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:38:15'),
+(120, '2025-11-21 21:38:28', '8221882', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:38:28'),
+(121, '2025-11-21 21:39:00', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'failed', 'not_enrolled', NULL, '192.168.254.100', NULL, '2025-11-21 13:39:00'),
+(122, '2025-11-21 21:39:06', '8220811', '8220811', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:39:06'),
+(123, '2025-11-21 21:39:39', '8221182', '8221182', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:39:39'),
+(124, '2025-11-21 21:40:23', '8921783', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:40:23'),
+(125, '2025-11-21 21:40:30', '8221113', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:40:30'),
+(126, '2025-11-21 21:40:36', '822183', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:40:36'),
+(127, '2025-11-21 21:40:39', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:40:39'),
+(128, '2025-11-21 21:40:46', '822113', NULL, 'unknown', 'SC001', 'Main Entrance Gate', 'failed', 'invalid_qr', NULL, '192.168.254.100', NULL, '2025-11-21 13:40:46'),
+(129, '2025-11-21 21:40:58', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:40:58'),
+(130, '2025-11-21 21:41:00', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:41:00'),
+(131, '2025-11-21 21:41:13', '8221183', '8221183', 'student', 'SC001', 'Main Entrance Gate', 'success', NULL, '{\"action\":\"Entry\",\"department\":\"COTE\"}', '192.168.254.100', NULL, '2025-11-21 13:41:13');
 
 -- --------------------------------------------------------
 
@@ -300,7 +387,8 @@ CREATE TABLE `security` (
 --
 
 INSERT INTO `security` (`SecurityID`, `SecurityFName`, `SecurityMName`, `SecurityLName`, `Gender`, `BirthDate`, `TimeSched`, `isActive`, `image`, `password`, `created_at`) VALUES
-('SEC-001', 'Guard. Leonides', '', 'Conde', 'Male', '1985-01-15', '6AM-6PM', 1, NULL, '$2y$10$4DDwNyNmIJRPzhkcGWEDzO3f0ZFX7IYiVoHg1mECRdjIBEjqBkURW', '2025-08-30 01:39:52');
+('SEC-001', 'Guard. Leonides', '', 'Conde', 'Male', '1985-01-15', '6AM-6PM', 1, NULL, '$2y$10$7Xwv1GsQrQ/FNtezy0sFIOIyP/LwdOScFVPOnV5/3HfBJFeHXD24G', '2025-11-20 11:38:40'),
+('SEC-002', 'Secret', 'S.', 'Secret', 'Female', '2025-11-15', '10:00am - 10:00pm', 1, 'uploads/security/SEC-002_1763637877.png', '$2y$10$NbbQHjcq5yk02XB8ukbTpewo4eeMcKeVG430xjLK5NXL0j3aZP/LS', '2025-11-20 11:24:38');
 
 -- --------------------------------------------------------
 
@@ -322,6 +410,14 @@ CREATE TABLE `staff` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `staff`
+--
+
+INSERT INTO `staff` (`StaffID`, `StaffFName`, `StaffMName`, `StaffLName`, `Gender`, `BirthDate`, `Position`, `Department`, `isActive`, `image`, `created_at`, `updated_at`) VALUES
+('STF-001', 'Secret', 'S.', 'Secret', 'Female', '2025-11-13', 'Secret', 'Support', 1, 'uploads/staff/STF-001_1763695757.jpg', '2025-11-21 03:29:17', '2025-11-21 03:29:17'),
+('STF-002', 'Liza', 'S.', 'Sobirano', 'Female', '2025-11-05', 'Secret', 'Support', 1, 'uploads/staff/STF-002_1763641107.png', '2025-11-20 12:19:41', '2025-11-20 12:19:41');
 
 -- --------------------------------------------------------
 
@@ -351,7 +447,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`StudentID`, `StudentFName`, `StudentMName`, `StudentLName`, `Gender`, `BirthDate`, `Course`, `YearLvl`, `Section`, `Department`, `isActive`, `IsEnroll`, `image`, `created_at`) VALUES
-('8111111', 'Secret', 'S.', 'Secret', 'Male', '2002-02-19', 'BSED', 4, 'B', 'COED', 1, 1, 'uploads/students/8111111_1763627153.png', '2025-11-20 11:05:49'),
+('8111111', 'Secret', 'S.', 'Secret', 'Male', '2002-02-19', 'BSED', 4, 'B', 'COED', 0, 0, 'uploads/students/8111111_1763627153.png', '2025-11-20 11:05:49'),
 ('8220469', 'Siara Lee', 'Sericon', 'Conde', 'Female', '1885-07-23', 'BSIT', 4, 'B', 'COTE', 1, 1, NULL, '2025-09-20 00:38:31'),
 ('8220811', 'Reil', '', 'Canete', 'Male', '2003-10-02', 'BSIT', 4, 'B', 'COTE', 1, 1, NULL, '2025-09-20 00:41:26'),
 ('8221182', 'Angelica Joy', '', 'Coyoca', 'Female', '2004-01-04', 'BSIT', 4, 'B', 'COTE', 1, 1, NULL, '2025-08-29 23:12:50'),
@@ -521,25 +617,25 @@ ALTER TABLE `visitor_logs`
 -- AUTO_INCREMENT for table `archive`
 --
 ALTER TABLE `archive`
-  MODIFY `ArchiveID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ArchiveID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `entrylogs`
 --
 ALTER TABLE `entrylogs`
-  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `EntryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `exitlogs`
 --
 ALTER TABLE `exitlogs`
-  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ExitID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `scan_attempts`
 --
 ALTER TABLE `scan_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT for table `visitors`

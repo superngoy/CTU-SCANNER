@@ -290,6 +290,108 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
         #usersTable tbody tr.action-row:hover {
             background-color: transparent;
         }
+
+        /* Fixed table height with internal scrolling */
+        .table-container-fixed {
+            height: 600px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 0 0 8px 8px;
+            position: relative;
+        }
+
+        .table-container-fixed table {
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .table-container-fixed thead {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--secondary-color) !important;
+        }
+
+        .table-container-fixed thead th {
+            background: var(--secondary-color) !important;
+            color: #333;
+            padding: 0.75rem !important;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .table-container-fixed tbody tr {
+            background-color: #fff;
+        }
+
+        /* Pagination styles */
+        .pagination-container {
+            padding: 1rem;
+            background: #fff;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .pagination-controls button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-controls button:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-size-selector {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .table-container-fixed {
+                height: 400px;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .pagination-controls {
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body style="background: #f5f6fa;">
@@ -365,7 +467,7 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                         <div class="loading">
                             <i class="fas fa-spinner fa-spin"></i> Loading data...
                         </div>
-                        <div class="table-responsive" id="tableContainer" style="display: none;">
+                        <div class="table-container-fixed" id="tableContainer" style="display: none;">
                             <table class="table table-striped table-hover" id="usersTable">
                                 <thead style="background: var(--secondary-color); color: #333;">
                                     <tr id="tableHeaders">
@@ -376,6 +478,28 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                                     <!-- Data will be loaded via JavaScript -->
                                 </tbody>
                             </table>
+                        </div>
+                        <!-- Pagination Controls -->
+                        <div class="pagination-container" id="paginationContainer" style="display: none;">
+                            <div class="pagination-info">
+                                <span id="recordsInfo">Showing 0 of 0</span>
+                            </div>
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
+                                <div>
+                                    <label for="pageSizeSelector" class="me-2">Rows per page:</label>
+                                    <select id="pageSizeSelector" class="page-size-selector">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-controls">
+                                    <button id="prevBtn" type="button">← Previous</button>
+                                    <span id="pageInfo" style="min-width: 100px; text-align: center;">Page 1</span>
+                                    <button id="nextBtn" type="button">Next →</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -588,6 +712,9 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
     <script>
         const userType = '<?php echo $userType; ?>';
         let users = [];
+        let filteredUsers = [];
+        let currentPage = 1;
+        let pageSize = 10;
         let currentEditUserId = null;
         let currentSortBy = null;
         let isAscending = true;
@@ -833,39 +960,54 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             searchInput.addEventListener('input', function(e) {
                 filterUsers(e.target.value);
             });
+
+            // Page size selector
+            const pageSizeSelector = document.getElementById('pageSizeSelector');
+            if (pageSizeSelector) {
+                pageSizeSelector.addEventListener('change', function(e) {
+                    pageSize = parseInt(e.target.value);
+                    currentPage = 1;
+                    displayPage();
+                });
+            }
+
+            // Pagination buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', previousPage);
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', nextPage);
+            }
         }
 
         function filterUsers(searchTerm) {
-            const rows = document.querySelectorAll('#tableBody tr');
             const term = searchTerm.toLowerCase().trim();
 
             if (term === '') {
-                rows.forEach(row => row.classList.remove('search-hidden'));
-                return;
+                filteredUsers = [...users];
+            } else {
+                filteredUsers = users.filter(user => {
+                    let searchableText = '';
+                    
+                    if (userType === 'students') {
+                        searchableText = `${user.StudentID} ${user.StudentFName} ${user.StudentMName} ${user.StudentLName} ${user.Course}`.toLowerCase();
+                    } else if (userType === 'faculty') {
+                        searchableText = `${user.FacultyID} ${user.FacultyFName} ${user.FacultyMName} ${user.FacultyLName} ${user.Department}`.toLowerCase();
+                    } else if (userType === 'security') {
+                        searchableText = `${user.SecurityID} ${user.SecurityFName} ${user.SecurityMName} ${user.SecurityLName} ${user.Department}`.toLowerCase();
+                    } else if (userType === 'staff') {
+                        searchableText = `${user.StaffID} ${user.StaffFName} ${user.StaffMName} ${user.StaffLName} ${user.Department}`.toLowerCase();
+                    }
+                    
+                    return searchableText.includes(term);
+                });
             }
 
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let found = false;
-
-                // Search in all cells except the first (photo) and last (actions)
-                for (let i = 1; i < cells.length - 1; i++) {
-                    const cellText = cells[i].textContent.toLowerCase();
-                    if (cellText.includes(term)) {
-                        found = true;
-                        // Highlight the matching text
-                        cells[i].innerHTML = cells[i].textContent.replace(
-                            new RegExp(term, 'gi'),
-                            match => `<mark class="highlight">${match}</mark>`
-                        );
-                    } else {
-                        // Restore original text if not matching
-                        cells[i].textContent = cells[i].textContent;
-                    }
-                }
-
-                row.classList.toggle('search-hidden', !found);
-            });
+            currentPage = 1;
+            displayPage();
         }
 
         function applySorting(sortType, event) {
@@ -876,35 +1018,35 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             isAscending = direction === 'asc';
             currentSortBy = sortType;
 
-            // Sort the users array
-            const sortedUsers = [...users].sort((a, b) => {
+            // Sort the filteredUsers array (which respects the current search)
+            filteredUsers = [...filteredUsers].sort((a, b) => {
                 let aValue, bValue;
 
                 if (userType === 'students') {
                     switch (field) {
                         case 'student':
-                            aValue = a.StudentID;
-                            bValue = b.StudentID;
+                            aValue = (a.StudentID || '').toString();
+                            bValue = (b.StudentID || '').toString();
                             break;
                         case 'name':
-                            aValue = `${a.StudentFName} ${a.StudentLName}`;
-                            bValue = `${b.StudentFName} ${b.StudentLName}`;
+                            aValue = `${a.StudentFName || ''} ${a.StudentLName || ''}`.trim();
+                            bValue = `${b.StudentFName || ''} ${b.StudentLName || ''}`.trim();
                             break;
                         case 'course':
-                            aValue = a.Course;
-                            bValue = b.Course;
+                            aValue = (a.Course || '').toString();
+                            bValue = (b.Course || '').toString();
                             break;
                         case 'year':
-                            aValue = parseInt(a.YearLvl);
-                            bValue = parseInt(b.YearLvl);
+                            aValue = parseInt(a.YearLvl) || 0;
+                            bValue = parseInt(b.YearLvl) || 0;
                             break;
                         case 'section':
-                            aValue = a.Section;
-                            bValue = b.Section;
+                            aValue = (a.Section || '').toString();
+                            bValue = (b.Section || '').toString();
                             break;
                         case 'department':
-                            aValue = a.Department;
-                            bValue = b.Department;
+                            aValue = (a.Department || '').toString();
+                            bValue = (b.Department || '').toString();
                             break;
                         default:
                             return 0;
@@ -912,20 +1054,20 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                 } else if (userType === 'faculty') {
                     switch (field) {
                         case 'faculty':
-                            aValue = a.FacultyID;
-                            bValue = b.FacultyID;
+                            aValue = (a.FacultyID || '').toString();
+                            bValue = (b.FacultyID || '').toString();
                             break;
                         case 'name':
-                            aValue = `${a.FacultyFName} ${a.FacultyLName}`;
-                            bValue = `${b.FacultyFName} ${b.FacultyLName}`;
+                            aValue = `${a.FacultyFName || ''} ${a.FacultyLName || ''}`.trim();
+                            bValue = `${b.FacultyFName || ''} ${b.FacultyLName || ''}`.trim();
                             break;
                         case 'department':
-                            aValue = a.Department;
-                            bValue = b.Department;
+                            aValue = (a.Department || '').toString();
+                            bValue = (b.Department || '').toString();
                             break;
                         case 'birthdate':
-                            aValue = new Date(a.Birthdate);
-                            bValue = new Date(b.Birthdate);
+                            aValue = new Date(a.Birthdate || '1900-01-01').getTime();
+                            bValue = new Date(b.Birthdate || '1900-01-01').getTime();
                             break;
                         default:
                             return 0;
@@ -933,20 +1075,20 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                 } else if (userType === 'security') {
                     switch (field) {
                         case 'security':
-                            aValue = a.SecurityID;
-                            bValue = b.SecurityID;
+                            aValue = (a.SecurityID || '').toString();
+                            bValue = (b.SecurityID || '').toString();
                             break;
                         case 'name':
-                            aValue = `${a.SecurityFName} ${a.SecurityLName}`;
-                            bValue = `${b.SecurityFName} ${b.SecurityLName}`;
+                            aValue = `${a.SecurityFName || ''} ${a.SecurityLName || ''}`.trim();
+                            bValue = `${b.SecurityFName || ''} ${b.SecurityLName || ''}`.trim();
                             break;
                         case 'schedule':
-                            aValue = a.TimeSched;
-                            bValue = b.TimeSched;
+                            aValue = (a.TimeSched || '').toString();
+                            bValue = (b.TimeSched || '').toString();
                             break;
                         case 'birthdate':
-                            aValue = new Date(a.BirthDate);
-                            bValue = new Date(b.BirthDate);
+                            aValue = new Date(a.BirthDate || '1900-01-01').getTime();
+                            bValue = new Date(b.BirthDate || '1900-01-01').getTime();
                             break;
                         default:
                             return 0;
@@ -954,42 +1096,50 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                 } else if (userType === 'staff') {
                     switch (field) {
                         case 'staff':
-                            aValue = a.StaffID;
-                            bValue = b.StaffID;
+                            aValue = (a.StaffID || '').toString();
+                            bValue = (b.StaffID || '').toString();
                             break;
                         case 'name':
-                            aValue = `${a.StaffFName} ${a.StaffLName}`;
-                            bValue = `${b.StaffFName} ${b.StaffLName}`;
+                            aValue = `${a.StaffFName || ''} ${a.StaffLName || ''}`.trim();
+                            bValue = `${b.StaffFName || ''} ${b.StaffLName || ''}`.trim();
                             break;
                         case 'position':
-                            aValue = a.Position;
-                            bValue = b.Position;
+                            aValue = (a.Position || '').toString();
+                            bValue = (b.Position || '').toString();
                             break;
                         case 'department':
-                            aValue = a.Department;
-                            bValue = b.Department;
+                            aValue = (a.Department || '').toString();
+                            bValue = (b.Department || '').toString();
                             break;
                         case 'birthdate':
-                            aValue = new Date(a.BirthDate);
-                            bValue = new Date(b.BirthDate);
+                            aValue = new Date(a.BirthDate || '1900-01-01').getTime();
+                            bValue = new Date(b.BirthDate || '1900-01-01').getTime();
                             break;
                         default:
                             return 0;
                     }
                 }
 
-                // Compare values
-                if (typeof aValue === 'string') {
+                // Compare values - handle both string and numeric comparisons
+                if (typeof aValue === 'string' && typeof bValue === 'string') {
                     aValue = aValue.toLowerCase();
                     bValue = bValue.toLowerCase();
-                    return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-                } else {
+                    const comparison = aValue.localeCompare(bValue);
+                    return isAscending ? comparison : -comparison;
+                } else if (typeof aValue === 'number' && typeof bValue === 'number') {
                     return isAscending ? aValue - bValue : bValue - aValue;
+                } else {
+                    // Fallback for mixed types
+                    const aStr = String(aValue || '').toLowerCase();
+                    const bStr = String(bValue || '').toLowerCase();
+                    const comparison = aStr.localeCompare(bStr);
+                    return isAscending ? comparison : -comparison;
                 }
             });
 
-            // Update table with sorted data
-            populateTable(sortedUsers);
+            // Reset to first page and display sorted data
+            currentPage = 1;
+            displayPage();
             
             // Update sort button text
             const sortDropdown = document.getElementById('sortDropdown');
@@ -1277,19 +1427,25 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
         function loadUsers() {
             document.querySelector('.loading').style.display = 'block';
             document.getElementById('tableContainer').style.display = 'none';
+            document.getElementById('paginationContainer').style.display = 'none';
 
             fetch(`manage_users_api.php?action=get_users&type=${userType}`)
                 .then(response => response.json())
                 .then(data => {
                     users = data;
+                    filteredUsers = [...users];
                     // Fix image paths for this page location (dashboards/admin/)
                     users = users.map(user => ({
                         ...user,
                         imageUrl: user.imageUrl ? '../../../' + user.imageUrl : user.imageUrl
                     }));
-                    populateTable(users);
+                    filteredUsers = [...users];
+                    
+                    currentPage = 1;
+                    displayPage();
                     document.querySelector('.loading').style.display = 'none';
                     document.getElementById('tableContainer').style.display = 'block';
+                    document.getElementById('paginationContainer').style.display = 'flex';
                 })
                 .catch(error => {
                     console.error('Error loading users:', error);
@@ -1298,6 +1454,49 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                         '<div class="alert alert-danger">Error loading data. Please refresh the page.</div>';
                     document.getElementById('tableContainer').style.display = 'block';
                 });
+        }
+
+        function displayPage() {
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredUsers.slice(start, end);
+            
+            populateTable(pageData);
+            updatePaginationInfo();
+        }
+
+        function updatePaginationInfo() {
+            const totalPages = Math.ceil(filteredUsers.length / pageSize);
+            const start = (currentPage - 1) * pageSize + 1;
+            const end = Math.min(currentPage * pageSize, filteredUsers.length);
+            
+            document.getElementById('recordsInfo').textContent = 
+                `Showing ${filteredUsers.length === 0 ? 0 : start} to ${end} of ${filteredUsers.length}`;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredUsers.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayPage();
+                scrollToTop();
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayPage();
+                scrollToTop();
+            }
+        }
+
+        function scrollToTop() {
+            document.getElementById('tableContainer').scrollTop = 0;
         }
 
         function populateTable(data) {

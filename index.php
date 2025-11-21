@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTU Scanner System</title>
+    <title>CTU Scanner System - Code 39 Barcode</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -58,7 +58,7 @@
                 <img src="assets/images/logo.png" alt="CTU Logo" class="logo-inline">
                 <span>CTU Scanner System</span>
             </h1>
-            <p class="hero-subtitle">Advanced QR Code Access Control System</p>
+            <p class="hero-subtitle">Advanced Code 39 Barcode Access Control System</p>
             <p class="hero-description">
                 Streamlined campus access management with real-time monitoring, 
                 comprehensive analytics, and secure authentication for students, faculty, and staff.
@@ -73,11 +73,11 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <a href="dashboards/scanner/" class="dashboard-card scanner-card d-block text-center">
                     <div class="dashboard-icon">
-                        <i class="fas fa-qrcode"></i>
+                        <i class="fas fa-barcode"></i>
                     </div>
                     <h3>Scanner Dashboard</h3>
                     <p class="text-muted">
-                        Scan QR codes for entry and exit tracking with real-time validation
+                        Scan Code 39 barcodes for entry and exit tracking with real-time validation
                     </p>
                     <div class="mt-3">
                         <span class="badge bg-primary rounded-pill px-3 py-2">
@@ -177,7 +177,7 @@
                         Cebu Technological University - Access Control System
                     </p>
                     <small class="opacity-75">
-                        Powered by advanced QR technology for seamless campus management
+                        Powered by advanced Code 39 barcode technology for seamless campus management
                     </small>
                 </div>
             </div>
