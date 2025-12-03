@@ -25,9 +25,9 @@ try {
     foreach ($recentEntries as $entry) {
         $personData = getPersonWithImage($conn, $entry['PersonID'], $entry['PersonCategory']);
         
-        $firstName = $entry['StudentFName'] ?? $entry['FacultyFName'] ?? $entry['SecurityFName'] ?? 'Unknown';
-        $middleName = $entry['StudentMName'] ?? $entry['FacultyMName'] ?? $entry['SecurityMName'] ?? '';
-        $lastName = $entry['StudentLName'] ?? $entry['FacultyLName'] ?? $entry['SecurityLName'] ?? '';
+        $firstName = $entry['StudentFName'] ?? 'Unknown';
+        $middleName = $entry['StudentMName'] ?? '';
+        $lastName = $entry['StudentLName'] ?? '';
         
         $fullName = trim($firstName . ' ' . $middleName . ' ' . $lastName);
         $fullName = preg_replace('/\s+/', ' ', $fullName); // Remove extra spaces
@@ -54,9 +54,9 @@ try {
     foreach ($recentExits as $exit) {
         $personData = getPersonWithImage($conn, $exit['PersonID'], $exit['PersonCategory']);
         
-        $firstName = $exit['StudentFName'] ?? $exit['FacultyFName'] ?? $exit['SecurityFName'] ?? 'Unknown';
-        $middleName = $exit['StudentMName'] ?? $exit['FacultyMName'] ?? $exit['SecurityMName'] ?? '';
-        $lastName = $exit['StudentLName'] ?? $exit['FacultyLName'] ?? $exit['SecurityLName'] ?? '';
+        $firstName = $exit['StudentFName'] ?? 'Unknown';
+        $middleName = $exit['StudentMName'] ?? '';
+        $lastName = $exit['StudentLName'] ?? '';
         
         $fullName = trim($firstName . ' ' . $middleName . ' ' . $lastName);
         $fullName = preg_replace('/\s+/', ' ', $fullName); // Remove extra spaces
@@ -102,8 +102,8 @@ function getPersonWithImage($conn, $personId, $personCategory) {
             $stmt = $conn->prepare("SELECT image FROM students WHERE StudentID = ?");
         } elseif (strtolower($personCategory) === 'faculty') {
             $stmt = $conn->prepare("SELECT image FROM faculty WHERE FacultyID = ?");
-        } elseif (strtolower($personCategory) === 'security') {
-            $stmt = $conn->prepare("SELECT image FROM security WHERE SecurityID = ?");
+        } elseif (strtolower($personCategory) === 'staff') {
+            $stmt = $conn->prepare("SELECT image FROM staff WHERE StaffID = ?");
         } else {
             return ['image' => null];
         }
@@ -148,6 +148,14 @@ function getPersonWithImage($conn, $personId, $personCategory) {
             $row = $stmt2->fetch(PDO::FETCH_ASSOC);
             if ($row) {
                 $additional['department'] = $row['Department'] ?? null;
+            }
+        } elseif (strtolower($personCategory) === 'staff') {
+            $stmt2 = $conn->prepare("SELECT Department, Position FROM staff WHERE StaffID = ?");
+            $stmt2->execute([$personId]);
+            $row = $stmt2->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $additional['department'] = $row['Department'] ?? null;
+                $additional['position'] = $row['Position'] ?? null;
             }
         }
     } catch (Exception $e) {

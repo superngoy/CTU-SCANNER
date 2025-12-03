@@ -1599,6 +1599,9 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             
             actionHtml = `
                 <td class="table-actions">
+                    <button class="btn btn-sm btn-outline-success me-1" onclick="generateID('${userId}', '${userType}'); event.stopPropagation();" title="Generate ID Card">
+                        <i class="fas fa-id-card"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser('${userId}'); event.stopPropagation();" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -1684,6 +1687,17 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                 submitLoading.style.display = 'none';
                 submitButton.disabled = false;
             });
+        }
+
+        function generateID(userId, type) {
+            // Determine the correct type for the URL
+            let urlType = type;
+            if (type === 'students') urlType = 'student';
+            else if (type === 'faculty') urlType = 'faculty';
+            else if (type === 'staff') urlType = 'staff';
+            
+            // Open ID generation page in new tab
+            window.open(`generate_id_api.php?person_id=${userId}&person_type=${urlType}`, '_blank', 'width=1200,height=800');
         }
 
         function editUser(userId) {

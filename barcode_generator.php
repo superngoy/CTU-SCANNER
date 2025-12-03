@@ -236,12 +236,20 @@ if ($action === 'staff') {
             display: inline-block;
             margin-bottom: 15px;
         }
+        .barcode-code {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
         .barcode-code img {
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
+            border: 3px solid #2c3e50;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
             margin: 10px 0;
             max-width: 100%;
             height: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .barcode-details {
             margin: 10px 0;
@@ -402,8 +410,8 @@ if ($action === 'staff') {
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <img src="${data.barcode_url}" alt="Barcode" class="img-fluid" style="border: 2px solid #e9ecef; border-radius: 10px;">
-                                        <p class="mt-2 text-muted">Scan this barcode with the scanner</p>
+                                        <img src="${data.barcode_url}" alt="Barcode" class="img-fluid" style="border: 3px solid #2c3e50; border-radius: 8px; padding: 8px; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
+                                        <p class="mt-2 text-muted"><strong>Code 39 Format</strong> - Scan this barcode with the scanner</p>
                                     </div>
                                 </div>
                             </div>
@@ -459,8 +467,8 @@ if ($action === 'staff') {
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <img src="${barcodeUrl}" alt="Barcode" class="img-fluid" style="border: 2px solid #e9ecef; border-radius: 10px;">
-                            <p class="mt-2 text-muted">Test barcode for scanning</p>
+                            <img src="${barcodeUrl}" alt="Barcode" class="img-fluid" style="border: 3px solid #2c3e50; border-radius: 8px; padding: 8px; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
+                            <p class="mt-2 text-muted"><strong>Code 39 Format</strong> - Test barcode for scanning</p>
                         </div>
                     </div>
                 </div>
@@ -523,25 +531,19 @@ if ($action === 'staff') {
         
         // Download barcode
         function downloadBarcode(id, name) {
-            const barcodeUrl = `https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(id)}&code=Code39&dpi=150&print=true&width=350&height=120`;
+            // Sanitize filename
+            const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
             
-            // Create a temporary link and trigger download
-            fetch(barcodeUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `Barcode_${id}_${name.replace(/\s+/g, '_')}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('Download failed:', error);
-                    alert('Download failed. You can right-click the barcode image and save it manually.');
-                });
+            // Use the download API endpoint
+            const downloadUrl = `api/download_barcode.php?data=${encodeURIComponent(id)}&name=${encodeURIComponent(safeName)}`;
+            
+            // Create an anchor element and trigger download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `Barcode_${safeName}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
         // Print function

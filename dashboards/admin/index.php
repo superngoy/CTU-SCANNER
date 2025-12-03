@@ -1019,7 +1019,7 @@ try {
             <div class="nav-item">
                 <a href="#qr-generator" class="nav-link" data-section="qr-generator">
                     <i class="fas fa-qrcode"></i>
-                    <span>QR Generator</span>
+                    <span>Barcode Generator</span>
                     <div class="nav-link-tooltip">QR Generator</div>
                 </a>
             </div>
@@ -2214,11 +2214,11 @@ try {
                                                 </div>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <div class="qr-container" style="background: var(--primary-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
-                                                    <img src="${data.barcode_url}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
+                                                <div style="background: #f8f9fa; padding: 15px; border-radius: 15px; display: inline-block; border: 1px solid #e9ecef;">
+                                                    <img src="${data.barcode_url}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 200px; border: 3px solid #2c3e50; border-radius: 8px; padding: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
                                                 </div>
                                                 <p class="mt-2 small text-muted">
-                                                    <i class="fas fa-mobile-alt me-1"></i>Scan with CTU Scanner
+                                                    <strong>Code 39 Format</strong> - Scan with CTU Scanner
                                                 </p>
                                             </div>
                                         </div>
@@ -2313,11 +2313,11 @@ try {
                                 </div>
                             </div>
                             <div class="col-md-6 text-center">
-                                <div class="qr-container" style="background: var(--warning-gradient); padding: 15px; border-radius: 15px; display: inline-block;">
-                                    <img src="${barcodeUrl}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 150px; border: 3px solid white; border-radius: 10px;">
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 15px; display: inline-block; border: 1px solid #e9ecef;">
+                                    <img src="${barcodeUrl}" alt="Code 39 Barcode" class="img-fluid" style="max-width: 200px; border: 3px solid #2c3e50; border-radius: 8px; padding: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
                                 </div>
                                 <p class="mt-2 small text-muted">
-                                    <i class="fas fa-flask me-1"></i>Test Code 39 Barcode
+                                    <strong>Code 39 Format</strong> - Test Code 39 Barcode
                                 </p>
                             </div>
                         </div>
@@ -2363,27 +2363,23 @@ try {
         }
         
         function downloadQR(id, name) {
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(id)}`;
+            // Sanitize filename
+            const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+            
+            // Use the download API endpoint
+            const downloadUrl = `../../api/download_barcode.php?data=${encodeURIComponent(id)}&name=${encodeURIComponent(safeName)}`;
             
             showNotification('Downloading barcode...', 'info');
             
-            fetch(qrUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `QR_${id}_${name.replace(/\s+/g, '_')}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    showNotification('Barcode downloaded successfully!', 'success');
-                })
-                .catch(error => {
-                    console.error('Download failed:', error);
-                    showNotification('Download failed. Right-click the barcode to save manually.', 'error');
-                });
+            // Create an anchor element and trigger download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `Barcode_${safeName}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Barcode downloaded successfully!', 'success');
         }
         
         function shareQR(id) {

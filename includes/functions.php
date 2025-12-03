@@ -76,22 +76,38 @@ class CTUScanner {
                         CASE 
                             WHEN e.PersonType = 'student' THEN s.image
                             WHEN e.PersonType = 'faculty' THEN f.image
+                            WHEN e.PersonType = 'staff' THEN st.image
                             ELSE NULL
                         END as image,
                         e.Timestamp,
                         CASE 
                             WHEN e.PersonType = 'student' THEN s.StudentFName
-                            ELSE f.FacultyFName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyFName
+                            WHEN e.PersonType = 'staff' THEN st.StaffFName
+                            ELSE 'Unknown'
                         END as StudentFName,
                         CASE 
+                            WHEN e.PersonType = 'student' THEN s.StudentMName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyMName
+                            WHEN e.PersonType = 'staff' THEN st.StaffMName
+                            ELSE ''
+                        END as StudentMName,
+                        CASE 
                             WHEN e.PersonType = 'student' THEN s.StudentLName
-                            ELSE f.FacultyLName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyLName
+                            WHEN e.PersonType = 'staff' THEN st.StaffLName
+                            ELSE ''
                         END as StudentLName,
                         f.FacultyFName,
-                        f.FacultyLName
+                        f.FacultyMName,
+                        f.FacultyLName,
+                        st.StaffFName,
+                        st.StaffMName,
+                        st.StaffLName
                     FROM entrylogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     ORDER BY e.Timestamp DESC 
                     LIMIT " . $limit;
             
@@ -117,6 +133,7 @@ class CTUScanner {
                         CASE 
                             WHEN e.PersonType = 'student' THEN s.image
                             WHEN e.PersonType = 'faculty' THEN f.image
+                            WHEN e.PersonType = 'staff' THEN st.image
                             ELSE NULL
                         END as image, 
                         e.PersonID,
@@ -124,17 +141,32 @@ class CTUScanner {
                         e.Timestamp,
                         CASE 
                             WHEN e.PersonType = 'student' THEN s.StudentFName
-                            ELSE f.FacultyFName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyFName
+                            WHEN e.PersonType = 'staff' THEN st.StaffFName
+                            ELSE 'Unknown'
                         END as StudentFName,
                         CASE 
+                            WHEN e.PersonType = 'student' THEN s.StudentMName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyMName
+                            WHEN e.PersonType = 'staff' THEN st.StaffMName
+                            ELSE ''
+                        END as StudentMName,
+                        CASE 
                             WHEN e.PersonType = 'student' THEN s.StudentLName
-                            ELSE f.FacultyLName
+                            WHEN e.PersonType = 'faculty' THEN f.FacultyLName
+                            WHEN e.PersonType = 'staff' THEN st.StaffLName
+                            ELSE ''
                         END as StudentLName,
                         f.FacultyFName,
-                        f.FacultyLName
+                        f.FacultyMName,
+                        f.FacultyLName,
+                        st.StaffFName,
+                        st.StaffMName,
+                        st.StaffLName
                     FROM exitlogs e
                     LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                     LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
+                    LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
                     ORDER BY e.Timestamp DESC 
                     LIMIT " . $limit;
             
