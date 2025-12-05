@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-// Security check - bypass for testing
-// if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'scanner') {
-//     header('Location: login.php');
-//     exit;
-// }
+// Security check - require scanner login
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'scanner') {
+    header('Location: login.php');
+    exit;
+}
 
 $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
 ?>
@@ -53,8 +53,7 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             display: flex;
             flex-direction: column;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         body::after {
@@ -88,20 +87,26 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             z-index: 1;
             width: 100%;
             max-width: 720px;
-            margin: auto;
-            padding: 16px 8px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            padding: 0;
+            margin: 0 auto;
+            overflow: hidden;
         }
 
         .scanner-header {
             text-align: center;
             color: white;
-            margin-bottom: 8px;
+            margin: 0;
             animation: slideDown 0.6s ease-out;
             flex-shrink: 0;
-            padding: 12px 0;
+            padding: 20px 16px;
+            background: linear-gradient(135deg, rgba(229, 197, 115, 0.1), rgba(168, 53, 49, 0.1));
+            border-radius: 20px 20px 0 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 197, 115, 0.2);
+            border-bottom: none;
         }
 
         @keyframes slideDown {
@@ -121,12 +126,12 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             margin: 0 auto 8px;
             object-fit: contain;
             border-radius: 50%;
-            border: 4px solid var(--primary-gold);
-            background: linear-gradient(135deg, rgba(229, 197, 115, 0.15), rgba(168, 53, 49, 0.15));
-            padding: 6px;
-            filter: drop-shadow(0 12px 25px rgba(229, 197, 115, 0.6));
+            border: 5px solid var(--primary-gold);
+            background: linear-gradient(135deg, rgba(229, 197, 115, 0.25), rgba(168, 53, 49, 0.15));
+            padding: 8px;
+            filter: drop-shadow(0 15px 35px rgba(229, 197, 115, 0.7));
             animation: logoPulse 3s ease-in-out infinite;
-            box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.3);
         }
 
         @keyframes logoPulse {
@@ -143,33 +148,62 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         .scanner-header h1 {
             font-size: 1.6rem;
             font-weight: 900;
-            margin-bottom: 3px;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
         }
 
         .scanner-header p {
-            font-size: 0.8rem;
-            opacity: 0.95;
+            font-size: 0.85rem;
+            opacity: 0.9;
             margin: 0;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logout-btn:hover {
+            background: rgba(229, 197, 115, 0.25);
+            color: var(--primary-gold);
+            border-color: rgba(229, 197, 115, 0.4);
+            transform: scale(1.1);
         }
 
         .scanner-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35), 0 8px 16px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.99);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(229, 197, 115, 0.3);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(229, 197, 115, 0.2);
+            border-top: none;
             animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            flex-shrink: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
         }
 
         @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
             to {
                 opacity: 1;
@@ -178,25 +212,70 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-orange) 100%);
             color: #fff;
-            padding: 16px;
+            padding: 20px;
             border: none;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: headerShine 3s ease-in-out infinite;
+        }
+
+        @keyframes headerShine {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(50px, -50px);
+            }
         }
 
         .card-header h4 {
             margin: 0;
-            font-weight: 800;
-            font-size: 1rem;
-            letter-spacing: 0.3px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
         }
 
         .card-body {
-            padding: 18px;
+            padding: 28px 24px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 18px;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .card-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .card-body::-webkit-scrollbar-thumb {
+            background: var(--primary-gold);
+            border-radius: 3px;
+        }
+
+        .card-body::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-orange);
         }
 
         .scanner-location-select {
@@ -204,104 +283,141 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .location-label {
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 800;
+            margin-bottom: 10px;
             color: var(--primary-red);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-select {
-            border: 2px solid #e0e0e0 !important;
-            border-radius: 10px;
-            padding: 10px 12px !important;
-            font-weight: 600;
+            border: 2.5px solid #e0e0e0 !important;
+            border-radius: 12px;
+            padding: 12px 14px !important;
+            font-weight: 700;
             color: #333;
             background-color: white;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .form-select:hover {
             border-color: var(--primary-gold) !important;
-            box-shadow: 0 4px 12px rgba(229, 197, 115, 0.15);
+            box-shadow: 0 6px 20px rgba(229, 197, 115, 0.25);
+            transform: translateY(-2px);
         }
 
         .form-select:focus {
             outline: none;
             border-color: var(--primary-orange) !important;
-            box-shadow: 0 0 0 4px rgba(229, 197, 115, 0.2), 0 4px 12px rgba(229, 197, 115, 0.15);
+            box-shadow: 0 0 0 5px rgba(229, 197, 115, 0.3), 0 6px 20px rgba(229, 197, 115, 0.25);
             background-color: white;
         }
 
         .scanner-status-box {
-            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(32, 201, 151, 0.1));
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(32, 201, 151, 0.1));
             border: 3px solid #28a745;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 18px;
+            padding: 28px 24px;
             text-align: center;
             margin: 0;
             animation: statusPulse 2s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scanner-status-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: statusShine 2.5s infinite;
+        }
+
+        @keyframes statusShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         @keyframes statusPulse {
-            0%, 100% { opacity: 0.95; }
+            0%, 100% { opacity: 0.93; }
             50% { opacity: 1; }
         }
 
         .status-text {
-            font-size: 0.9rem;
-            font-weight: 800;
-            margin: 5px 0;
-            color: var(--primary-red);
+            font-size: 1rem;
+            font-weight: 900;
+            margin: 8px 0 4px 0;
+            color: #28a745;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .scanner-status-box small {
+            font-size: 0.8rem !important;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
         .barcode-input-group {
-            margin: 0;
+            margin: 8px 0 0 0;
             position: relative;
         }
 
         .barcode-input-group small {
-            font-size: 0.7rem;
-            margin-top: 6px;
+            font-size: 0.75rem;
+            margin-top: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 5px;
+            font-weight: 600;
+            color: #666;
         }
 
         .barcode-input-group small strong {
-            font-weight: 700;
+            font-weight: 900;
             color: var(--primary-red);
         }
 
         .barcode-input {
-            font-size: 1.1rem;
-            padding: 12px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            font-size: 1.2rem;
+            padding: 14px 16px;
+            border: 2.5px solid #e0e0e0;
+            border-radius: 12px;
             text-align: center;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             color: var(--primary-red);
-            background: linear-gradient(135deg, #fafafa, #ffffff);
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             -webkit-user-select: text;
             user-select: text;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .barcode-input:hover {
             border-color: var(--primary-gold);
-            box-shadow: 0 4px 16px rgba(229, 197, 115, 0.2);
+            box-shadow: 0 6px 20px rgba(229, 197, 115, 0.25);
+            transform: translateY(-2px);
         }
 
         .barcode-input:focus {
             outline: none;
             border-color: var(--primary-orange);
-            box-shadow: 0 0 0 4px rgba(229, 197, 115, 0.2), 0 4px 16px rgba(229, 197, 115, 0.2);
+            box-shadow: 0 0 0 5px rgba(229, 197, 115, 0.3), 0 6px 20px rgba(229, 197, 115, 0.25);
             background: white;
         }
 
@@ -508,23 +624,38 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .scan-result-modal {
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            border-radius: 24px;
-            padding: 28px 24px;
-            max-width: 480px;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+            border-radius: 28px;
+            padding: 32px 28px;
+            max-width: 520px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.25);
             text-align: center;
-            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-top: 5px solid var(--primary-gold);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid rgba(229, 197, 115, 0.3);
+            position: relative;
+        }
+
+        .scan-result-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+            border-radius: 28px 28px 0 0;
+        }
+
+        .scan-result-modal.error::before {
+            background: linear-gradient(135deg, var(--primary-red), #c44536);
         }
 
         @keyframes modalSlideIn {
             from {
-                transform: translateY(-40px) scale(0.95);
+                transform: translateY(-50px) scale(0.92);
                 opacity: 0;
             }
             to {
@@ -534,13 +665,15 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .scan-result-modal.error {
-            border-top-color: var(--primary-red);
+            border-color: rgba(220, 53, 69, 0.3);
         }
 
         .result-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
+            font-size: 3.2rem;
+            margin-bottom: 16px;
             animation: iconPulse 0.6s ease-out;
+            display: flex;
+            justify-content: center;
         }
 
         @keyframes iconPulse {
@@ -575,35 +708,38 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .result-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 10px;
             color: var(--primary-red);
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
+            text-transform: uppercase;
         }
 
         .result-message {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 12px;
-            line-height: 1.5;
+            font-size: 1.05rem;
+            color: #555;
+            margin-bottom: 18px;
+            line-height: 1.6;
+            font-weight: 700;
         }
 
         .result-details {
             text-align: left;
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0 0 0;
-            border: 1px solid rgba(229, 197, 115, 0.2);
+            background: linear-gradient(135deg, rgba(229, 197, 115, 0.05), rgba(168, 53, 49, 0.03));
+            border-radius: 16px;
+            padding: 16px;
+            margin: 16px 0 0 0;
+            border: 2px solid rgba(229, 197, 115, 0.2);
         }
 
         .result-detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            align-items: center;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(229, 197, 115, 0.15);
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
 
         .result-detail-row:last-child {
@@ -611,43 +747,48 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         }
 
         .detail-label {
-            font-weight: 700;
-            color: var(--primary-orange);
-            font-size: 0.75rem;
+            font-weight: 900;
+            color: var(--primary-red);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .detail-value {
             color: #333;
-            font-weight: 600;
+            font-weight: 800;
             text-align: right;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
         }
 
         .recent-scans-toggle {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 76px;
-            height: 76px;
-            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-orange) 100%);
             border: none;
             border-radius: 50%;
             color: white;
-            font-size: 1.9rem;
+            font-size: 2rem;
             cursor: pointer;
-            box-shadow: 0 12px 40px rgba(229, 197, 115, 0.4);
+            box-shadow: 0 15px 50px rgba(229, 197, 115, 0.5);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 500;
             border: 4px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .recent-scans-toggle:hover {
-            transform: scale(1.12);
-            box-shadow: 0 16px 50px rgba(229, 197, 115, 0.5);
+            transform: scale(1.15) translateY(-4px);
+            box-shadow: 0 20px 60px rgba(229, 197, 115, 0.6);
         }
 
         .recent-scans-toggle:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
         }
 
         .recent-scans-panel {
@@ -1113,6 +1254,9 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             <img src="/assets/images/logo.png" alt="CTU Logo" class="logo">
             <h1><i class="fas fa-barcode"></i> CTU Scanner</h1>
             <p>Code 39 Barcode Scanner System</p>
+            <a href="logout.php" class="logout-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
 
         <div class="scanner-card">
@@ -1443,7 +1587,7 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             // Generate avatar HTML
             let avatarHtml = '';
             if (person && person.image) {
-                avatarHtml = `<img src="${person.image}" alt="${person.name}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary-gold); object-fit: cover; margin-bottom: 15px; box-shadow: 0 8px 25px rgba(229, 197, 115, 0.4);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
+                avatarHtml = `<img src="${person.image}" alt="${person.name}" style="width: 150px; height: 150px; border-radius: 50%; border: 5px solid var(--primary-gold); object-fit: cover; margin-bottom: 20px; box-shadow: 0 12px 40px rgba(229, 197, 115, 0.5);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`;
             }
             
             let initials = '';
@@ -1452,7 +1596,7 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
                 initials = (nameparts[0][0] + (nameparts[1] ? nameparts[1][0] : '')).toUpperCase();
             }
             
-            const defaultAvatarHtml = `<div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange)); color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; border: 4px solid var(--primary-gold); margin-bottom: 15px; box-shadow: 0 8px 25px rgba(229, 197, 115, 0.4); ${person && person.image ? 'display: none;' : ''}" id="defaultAvatar">${initials}</div>`;
+            const defaultAvatarHtml = `<div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange)); color: white; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; border: 5px solid var(--primary-gold); margin-bottom: 20px; box-shadow: 0 12px 40px rgba(229, 197, 115, 0.5); ${person && person.image ? 'display: none;' : ''}" id="defaultAvatar">${initials}</div>`;
 
             document.getElementById('resultIcon').innerHTML = avatarHtml + defaultAvatarHtml;
             document.getElementById('resultTitle').textContent = 'Scan Successful';

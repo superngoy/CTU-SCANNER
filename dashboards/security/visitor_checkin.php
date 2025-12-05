@@ -17,6 +17,7 @@ ini_set('error_log', __DIR__ . '/visitor_checkin_error.log');
 if (!ob_get_level()) ob_start();
 
 require_once '../../config/database.php';
+require_once '../../includes/notification_helpers.php';
 
 function send_json($arr) {
     if (ob_get_length()) {
@@ -68,6 +69,10 @@ try {
         $stmt->execute([$visitorId, $location]);
         $logId = $conn->lastInsertId();
 
+        // Send notification to admin
+        $visitorName = trim($visitor['first_name'] . ' ' . $visitor['middle_name'] . ' ' . $visitor['last_name']);
+        notifyVisitorCheckIn($visitorName, 'Guest', $location);
+
         send_json([
             'success' => true,
             'message' => 'Visitor checked in successfully',
@@ -111,6 +116,10 @@ try {
         $checkinTime = strtotime($log['check_in_time']);
         $checkoutTime = time();
         $dwellMinutes = round(($checkoutTime - $checkinTime) / 60);
+
+        // Send notification to admin
+        $visitorName = trim($visitor['first_name'] . ' ' . $visitor['middle_name'] . ' ' . $visitor['last_name']);
+        notifyVisitorCheckOut($visitorName);
 
         send_json([
             'success' => true,

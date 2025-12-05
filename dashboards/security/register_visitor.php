@@ -19,6 +19,7 @@ ini_set('error_log', __DIR__ . '/visitor_error.log');
 if (!ob_get_level()) ob_start();
 
 require_once '../../config/database.php';
+require_once '../../includes/notification_helpers.php';
 
 // Helper to send clean JSON and exit
 function send_json($arr) {
@@ -133,6 +134,10 @@ try {
     ");
     $stmtGet->execute([$visitorId]);
     $visitor = $stmtGet->fetch(PDO::FETCH_ASSOC);
+
+    // Send notification to admin
+    $visitorName = trim($firstName . ' ' . $middleName . ' ' . $lastName);
+    notifyVisitorRegistered($visitorName, 'Guest', $purpose);
 
     send_json([
         'success' => true,

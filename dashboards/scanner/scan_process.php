@@ -9,6 +9,7 @@ ini_set('error_log', __DIR__ . '/scan_error.log');
 if (!ob_get_level()) ob_start();
 
 require_once '../../includes/functions.php';
+require_once '../../includes/notification_helpers.php';
 
 // Helper to send clean JSON and exit
 function send_json($arr) {
@@ -69,6 +70,21 @@ if ($_POST['action'] === 'scan') {
                     $scanner_info['Location'] ?? 'Unknown',
                     $_SERVER['REMOTE_ADDR'] ?? null
                 ]);
+                
+                // Create notification for admin about failed scan
+                $name = trim($person['StudentFName'] . ' ' . ($person['StudentMName'] ?? '') . ' ' . $person['StudentLName']);
+                $name = preg_replace('/\s+/', ' ', $name);
+                addNotification(
+                    'Access Denied - Not Enrolled',
+                    "Student " . $name . " ({$person_id}) attempted entry at " . ($scanner_info['Location'] ?? 'Unknown') . " but is not enrolled.",
+                    'error',
+                    'scan_failure',
+                    'fa-user-slash',
+                    null
+                );
+                
+                // Create notification for security about failed scan
+                notifySecurityNotEnrolled($name, $person_id, $scanner_info['Location'] ?? 'Unknown');
                 
                 send_json([
                     'success' => false,
@@ -221,6 +237,9 @@ if ($_POST['action'] === 'scan') {
                     $_SERVER['REMOTE_ADDR'] ?? null
                 ]);
                 
+                // Create security notification for system error
+                notifySecurityFailedScan($name, ucfirst($person['type']), 'System Error - Failed to record ' . $action, $scanner_info['Location'] ?? 'Unknown');
+                
                 send_json(['success' => false, 'message' => 'Failed to record ' . strtolower($action)]);
             }
         } else {
@@ -266,6 +285,41 @@ if ($_POST['action'] === 'scan') {
                 $reason = 'inactive';
                 $log_person_id = $inactiveUser['id'];
                 $log_person_type = $inactiveUser['type'];
+                
+                // Get person details for notification
+                $personDetails = null;
+                if ($log_person_type === 'student') {
+                    $stmt = $conn->prepare("SELECT StudentFName, StudentMName, StudentLName FROM students WHERE StudentID = ?");
+                } elseif ($log_person_type === 'faculty') {
+                    $stmt = $conn->prepare("SELECT FacultyFName as StudentFName, FacultyMName as StudentMName, FacultyLName as StudentLName FROM faculty WHERE FacultyID = ?");
+                } elseif ($log_person_type === 'staff') {
+                    $stmt = $conn->prepare("SELECT StaffFName as StudentFName, StaffMName as StudentMName, StaffLName as StudentLName FROM staff WHERE StaffID = ?");
+                } else {
+                    $stmt = $conn->prepare("SELECT SecurityFName as StudentFName, SecurityMName as StudentMName, SecurityLName as StudentLName FROM security WHERE SecurityID = ?");
+                }
+                
+                $stmt->execute([$log_person_id]);
+                $personDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                // Create notification for inactive user
+                if ($personDetails) {
+                    $name = trim($personDetails['StudentFName'] . ' ' . ($personDetails['StudentMName'] ?? '') . ' ' . $personDetails['StudentLName']);
+                    $name = preg_replace('/\s+/', ' ', $name);
+                } else {
+                    $name = $log_person_id;
+                }
+                
+                addNotification(
+                    'Access Denied - Inactive Account',
+                    ucfirst($log_person_type) . " " . $name . " ({$log_person_id}) attempted entry at " . ($scanner_info['Location'] ?? 'Unknown') . " but account is inactive.",
+                    'warning',
+                    'scan_failure',
+                    'fa-user-lock',
+                    null
+                );
+                
+                // Create security notification for inactive account
+                notifySecurityInactiveAccount($name, $log_person_type, $log_person_id, $scanner_info['Location'] ?? 'Unknown');
             }
             
             // Log failed attempt
@@ -284,6 +338,19 @@ if ($_POST['action'] === 'scan') {
                     $_SERVER['REMOTE_ADDR'] ?? null
                 ]);
             } else {
+                // Invalid QR code - create notification
+                addNotification(
+                    'Invalid Barcode Detected',
+                    "Unrecognized barcode '" . substr($barcode_data, 0, 50) . "' scanned at " . ($scanner_info['Location'] ?? 'Unknown') . ". This barcode does not exist in the system.",
+                    'error',
+                    'scan_failure',
+                    'fa-exclamation-circle',
+                    null
+                );
+                
+                // Create security notification for invalid barcode
+                notifySecurityInvalidBarcode($barcode_data, $scanner_info['Location'] ?? 'Unknown');
+                
                 $stmtAttempts = $conn->prepare("
                     INSERT INTO scan_attempts (scanned_at, qr_data, scanner_id, location, status, reason, ip_address)
                     VALUES (NOW(), ?, ?, ?, 'failed', ?, ?)

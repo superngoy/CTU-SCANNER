@@ -47,6 +47,7 @@ require_once '../../config/database.php';
             min-height: 100vh;
             animation: gradientShift 15s ease infinite;
             background-size: 200% 200%;
+            overflow-x: hidden;
         }
         
         @keyframes gradientShift {
@@ -58,7 +59,18 @@ require_once '../../config/database.php';
         .navbar {
             background: var(--primary-gradient) !important;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 1rem 0;
+            padding: 1rem 0.5rem;
+            position: relative;
+            z-index: 100;
+            overflow: visible !important;
+        }
+        
+        .navbar .container-fluid {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
         }
         
         .navbar-brand {
@@ -433,18 +445,591 @@ require_once '../../config/database.php';
             max-width: 1400px;
         }
         
+        /* Notification Styles for Security Dashboard */
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.15s ease;
+            margin-right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-btn:hover {
+            background: rgba(229, 197, 115, 0.2);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            background: #dc3545;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            padding: 2px 4px;
+            min-width: 16px;
+            height: auto;
+        }
+
+        .notification-badge:not(:empty) {
+            width: auto;
+            height: 18px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            overflow: visible !important;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            margin-left: auto;
+        }
+
+        .navbar-text {
+            white-space: nowrap;
+            font-size: 0.95rem;
+            margin: 0 !important;
+        }
+
+        .nav-link {
+            white-space: nowrap;
+            padding: 0 !important;
+        }
+
+        /* Profile Dropdown Styles */
+        .profile-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .profile-btn:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-btn .default-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #E5C573, #f5deba);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .profile-dropdown {
+            position: fixed;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 220px;
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+            animation: slideInDown 0.3s ease-out;
+            top: calc(100% + 10px);
+            right: 20px;
+        }
+
+        .profile-dropdown.show {
+            display: flex;
+        }
+
+        .profile-header {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-header-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .profile-header-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-header-img .default-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #E5C573, #f5deba);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .profile-info h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .profile-info p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .profile-body {
+            padding: 8px 0;
+        }
+
+        .profile-logout-btn {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            color: #666;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .profile-logout-btn:hover {
+            background: #f5f5f5;
+            color: #dc3545;
+        }
+
+        /* Notification Container & Dropdown */
+        .notification-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .notification-dropdown {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+            margin-top: 0;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        .notification-dropdown.show {
+            display: flex;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .notification-header h6 {
+            color: #333;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .notification-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 200px;
+            max-height: 380px;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .notification-item:hover {
+            background: #f9f9f9;
+        }
+
+        .notification-item.unread {
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .notification-item.type-error .notification-icon {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .notification-item.type-warning .notification-icon {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .notification-item.type-info .notification-icon {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notification-title .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
+        .notification-message {
+            color: #666;
+            font-size: 13px;
+            margin: 0 0 6px 0;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: #999;
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .notification-actions button {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 12px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .notification-actions button:hover {
+            color: var(--primary-color);
+        }
+
+        .notification-footer {
+            padding: 10px 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #fafafa;
+            border-radius: 0 0 12px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notification-footer .btn-link {
+            color: #666;
+            font-size: 13px;
+            padding: 8px 12px;
+            text-decoration: none;
+        }
+
+        .notification-footer .btn-link:hover {
+            color: var(--primary-color);
+            background: rgba(151, 37, 41, 0.05);
+        }
+
+        .notification-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .notification-empty i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Animation for dropdown */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .container-fluid {
+            overflow: visible !important;
+        }
+        
         @media (max-width: 768px) {
             .stat-card h3 {
                 font-size: 2rem;
             }
             
+            .navbar .container-fluid {
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .navbar-brand {
+                display: flex;
+                align-items: center;
+                font-size: 1rem;
+                flex-basis: auto;
+                margin-bottom: 0;
+                order: 1;
+            }
+
             .navbar-brand img {
                 height: 35px;
                 margin-right: 10px;
             }
+
+            .navbar-brand div:last-child small {
+                display: none;
+            }
             
+            .navbar-nav {
+                flex-basis: auto;
+                justify-content: flex-end;
+                margin-top: 0;
+                gap: 0.5rem;
+                order: 2;
+                margin-left: auto;
+                flex-wrap: nowrap;
+            }
+
+            .notification-btn {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .profile-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .profile-container {
+                margin: 0;
+            }
+
+            .profile-dropdown {
+                position: fixed !important;
+                top: auto !important;
+                left: auto !important;
+                right: 20px !important;
+                bottom: auto !important;
+                transform: none !important;
+                width: 300px !important;
+                max-width: none !important;
+            }
+
+            .notification-dropdown {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translate(-50%, -50%);
+                width: 90vw !important;
+                max-width: 450px !important;
+                max-height: 70vh !important;
+            }
+
             .card-header {
                 padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .navbar .container-fluid {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .navbar-brand {
+                flex-basis: auto;
+                font-size: 0.85rem;
+                margin-bottom: 0;
+                order: 1;
+            }
+
+            .navbar-brand img {
+                height: 30px;
+                margin-right: 8px;
+            }
+
+            .navbar-brand div:last-child {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .navbar-brand div:last-child small {
+                display: none;
+            }
+
+            .navbar-nav {
+                flex-basis: auto;
+                gap: 0.5rem;
+                justify-content: flex-end;
+                order: 2;
+                margin-left: auto;
+                flex-wrap: nowrap;
+            }
+
+            .notification-btn {
+                padding: 0.4rem 0.5rem;
+                font-size: 16px;
+            }
+
+            .profile-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .profile-container {
+                margin: 0;
+            }
+
+            .profile-dropdown {
+                position: fixed !important;
+                top: auto !important;
+                left: auto !important;
+                right: 10px !important;
+                bottom: auto !important;
+                transform: none !important;
+                width: 280px !important;
+                max-width: none !important;
+            }
+
+            .notification-dropdown {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translate(-50%, -50%) !important;
+                width: 95vw !important;
+                max-width: 350px !important;
             }
         }
     </style>
@@ -461,15 +1046,98 @@ require_once '../../config/database.php';
                 </div>
             </a>
             <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    <i class="fas fa-user-shield me-2"></i>Security: <?php echo htmlspecialchars($_SESSION['security_name'] ?? $_SESSION['security_id']); ?>
-                </span>
-                <a class="nav-link" href="logout.php" style="color: rgba(255,255,255,0.9);">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
-                </a>
+                <!-- Notification Bell with Dropdown -->
+                <div class="notification-container">
+                    <button class="notification-btn" id="notificationBell" title="Failed Scan Alerts" onclick="toggleNotificationDropdown()">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-badge" id="notificationBadge">0</div>
+                    </button>
+                </div>
+
+                <!-- Profile Picture with Dropdown -->
+                <div class="profile-container">
+                    <button class="profile-btn" id="profileBtn" title="Profile" onclick="toggleProfileDropdown()">
+                        <?php 
+                            $security_id = $_SESSION['security_id'] ?? 'S';
+                            $profile_pic = '';
+                            
+                            // Fetch profile picture from database
+                            try {
+                                require_once '../../config/database.php';
+                                $db = new Database();
+                                $conn = $db->getConnection();
+                                
+                                $sql = "SELECT image FROM security WHERE SecurityID = ?";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->execute([$security_id]);
+                                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                
+                                if ($result && $result['image']) {
+                                    $profile_pic = '/' . $result['image'];
+                                }
+                            } catch (Exception $e) {
+                                // If database query fails, use fallback
+                            }
+                            
+                            if ($profile_pic && file_exists($_SERVER['DOCUMENT_ROOT'] . $profile_pic)) {
+                                echo '<img src="' . htmlspecialchars($profile_pic) . '" alt="Profile">';
+                            } else {
+                                echo '<div class="default-avatar">' . substr(htmlspecialchars($security_id ?? 'S'), 0, 1) . '</div>';
+                            }
+                        ?>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="profile-header">
+                            <div class="profile-header-img">
+                                <?php 
+                                    if ($profile_pic && file_exists($_SERVER['DOCUMENT_ROOT'] . $profile_pic)) {
+                                        echo '<img src="' . htmlspecialchars($profile_pic) . '" alt="Profile">';
+                                    } else {
+                                        echo '<div class="default-avatar">' . substr(htmlspecialchars($security_id ?? 'S'), 0, 1) . '</div>';
+                                    }
+                                ?>
+                            </div>
+                            <div class="profile-info">
+                                <h6><?php echo htmlspecialchars($_SESSION['security_name'] ?? 'Security Guard'); ?></h6>
+                                <p><?php echo htmlspecialchars($security_id); ?></p>
+                            </div>
+                        </div>
+                        <div class="profile-body">
+                            <a href="logout.php" class="profile-logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- Notification Dropdown Panel - Outside navbar to avoid clipping -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h6 class="mb-0">Failed Scan Alerts</h6>
+            <button class="btn-close btn-sm" onclick="toggleNotificationDropdown()"></button>
+        </div>
+        
+        <div class="notification-list" id="notificationList">
+            <div class="text-center p-4">
+                <i class="fas fa-spinner fa-spin text-muted mb-2"></i>
+                <p class="text-muted small">Loading...</p>
+            </div>
+        </div>
+        
+        <div class="notification-footer">
+            <button class="btn btn-sm btn-link w-100" onclick="markAllNotificationsRead()">
+                <i class="fas fa-check me-1"></i>Mark all as read
+            </button>
+            <button class="btn btn-sm btn-link text-danger w-100" onclick="clearAllNotifications()">
+                <i class="fas fa-trash me-1"></i>Clear all
+            </button>
+        </div>
+    </div>
 
     <div class="container-fluid py-4">
         <!-- Stats Cards -->
@@ -1119,7 +1787,264 @@ require_once '../../config/database.php';
             setInterval(loadVisitors, 30000);
             // Refresh active visitors every 15 seconds
             setInterval(loadActiveVisitors, 15000);
+            
+            // Load notifications on page load
+            fetchNotifications();
+            // Refresh notifications every 10 seconds
+            setInterval(fetchNotifications, 10000);
+            // Close dropdown when clicking outside
+            document.addEventListener('click', closeNotificationDropdownOnClickOutside);
+            
+            // Reposition profile dropdown on scroll and window resize
+            window.addEventListener('scroll', () => {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    positionProfileDropdown();
+                }
+            });
+            
+            window.addEventListener('resize', () => {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    positionProfileDropdown();
+                }
+            });
         });
+
+        // ==========================================
+        // NOTIFICATION FUNCTIONS
+        // ==========================================
+
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+            
+            // Fetch notifications when opening dropdown
+            if (dropdown.classList.contains('show')) {
+                fetchNotifications();
+            }
+        }
+
+        function closeNotificationDropdownOnClickOutside(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.getElementById('notificationBell');
+            
+            if (!dropdown.contains(event.target) && !bell.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        // ==========================================
+        // PROFILE DROPDOWN FUNCTIONS
+        // ==========================================
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            
+            // Close notification dropdown
+            closeNotificationDropdownOnClickOutside({ target: document.body });
+            
+            // Toggle profile dropdown
+            dropdown.classList.toggle('show');
+            
+            // Position dropdown properly
+            if (dropdown.classList.contains('show')) {
+                positionProfileDropdown();
+            }
+        }
+
+        function positionProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            
+            if (!dropdown || !btn) return;
+            
+            const rect = btn.getBoundingClientRect();
+            const dropdownHeight = dropdown.offsetHeight;
+            
+            // Position to the right of profile button with proper spacing
+            dropdown.style.top = (rect.bottom + 10) + 'px';
+            dropdown.style.right = 'auto';
+            dropdown.style.left = (rect.left - dropdown.offsetWidth + btn.offsetWidth) + 'px';
+            
+            // If dropdown goes off screen, adjust
+            if (dropdown.getBoundingClientRect().right > window.innerWidth - 10) {
+                dropdown.style.left = 'auto';
+                dropdown.style.right = '10px';
+            }
+        }
+
+        function closeProfileDropdownOnClickOutside(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const btn = document.getElementById('profileBtn');
+            
+            if (!dropdown.contains(event.target) && !btn.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        // Close dropdowns on click outside
+        document.addEventListener('click', (event) => {
+            closeNotificationDropdownOnClickOutside(event);
+            closeProfileDropdownOnClickOutside(event);
+        });
+
+        /**
+         * Fetch notifications from API
+         */
+        function fetchNotifications() {
+            fetch('../../api/notifications_security_api.php?action=get_all&limit=20')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayNotifications(data.notifications);
+                        updateNotificationBadge(data);
+                    }
+                })
+                .catch(error => console.log('Notification fetch error:', error));
+        }
+
+        /**
+         * Display notifications in dropdown
+         */
+        function displayNotifications(notifications) {
+            const listContainer = document.getElementById('notificationList');
+            
+            if (!notifications || notifications.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="notification-empty">
+                        <div><i class="fas fa-inbox"></i></div>
+                        <p>No failed scan alerts</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = notifications.map(notif => {
+                const timeAgo = getTimeAgo(notif.created_at);
+                const isUnread = !notif.is_read;
+                
+                return `
+                    <div class="notification-item type-${notif.type} ${isUnread ? 'unread' : ''}">
+                        <div class="notification-icon">
+                            <i class="fas ${notif.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">
+                                ${notif.title}
+                                ${isUnread ? '<span class="badge bg-danger">New</span>' : ''}
+                            </div>
+                            <p class="notification-message">${notif.message}</p>
+                            <p class="notification-time">${timeAgo}</p>
+                            <div class="notification-actions">
+                                ${isUnread ? `<button onclick="markNotificationRead('${notif.id}')"><i class="fas fa-check me-1"></i>Mark read</button>` : ''}
+                                <button onclick="deleteNotification('${notif.id}')" class="text-danger"><i class="fas fa-trash me-1"></i>Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Update notification badge with unread count
+         */
+        function updateNotificationBadge(data) {
+            const badge = document.getElementById('notificationBadge');
+            let unreadCount = 0;
+            
+            if (data.notifications) {
+                unreadCount = data.notifications.filter(n => !n.is_read).length;
+            }
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.textContent = '';
+                badge.style.display = 'none';
+            }
+        }
+
+        /**
+         * Mark single notification as read
+         */
+        function markNotificationRead(notifId) {
+            fetch(`../../api/notifications_security_api.php?action=mark_read&notification_id=${notifId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchNotifications();
+                    }
+                })
+                .catch(error => console.log('Error marking read:', error));
+        }
+
+        /**
+         * Mark all notifications as read
+         */
+        function markAllNotificationsRead() {
+            fetch('../../api/notifications_security_api.php?action=mark_all_read', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchNotifications();
+                }
+            })
+            .catch(error => console.log('Error marking all read:', error));
+        }
+
+        /**
+         * Delete notification
+         */
+        function deleteNotification(notifId) {
+            if (confirm('Delete this notification?')) {
+                fetch(`../../api/notifications_security_api.php?action=delete&notification_id=${notifId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            fetchNotifications();
+                        }
+                    })
+                    .catch(error => console.log('Error deleting:', error));
+            }
+        }
+
+        /**
+         * Clear all notifications
+         */
+        function clearAllNotifications() {
+            if (confirm('Clear all failed scan alerts? This cannot be undone.')) {
+                fetch('../../api/notifications_security_api.php?action=clear_all', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchNotifications();
+                    }
+                })
+                .catch(error => console.log('Error clearing:', error));
+            }
+        }
+
+        /**
+         * Convert timestamp to "time ago" format
+         */
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            return date.toLocaleDateString();
+        }
     </script>
 </body>
 </html>

@@ -2050,6 +2050,7 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             submitButton.disabled = true;
             
             const formData = new FormData(e.target);
+            const userId = formData.get('user_id');
             formData.append('action', 'update_user');
             formData.append('type', userType);
             
@@ -2064,13 +2065,16 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
                     modal.hide();
                     
-                    // Reload data with a small delay to ensure server processes the file
+                    // Fetch updated user data from server
                     setTimeout(() => {
-                        loadUsers();
+                        fetch(`manage_users_api.php?action=get_user&type=${userType}&user_id=${userId}`)
+                            .then(response => response.json())
+                            .then(userData => {
+                                // Update local data and redisplay
+                                updateLocalUserData(userId, userData);
+                                showAlert('success', data.message);
+                            });
                     }, 300);
-                    
-                    // Show success message
-                    showAlert('success', data.message);
                 } else {
                     showAlert('danger', data.message || 'An error occurred');
                 }
@@ -2085,6 +2089,37 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                 submitLoading.style.display = 'none';
                 submitButton.disabled = false;
             });
+        }
+
+        function updateLocalUserData(userId, updates) {
+            // Update in users array
+            const userIndex = users.findIndex(user => {
+                if (userType === 'students') return user.StudentID === userId;
+                if (userType === 'faculty') return user.FacultyID === userId;
+                if (userType === 'security') return user.SecurityID === userId;
+                if (userType === 'staff') return user.StaffID === userId;
+                return false;
+            });
+
+            if (userIndex !== -1) {
+                users[userIndex] = { ...users[userIndex], ...updates };
+            }
+
+            // Update in filtered array
+            const filteredIndex = filteredUsers.findIndex(user => {
+                if (userType === 'students') return user.StudentID === userId;
+                if (userType === 'faculty') return user.FacultyID === userId;
+                if (userType === 'security') return user.SecurityID === userId;
+                if (userType === 'staff') return user.StaffID === userId;
+                return false;
+            });
+
+            if (filteredIndex !== -1) {
+                filteredUsers[filteredIndex] = { ...filteredUsers[filteredIndex], ...updates };
+            }
+
+            // Re-display current page with updated data
+            displayPage();
         }
 
         function toggleStatus(userId, newStatus) {
@@ -2105,7 +2140,8 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    loadUsers(); // Reload table
+                    // Update local data instead of reloading
+                    updateLocalUserData(userId, { isActive: newStatus });
                     showAlert('success', data.message);
                 } else {
                     showAlert('danger', data.message || 'An error occurred');
@@ -2135,7 +2171,8 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    loadUsers(); // Reload table
+                    // Update local data instead of reloading
+                    updateLocalUserData(userId, { IsEnroll: newEnrollment });
                     showAlert('success', data.message);
                 } else {
                     showAlert('danger', data.message || 'An error occurred');

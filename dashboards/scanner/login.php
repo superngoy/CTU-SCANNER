@@ -4,21 +4,21 @@ require_once '../../config/database.php';
 
 $auth = new Auth();
 
-if ($auth->isLoggedIn('security')) {
+if ($auth->isLoggedIn('scanner')) {
     header('Location: index.php');
     exit();
 }
 
 $error = '';
 if ($_POST) {
-    $securityId = $_POST['security_id'] ?? '';
+    $identifier = $_POST['identifier'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    if ($auth->loginSecurity($securityId, $password)) {
+    if ($auth->loginScanner($identifier, $password)) {
         header('Location: index.php');
         exit();
     } else {
-        $error = 'Invalid credentials';
+        $error = 'Invalid credentials. Please use Security Guard or Admin account.';
     }
 }
 ?>
@@ -27,7 +27,7 @@ if ($_POST) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Login - CTU Scanner</title>
+    <title>Scanner Login - CTU Scanner</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -51,10 +51,11 @@ if ($_POST) {
             background: linear-gradient(135deg, #972529 0%, #c44536 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            padding: 20px 0;
         }
         
         /* Animated background elements */
@@ -95,6 +96,7 @@ if ($_POST) {
             width: 100%;
             max-width: 480px;
             padding: 20px;
+            margin: auto;
         }
         
         .login-card {
@@ -177,6 +179,18 @@ if ($_POST) {
             margin: 0;
             font-weight: 400;
             letter-spacing: 0.3px;
+        }
+        
+        .login-header .badge {
+            display: inline-block;
+            background: rgba(229, 197, 115, 0.25);
+            color: var(--secondary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+            border: 1px solid rgba(229, 197, 115, 0.4);
         }
         
         .login-body {
@@ -318,6 +332,23 @@ if ($_POST) {
             font-size: 15px;
         }
         
+        .login-info {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(229, 197, 115, 0.3);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+        
+        .login-info strong {
+            color: var(--secondary);
+            display: block;
+            margin-bottom: 6px;
+        }
+        
         .login-footer {
             padding: 18px 30px;
             background: rgba(255, 255, 255, 0.08);
@@ -384,10 +415,16 @@ if ($_POST) {
                         <img src="../../assets/images/logo.png" alt="CTU Logo">
                     </div>
                 </div>
-                <h2>Security Dashboard</h2>
-                <p>CTU Scanner System</p>
+                <h2>Scanner Access</h2>
+                <p>CTU Campus Entry System</p>
+                <span class="badge"><i class="fas fa-lock"></i> Secure Access Required</span>
             </div>
             <div class="login-body">
+                <div class="login-info">
+                    <strong><i class="fas fa-info-circle"></i> Authorized Personnel Only</strong>
+                    Use your Security Guard or Admin credentials to access the scanner system.
+                </div>
+                
                 <?php if ($error): ?>
                     <div class="error-alert">
                         <i class="fas fa-exclamation-circle"></i>
@@ -397,8 +434,8 @@ if ($_POST) {
                 
                 <form method="POST">
                     <div class="form-group">
-                        <label for="security_id"><i class="fas fa-id-badge"></i> Security ID</label>
-                        <input type="text" id="security_id" name="security_id" placeholder="Enter ID" required autofocus>
+                        <label for="identifier"><i class="fas fa-id-badge"></i> ID or Email</label>
+                        <input type="text" id="identifier" name="identifier" placeholder="Enter Security ID or Admin Email" required autofocus>
                     </div>
                     
                     <div class="form-group password-field">
@@ -412,13 +449,14 @@ if ($_POST) {
                     </div>
                     
                     <button type="submit" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
+                        <i class="fas fa-sign-in-alt"></i> Access Scanner
                     </button>
                 </form>
             </div>
             <div class="login-footer">
                 <a href="../admin/login.php">Admin Login</a> | 
-                <a href="../scanner/">Scanner</a>
+                <a href="../security/login.php">Security Login</a> | 
+                <a href="../../index.php">Back to Home</a>
             </div>
         </div>
     </div>

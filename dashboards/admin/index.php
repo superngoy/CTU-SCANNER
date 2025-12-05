@@ -459,6 +459,245 @@ try {
             background: #972529;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            padding: 2px 4px;
+            min-width: 16px;
+            height: auto;
+        }
+
+        .notification-badge:not(:empty) {
+            width: auto;
+            height: 18px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Notification Container & Dropdown */
+        .notification-container {
+            position: relative;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: -20px;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            margin-top: 10px;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        .notification-dropdown.show {
+            display: flex;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .notification-header h6 {
+            color: #333;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .notification-list {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 200px;
+            max-height: 380px;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .notification-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .notification-item:hover {
+            background: #f9f9f9;
+        }
+
+        .notification-item.unread {
+            background: rgba(151, 37, 41, 0.05);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .notification-item.type-success .notification-icon {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .notification-item.type-error .notification-icon {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .notification-item.type-warning .notification-icon {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .notification-item.type-info .notification-icon {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notification-title .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
+        .notification-message {
+            color: #666;
+            font-size: 13px;
+            margin: 0 0 6px 0;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: #999;
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .notification-actions button {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 12px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .notification-actions button:hover {
+            color: var(--primary-color);
+        }
+
+        .notification-footer {
+            padding: 10px 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #fafafa;
+            border-radius: 0 0 12px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notification-footer .btn-link {
+            color: #666;
+            font-size: 13px;
+            padding: 8px 12px;
+            text-decoration: none;
+        }
+
+        .notification-footer .btn-link:hover {
+            color: var(--primary-color);
+            background: rgba(151, 37, 41, 0.05);
+        }
+
+        .notification-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .notification-empty i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Animation for dropdown */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
         }
 
         .user-profile {
@@ -767,6 +1006,30 @@ try {
             .header-actions {
                 gap: 8px;
             }
+            
+            .notification-dropdown {
+                position: fixed;
+                top: 70px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                width: calc(100vw - 20px);
+                max-width: 380px;
+                max-height: 70vh;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                position: fixed;
+                top: 70px;
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                width: calc(100vw - 20px);
+                max-width: 380px;
+                max-height: 70vh;
+            }
         }
 
         .mobile-toggle {
@@ -1031,7 +1294,7 @@ try {
                 </a>
             </div>
             <div class="nav-item">
-                <a href="visitor_analytics.php" class="nav-link">
+                <a href="#visitor-analytics" class="nav-link" data-section="visitor-analytics">
                     <i class="fas fa-users"></i>
                     <span>Visitor Analytics</span>
                     <div class="nav-link-tooltip">Visitor Analytics</div>
@@ -1081,10 +1344,38 @@ try {
         </div>
         
         <div class="header-actions">
-            <button class="notification-btn" title="Notifications">
-                <i class="fas fa-bell"></i>
-                <div class="notification-badge"></div>
-            </button>
+            <!-- Notification Bell with Dropdown -->
+            <div class="notification-container">
+                <button class="notification-btn" id="notificationBell" title="Notifications" onclick="toggleNotificationDropdown()">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge" id="notificationBadge">0</div>
+                </button>
+                
+                <!-- Notification Dropdown Panel -->
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <h6 class="mb-0">Notifications</h6>
+                        <button class="btn-close btn-sm" onclick="toggleNotificationDropdown()"></button>
+                    </div>
+                    
+                    <div class="notification-list" id="notificationList">
+                        <div class="text-center p-4">
+                            <i class="fas fa-spinner fa-spin text-muted mb-2"></i>
+                            <p class="text-muted small">Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-footer">
+                        <button class="btn btn-sm btn-link w-100" onclick="markAllNotificationsRead()">
+                            <i class="fas fa-check me-1"></i>Mark all as read
+                        </button>
+                        <button class="btn btn-sm btn-link text-danger w-100" onclick="clearAllNotifications()">
+                            <i class="fas fa-trash me-1"></i>Clear all
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <a href="#profile" class="user-profile">
                 <i class="fas fa-user-shield"></i>
                 <span>Administrator</span>
@@ -1585,61 +1876,190 @@ try {
 
         <!-- Reports Section -->
         <div id="reports-section" class="content-section" style="display: none;">
-            <div class="row">
-                <div class="col-12">
-                    <div class="enhanced-card fade-in-up">
-                        <div class="card-header p-3">
-                            <h5 class="mb-0">
-                                <i class="fas fa-download me-2"></i>Data Export Center
-                            </h5>
-                        </div>
-                        <div class="card-body p-3">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="d-grid gap-3 mb-4">
-                                        <button class="btn btn-success py-3" onclick="exportExcel()" style="border-radius: 12px;">
-                                            <i class="fas fa-file-excel me-2"></i>Export to Excel
-                                            <span class="loading-spinner d-none ms-2" id="excelLoading"></span>
-                                        </button>
-                                        <button class="btn btn-danger py-3" onclick="exportPDF()" style="border-radius: 12px;">
-                                            <i class="fas fa-file-pdf me-2"></i>Export to PDF
-                                            <span class="loading-spinner d-none ms-2" id="pdfLoading"></span>
-                                        </button>
-                                        <button class="btn btn-info py-3" onclick="printPDF()" style="border-radius: 12px;">
-                                            <i class="fas fa-print me-2"></i>Print Report
-                                            <span class="loading-spinner d-none ms-2" id="printLoading"></span>
-                                        </button>
-                                    </div>
+            <!-- Tabs for different report types -->
+            <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist" style="border-bottom: 2px solid #dee2e6;">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="export-tab" data-bs-toggle="tab" data-bs-target="#export-content" type="button" role="tab" style="color: #495057; border: 1px solid transparent; border-bottom: 3px solid #0d6efd;">
+                        <i class="fas fa-download me-2"></i>Data Export
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="user-logs-tab" data-bs-toggle="tab" data-bs-target="#user-logs-content" type="button" role="tab" style="color: #495057; border: 1px solid transparent;">
+                        <i class="fas fa-history me-2"></i>User Activity Logs
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="reportTabContent">
+                <!-- Export Tab -->
+                <div class="tab-pane fade show active" id="export-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="enhanced-card fade-in-up">
+                                <div class="card-header p-3">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-download me-2"></i>Data Export Center
+                                    </h5>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="date-input-group">
-                                        <label class="form-label fw-bold">
-                                            <i class="fas fa-calendar-alt me-2"></i>Date Range:
-                                        </label>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <input type="date" id="startDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="date" id="endDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="d-grid gap-3 mb-4">
+                                                <button class="btn btn-success py-3" onclick="exportExcel()" style="border-radius: 12px;">
+                                                    <i class="fas fa-file-excel me-2"></i>Export to Excel
+                                                    <span class="loading-spinner d-none ms-2" id="excelLoading"></span>
+                                                </button>
+                                                <button class="btn btn-danger py-3" onclick="exportPDF()" style="border-radius: 12px;">
+                                                    <i class="fas fa-file-pdf me-2"></i>Export to PDF
+                                                    <span class="loading-spinner d-none ms-2" id="pdfLoading"></span>
+                                                </button>
+                                                <button class="btn btn-info py-3" onclick="printPDF()" style="border-radius: 12px;">
+                                                    <i class="fas fa-print me-2"></i>Print Report
+                                                    <span class="loading-spinner d-none ms-2" id="printLoading"></span>
+                                                </button>
                                             </div>
                                         </div>
-                                            <div class="row g-2">
-                                                <div class="col-6">
-                                                    <select id="presetSelect" class="form-select" aria-label="Load preset">
-                                                        <option value="">Load Preset...</option>
-                                                    </select>
+                                        <div class="col-lg-6">
+                                            <div class="date-input-group">
+                                                <label class="form-label fw-bold">
+                                                    <i class="fas fa-calendar-alt me-2"></i>Date Range:
+                                                </label>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <input type="date" id="startDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input type="date" id="endDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
+                                                    </div>
                                                 </div>
-                                                <div class="col-6">
-                                                    <button class="btn btn-outline-secondary w-100" onclick="savePreset()" title="Save current date range as preset">Save Preset</button>
-                                                </div>
+                                                    <div class="row g-2">
+                                                        <div class="col-6">
+                                                            <select id="presetSelect" class="form-select" aria-label="Load preset">
+                                                                <option value="">Load Preset...</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-secondary w-100" onclick="savePreset()" title="Save current date range as preset">Save Preset</button>
+                                                        </div>
+                                                    </div>
+                                                    <div style="height:8px"></div>
+                                                <button class="btn btn-primary w-100 py-3" onclick="generateReport()" style="border-radius: 12px;">
+                                                    <i class="fas fa-chart-bar me-2"></i>Generate Custom Report
+                                                    <span class="loading-spinner d-none ms-2" id="reportLoading"></span>
+                                                </button>
                                             </div>
-                                            <div style="height:8px"></div>
-                                        <button class="btn btn-primary w-100 py-3" onclick="generateReport()" style="border-radius: 12px;">
-                                            <i class="fas fa-chart-bar me-2"></i>Generate Custom Report
-                                            <span class="loading-spinner d-none ms-2" id="reportLoading"></span>
-                                        </button>
+                                        </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Activity Logs Tab -->
+                <div class="tab-pane fade" id="user-logs-content" role="tabpanel">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Search Card -->
+                            <div class="enhanced-card fade-in-up mb-4">
+                                <div class="card-header" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); border: none; padding: 20px;">
+                                    <h5 class="mb-0 text-white">
+                                        <i class="fas fa-magnifying-glass me-2"></i>Search User Activity Logs
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4">
+                                    <!-- Search Form -->
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold" style="color: #972529;">User Type</label>
+                                            <select id="userLogsType" class="form-select" style="border: 2px solid #E5C573; border-radius: 8px; padding: 10px; transition: all 0.3s;">
+                                                <option value="student">🎓 Student</option>
+                                                <option value="faculty">👨‍🏫 Faculty</option>
+                                                <option value="staff">👔 Staff</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold" style="color: #972529;">User ID</label>
+                                            <input type="text" id="userLogsId" class="form-control" placeholder="Enter user ID" style="border: 2px solid #E5C573; border-radius: 8px; padding: 10px; transition: all 0.3s;">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold" style="color: #972529;">Date</label>
+                                            <input type="date" id="userLogsDate" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border: 2px solid #E5C573; border-radius: 8px; padding: 10px; transition: all 0.3s;">
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button class="btn w-100 py-2" onclick="searchUserLogs()" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white; border: none; border-radius: 8px; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 12px rgba(151, 37, 41, 0.3);">
+                                                <i class="fas fa-search me-2"></i>Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Error Message -->
+                            <div id="userLogsError" class="alert d-none mb-4" role="alert" style="background: #fee2e2; border: 2px solid #fecaca; color: #991b1b; border-radius: 10px; padding: 15px;">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                <span id="userLogsErrorText"></span>
+                            </div>
+
+                            <!-- Loading -->
+                            <div id="userLogsLoading" class="d-none text-center py-5">
+                                <div class="spinner-border" role="status" style="color: #972529; width: 3rem; height: 3rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-3" style="color: #666; font-weight: 500;">Fetching user activity logs...</p>
+                            </div>
+
+                            <!-- User Info Card -->
+                            <div id="userLogsInfo" class="d-none mb-4">
+                                <div class="enhanced-card" style="background: linear-gradient(135deg, rgba(151, 37, 41, 0.1) 0%, rgba(229, 197, 115, 0.1) 100%); border-left: 5px solid #E5C573;">
+                                    <div class="card-body p-4">
+                                        <div class="row" id="userLogsInfoContent">
+                                            <!-- Populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Logs Table Card -->
+                            <div id="userLogsTable" class="d-none">
+                                <div class="enhanced-card">
+                                    <div class="card-header" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); border: none; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                                        <h5 class="mb-0 text-white">
+                                            <i class="fas fa-history me-2"></i>Activity Logs
+                                        </h5>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-light btn-sm" onclick="exportUserLogsExcel()" style="border-radius: 6px; font-weight: 600; transition: all 0.3s;">
+                                                <i class="fas fa-file-excel me-1" style="color: #28a745;"></i>Excel
+                                            </button>
+                                            <button class="btn btn-light btn-sm" onclick="exportUserLogsPDF()" style="border-radius: 6px; font-weight: 600; transition: all 0.3s;">
+                                                <i class="fas fa-file-pdf me-1" style="color: #dc3545;"></i>PDF
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div class="table-responsive">
+                                            <table class="table" style="border-collapse: collapse;">
+                                                <thead>
+                                                    <tr style="border-bottom: 2px solid #E5C573;">
+                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Time</th>
+                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Type</th>
+                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Scanner Location</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="userLogsTableBody">
+                                                    <!-- Populated by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No logs found -->
+                            <div id="userLogsEmpty" class="d-none">
+                                <div class="enhanced-card text-center py-5">
+                                    <i class="fas fa-inbox" style="font-size: 56px; color: #d1d5db; margin-bottom: 15px; opacity: 0.6;"></i>
+                                    <p class="text-muted" style="font-size: 16px; margin-top: 10px;">No activity logs found for this user on the selected date</p>
                                 </div>
                             </div>
                         </div>
@@ -1743,73 +2163,669 @@ try {
 
         <!-- Settings Section -->
         <div id="settings-section" class="content-section" style="display: none;">
-            <div class="row">
-                <div class="col-12">
-                    <div class="enhanced-card fade-in-up">
-                        <div class="card-header p-3">
-                            <h5 class="mb-0">
-                                <i class="fas fa-cog me-2"></i>System Settings
-                            </h5>
-                        </div>
-                        <div class="card-body p-3">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <h6 class="mb-3">
-                                        <i class="fas fa-palette me-2"></i>Theme Settings
-                                    </h6>
-                                    <div class="mb-3">
-                                        <label class="form-label">Color Scheme</label>
-                                        <select class="form-select" style="border-radius: 8px;">
-                                            <option>CTU Gold Theme (Current)</option>
-                                            <option>Dark Theme</option>
-                                            <option>Light Theme</option>
-                                        </select>
+            <div class="container-fluid">
+                <!-- Settings Tabs -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs settings-tabs" role="tablist" style="border-bottom: 3px solid #972529;">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active settings-tab-btn" id="display-settings-tab" data-bs-toggle="tab" data-bs-target="#display-settings-panel" type="button" role="tab" style="color: #333; font-weight: 600;">
+                                    <i class="fas fa-monitor me-2"></i>Display
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link settings-tab-btn" id="notification-settings-tab" data-bs-toggle="tab" data-bs-target="#notification-settings-panel" type="button" role="tab" style="color: #333; font-weight: 600;">
+                                    <i class="fas fa-bell me-2"></i>Notifications
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link settings-tab-btn" id="report-settings-tab" data-bs-toggle="tab" data-bs-target="#report-settings-panel" type="button" role="tab" style="color: #333; font-weight: 600;">
+                                    <i class="fas fa-file-export me-2"></i>Reports
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link settings-tab-btn" id="security-settings-tab" data-bs-toggle="tab" data-bs-target="#security-settings-panel" type="button" role="tab" style="color: #333; font-weight: 600;">
+                                    <i class="fas fa-shield-alt me-2"></i>Security
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link settings-tab-btn" id="system-settings-tab" data-bs-toggle="tab" data-bs-target="#system-settings-panel" type="button" role="tab" style="color: #333; font-weight: 600;">
+                                    <i class="fas fa-cogs me-2"></i>System
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Display Settings Tab -->
+                    <div class="tab-pane fade show active" id="display-settings-panel" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-palette me-2"></i>Appearance
+                                        </h6>
                                     </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <h6 class="mb-3">
-                                        <i class="fas fa-bell me-2"></i>Notification Settings
-                                    </h6>
-                                    <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input" type="checkbox" id="emailNotif" checked>
-                                        <label class="form-check-label" for="emailNotif">
-                                            Email Notifications
-                                        </label>
-                                    </div>
-                                    <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input" type="checkbox" id="pushNotif" checked>
-                                        <label class="form-check-label" for="pushNotif">
-                                            Push Notifications
-                                        </label>
+                                    <div class="card-body p-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Theme</label>
+                                            <select class="form-select" id="themeSelect" onchange="changeTheme(this.value)">
+                                                <option value="light" selected>CTU Gold Theme (Current)</option>
+                                                <option value="dark">Dark Mode</option>
+                                                <option value="auto">Auto (System Preference)</option>
+                                            </select>
+                                            <small class="text-muted">Changes apply immediately</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Sidebar Collapse</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="collapseSidebarPref">
+                                                <label class="form-check-label" for="collapseSidebarPref">
+                                                    Remember collapsed state
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-12">
-                                    <h6 class="mb-3">
-                                        <i class="fas fa-database me-2"></i>System Information
-                                    </h6>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <small class="text-muted">Version</small>
-                                            <p class="mb-2">CTU Scanner v2.1</p>
+
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #E5C573 0%, #D4B85A 100%); color: #333;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-calendar-alt me-2"></i>Date & Time
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Date Format</label>
+                                            <select class="form-select" id="dateFormatSelect" onchange="changeDateFormat(this.value)">
+                                                <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
+                                                <option value="DD/MM/YYYY" selected>DD/MM/YYYY (PH)</option>
+                                                <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-3">
-                                            <small class="text-muted">Last Update</small>
-                                            <p class="mb-2"><?php echo date('M d, Y'); ?></p>
+                                        <div class="mb-3">
+                                            <label class="form-label">Timezone</label>
+                                            <select class="form-select" id="timezoneSelect" onchange="changeTimezone(this.value)">
+                                                <option value="UTC+8" selected>Philippine Time (UTC+8)</option>
+                                                <option value="UTC">Coordinated Universal Time</option>
+                                                <option value="UTC+0">GMT</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-3">
-                                            <small class="text-muted">Database</small>
-                                            <p class="mb-2">MySQL 8.0</p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <small class="text-muted">Status</small>
-                                            <p class="mb-2">
-                                                <span class="badge bg-success">Active</span>
-                                            </p>
+                                        <div class="alert alert-info border-0 p-2" style="background: rgba(13, 202, 240, 0.1); font-size: 0.85rem;">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Current time: <span id="currentTimeDisplay"><?php echo date('h:i:s A'); ?></span>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-table me-2"></i>Data Display
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Pagination Size</label>
+                                                <select class="form-select" id="paginationSelect" onchange="changePagination(this.value)">
+                                                    <option value="10">10 items</option>
+                                                    <option value="25" selected>25 items</option>
+                                                    <option value="50">50 items</option>
+                                                    <option value="100">100 items</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="compactViewToggle" checked>
+                                                    <label class="form-check-label" for="compactViewToggle">
+                                                        Compact table view
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-switch mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="showAvatarsToggle" checked>
+                                                    <label class="form-check-label" for="showAvatarsToggle">
+                                                        Show user avatars
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Settings Tab -->
+                    <div class="tab-pane fade" id="notification-settings-panel" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-bell me-2"></i>Notification Channels
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                                            <label class="form-check-label" for="emailNotif">
+                                                <i class="fas fa-envelope me-1"></i>Email Notifications
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="pushNotif" checked>
+                                            <label class="form-check-label" for="pushNotif">
+                                                <i class="fas fa-desktop me-1"></i>Browser Notifications
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="soundNotif" checked onchange="toggleNotificationSound()">
+                                            <label class="form-check-label" for="soundNotif">
+                                                <i class="fas fa-volume-up me-1"></i>Notification Sound
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="systemTrayNotif" checked>
+                                            <label class="form-check-label" for="systemTrayNotif">
+                                                <i class="fas fa-star me-1"></i>Highlight Failed Scans
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #E5C573 0%, #D4B85A 100%); color: #333;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-filter me-2"></i>Alert Types
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="alertFailed" checked>
+                                            <label class="form-check-label" for="alertFailed">
+                                                Failed scans
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="alertDuplicate" checked>
+                                            <label class="form-check-label" for="alertDuplicate">
+                                                Duplicate entries
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="alertInactive" checked>
+                                            <label class="form-check-label" for="alertInactive">
+                                                Inactive user scan
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="alertSystem" checked>
+                                            <label class="form-check-label" for="alertSystem">
+                                                System alerts
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Settings Tab -->
+                    <div class="tab-pane fade" id="report-settings-panel" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-file-export me-2"></i>Default Export Format
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="exportFormat" id="exportExcel" value="excel" checked>
+                                                <label class="form-check-label" for="exportExcel">
+                                                    <i class="fas fa-file-excel me-1" style="color: #207245;"></i>Excel (.xlsx)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="exportFormat" id="exportPdf" value="pdf">
+                                                <label class="form-check-label" for="exportPdf">
+                                                    <i class="fas fa-file-pdf me-1" style="color: #d32f2f;"></i>PDF (.pdf)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="exportFormat" id="exportCsv" value="csv">
+                                                <label class="form-check-label" for="exportCsv">
+                                                    <i class="fas fa-file-csv me-1" style="color: #27AE60;"></i>CSV (.csv)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #E5C573 0%, #D4B85A 100%); color: #333;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-sliders-h me-2"></i>Report Options
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="includeCharts" checked>
+                                            <label class="form-check-label" for="includeCharts">
+                                                Include charts in reports
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="includeSummary" checked>
+                                            <label class="form-check-label" for="includeSummary">
+                                                Include summary statistics
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="includeFooter" checked>
+                                            <label class="form-check-label" for="includeFooter">
+                                                Add company footer
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="autoCompress" checked>
+                                            <label class="form-check-label" for="autoCompress">
+                                                Compress large files
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings Tab -->
+                    <div class="tab-pane fade" id="security-settings-panel" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-shield-alt me-2"></i>Session Security
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Session Timeout</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="sessionTimeout" value="60" min="15" max="480">
+                                                <span class="input-group-text">minutes</span>
+                                            </div>
+                                            <small class="text-muted">Auto-logout inactive sessions</small>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Login Attempt Limit</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="loginAttempts" value="5" min="3" max="10">
+                                                <span class="input-group-text">attempts</span>
+                                            </div>
+                                            <small class="text-muted">Failed attempts before lockout</small>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="enableTwoFactor" checked disabled>
+                                            <label class="form-check-label" for="enableTwoFactor">
+                                                <i class="fas fa-lock me-1"></i>Two-Factor Authentication
+                                            </label>
+                                            <small class="d-block text-muted mt-1">Built-in security feature (always enabled)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #E5C573 0%, #D4B85A 100%); color: #333;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-lock me-2"></i>Password Policy
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="alert alert-info border-0 p-2 mb-3" style="background: rgba(13, 202, 240, 0.1); font-size: 0.85rem;">
+                                            <div class="mb-2"><strong>Current Policy:</strong></div>
+                                            <ul class="mb-0" style="padding-left: 20px;">
+                                                <li>Minimum 8 characters</li>
+                                                <li>Must contain numbers & letters</li>
+                                                <li>Must contain special characters</li>
+                                                <li>Expires every 90 days</li>
+                                            </ul>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="changePassword()">
+                                            <i class="fas fa-key me-1"></i>Change Your Password
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-history me-2"></i>Login History
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <thead>
+                                                    <tr style="background: #f8f9fa;">
+                                                        <th>Date & Time</th>
+                                                        <th>IP Address</th>
+                                                        <th>Browser</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="loginHistoryBody">
+                                                    <tr>
+                                                        <td colspan="4" class="text-center text-muted py-3">
+                                                            <i class="fas fa-hourglass-start me-2"></i>Loading...
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Settings Tab -->
+                    <div class="tab-pane fade" id="system-settings-panel" role="tabpanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-database me-2"></i>System Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="row">
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Application</small>
+                                                <p class="mb-0"><strong>CTU Scanner</strong></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Version</small>
+                                                <p class="mb-0"><strong>v2.1</strong></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Database</small>
+                                                <p class="mb-0"><strong>MySQL 8.0</strong></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">PHP Version</small>
+                                                <p class="mb-0"><strong><?php echo phpversion(); ?></strong></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Status</small>
+                                                <p class="mb-0"><span class="badge bg-success">Active</span></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <small class="text-muted d-block">Last Updated</small>
+                                                <p class="mb-0"><strong><?php echo date('M d, Y'); ?></strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #E5C573 0%, #D4B85A 100%); color: #333;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-hdd me-2"></i>Storage & Backups
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <small class="text-muted">Database Size</small>
+                                                <small class="text-muted" id="dbSize">Calculating...</small>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 35%;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <small class="text-muted d-block mb-2">Last Backup</small>
+                                            <p class="mb-0"><strong>Today, 01:00 AM</strong></p>
+                                            <small class="text-success"><i class="fas fa-check me-1"></i>Successful</small>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" onclick="createBackup()">
+                                            <i class="fas fa-download me-1"></i>Backup Now
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="viewBackups()">
+                                            <i class="fas fa-list me-1"></i>View Backups
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="enhanced-card fade-in-up">
+                                    <div class="card-header p-3" style="background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white;">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-wrench me-2"></i>Maintenance Tools
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3">
+                                                <button class="btn btn-outline-warning btn-block w-100" onclick="cleanupLogs()">
+                                                    <i class="fas fa-trash me-1"></i>Clean Old Logs
+                                                </button>
+                                                <small class="text-muted d-block mt-1">Logs older than 90 days</small>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <button class="btn btn-outline-info btn-block w-100" onclick="rebuildIndexes()">
+                                                    <i class="fas fa-sync-alt me-1"></i>Rebuild Indexes
+                                                </button>
+                                                <small class="text-muted d-block mt-1">Optimize database</small>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <button class="btn btn-outline-success btn-block w-100" onclick="checkDatabase()">
+                                                    <i class="fas fa-stethoscope me-1"></i>Check Database
+                                                </button>
+                                                <small class="text-muted d-block mt-1">Integrity check</small>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <button class="btn btn-outline-danger btn-block w-100" onclick="cacheStats()">
+                                                    <i class="fas fa-layer-group me-1"></i>Cache Stats
+                                                </button>
+                                                <small class="text-muted d-block mt-1">System cache info</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Settings Button -->
+                <div class="row mt-4 mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary" onclick="saveAllSettings()">
+                            <i class="fas fa-save me-2"></i>Save All Settings
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="resetSettings()">
+                            <i class="fas fa-undo me-2"></i>Reset to Defaults
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitor Analytics Section -->
+        <div id="visitor-analytics-section" class="content-section" style="display: none;">
+            <div class="container-fluid">
+                <!-- Date Range Filter -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="enhanced-card fade-in-up">
+                            <div class="card-body p-3">
+                                <form method="GET" class="row g-3" id="visitorAnalyticsForm">
+                                    <input type="hidden" name="section" value="visitor-analytics">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="date" class="form-control" name="start_date" id="visitorStartDate" value="<?php echo date('Y-m-d', strtotime('-30 days')); ?>">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" name="end_date" id="visitorEndDate" value="<?php echo date('Y-m-d'); ?>">
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary me-2">
+                                            <i class="fas fa-filter me-1"></i>Filter
+                                        </button>
+                                        <button type="reset" class="btn btn-outline-secondary" onclick="resetVisitorAnalytics()">
+                                            <i class="fas fa-redo me-1"></i>Reset
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4" id="visitorStatsRow">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <h3 id="totalVisitors">-</h3>
+                            <p><i class="fas fa-id-card me-1"></i>Total Visitors Registered</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <h3 id="totalCheckIns">-</h3>
+                            <p><i class="fas fa-sign-in-alt me-1"></i>Total Check-Ins</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <h3 id="totalCheckOuts">-</h3>
+                            <p><i class="fas fa-sign-out-alt me-1"></i>Total Check-Outs</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <h3 id="avgDwellTime">-</h3>
+                            <p><i class="fas fa-hourglass-half me-1"></i>Avg Dwell Time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <div class="col-lg-8">
+                        <div class="enhanced-card fade-in-up">
+                            <div class="card-header p-3">
+                                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Daily Visitor Registrations</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <canvas id="visitorTrendChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="enhanced-card fade-in-up">
+                            <div class="card-header p-3">
+                                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Top Visit Purposes</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <canvas id="visitorPurposeChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Visitors Table -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="enhanced-card fade-in-up">
+                            <div class="card-header p-3">
+                                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Recent Visitors</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead style="background: var(--secondary-color); color: #333;">
+                                            <tr>
+                                                <th>Code</th>
+                                                <th>Name</th>
+                                                <th>Company</th>
+                                                <th>Purpose</th>
+                                                <th>Contact</th>
+                                                <th>Registered</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentVisitorsBody">
+                                            <tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-hourglass-start me-2"></i>Loading...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Check-In/Check-Out Logs -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="enhanced-card fade-in-up">
+                            <div class="card-header p-3">
+                                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Check-In & Check-Out Logs</h5>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead style="background: var(--secondary-color); color: #333;">
+                                            <tr>
+                                                <th>Visitor Code</th>
+                                                <th>Visitor Name</th>
+                                                <th>Check-In Time</th>
+                                                <th>Check-Out Time</th>
+                                                <th>Dwell Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="visitorLogsBody">
+                                            <tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-hourglass-start me-2"></i>Loading...</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -1822,7 +2838,10 @@ try {
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../../assets/js/admin.js"></script>
+    <script src="../../assets/audio/notification-sound.js"></script>
     
     <script>
         // Get asset and base paths from HTML data attributes
@@ -1973,6 +2992,47 @@ try {
             
             console.log('Page load: showing section:', section);
             showSection(section);
+            
+            // Restore Reports tab after section is shown (tab persistence)
+            if (section === 'reports') {
+                setTimeout(() => {
+                    const savedTab = sessionStorage.getItem('activeReportsTab');
+                    if (savedTab) {
+                        const tabButton = document.getElementById(savedTab + '-tab');
+                        if (tabButton) {
+                            const tab = new bootstrap.Tab(tabButton);
+                            tab.show();
+                        }
+                    }
+
+                    // Restore search data for user logs
+                    const savedUserLogsData = sessionStorage.getItem('userLogsSearchData');
+                    if (savedUserLogsData) {
+                        try {
+                            const data = JSON.parse(savedUserLogsData);
+                            
+                            // Restore form values
+                            document.getElementById('userLogsType').value = data.userType || 'student';
+                            document.getElementById('userLogsId').value = data.userId || '';
+                            document.getElementById('userLogsDate').value = data.searchDate || new Date().toISOString().split('T')[0];
+                            
+                            // Restore search results if available
+                            if (data.userLogsInfo && data.userLogs) {
+                                currentUserLogsInfo = data.userLogsInfo;
+                                currentUserLogs = data.userLogs;
+                                currentUserLogsDate = data.searchDate;
+                                
+                                displayUserLogsInfo(data.userLogsInfo);
+                                displayUserLogsTable(data.userLogs);
+                                showUserLogsTable();
+                                hideUserLogsEmpty();
+                            }
+                        } catch (e) {
+                            console.log('Could not restore user logs data');
+                        }
+                    }
+                }, 50);
+            }
             
             // Handle window resize
             window.addEventListener('resize', handleWindowResize);
@@ -2571,6 +3631,257 @@ try {
                     loading.classList.add('d-none');
                 });
         }
+
+        // ============================================
+        // NOTIFICATION SYSTEM - Session-based
+        // ============================================
+        
+        let notificationPollingInterval = null;
+        
+        /**
+         * Toggle notification dropdown visibility
+         */
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+            
+            // Close dropdown when clicking outside
+            if (dropdown.classList.contains('show')) {
+                document.addEventListener('click', closeNotificationDropdownOnClickOutside);
+                fetchNotifications();
+            } else {
+                document.removeEventListener('click', closeNotificationDropdownOnClickOutside);
+            }
+        }
+        
+        function closeNotificationDropdownOnClickOutside(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.getElementById('notificationBell');
+            
+            if (!dropdown.contains(event.target) && !bell.contains(event.target)) {
+                dropdown.classList.remove('show');
+                document.removeEventListener('click', closeNotificationDropdownOnClickOutside);
+            }
+        }
+        
+        /**
+         * Fetch notifications from API
+         */
+        function fetchNotifications() {
+            fetch('../../api/notifications_api.php?action=get_all&limit=20')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayNotifications(data.notifications);
+                        updateNotificationBadge(data);
+                    }
+                })
+                .catch(error => console.log('Notification fetch error:', error));
+        }
+        
+        /**
+         * Display notifications in dropdown
+         */
+        function displayNotifications(notifications) {
+            const listContainer = document.getElementById('notificationList');
+            
+            if (!notifications || notifications.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="notification-empty">
+                        <div><i class="fas fa-inbox"></i></div>
+                        <p>No notifications yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = notifications.map(notif => {
+                const timeAgo = getTimeAgo(notif.created_at);
+                const isUnread = !notif.is_read;
+                
+                return `
+                    <div class="notification-item type-${notif.type} ${isUnread ? 'unread' : ''}">
+                        <div class="notification-icon">
+                            <i class="fas ${notif.icon}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">
+                                ${notif.title}
+                                ${isUnread ? '<span class="badge bg-danger">New</span>' : ''}
+                            </div>
+                            <p class="notification-message">${notif.message}</p>
+                            <p class="notification-time">${timeAgo}</p>
+                            <div class="notification-actions">
+                                ${isUnread ? `<button onclick="markNotificationRead('${notif.id}')"><i class="fas fa-check me-1"></i>Mark read</button>` : ''}
+                                <button onclick="deleteNotification('${notif.id}')" class="text-danger"><i class="fas fa-trash me-1"></i>Delete</button>
+                                ${notif.action_url ? `<a href="${notif.action_url}" class="text-primary" style="text-decoration:none;"><i class="fas fa-arrow-right me-1"></i>View</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Play sound for unread failed scan notifications
+            if (typeof notificationSound !== 'undefined' && notifications.some(n => !n.is_read && n.category === 'scan_failure')) {
+                if (notificationSound) {
+                    // Play appropriate sound based on notification type
+                    const failedScan = notifications.find(n => !n.is_read && n.category === 'scan_failure');
+                    if (failedScan) {
+                        if (failedScan.type === 'error') {
+                            notificationSound.playErrorTone();
+                        } else if (failedScan.type === 'warning') {
+                            notificationSound.playWarningTone();
+                        } else {
+                            notificationSound.playNotificationTone();
+                        }
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Update notification badge with unread count
+         */
+        function updateNotificationBadge(data) {
+            const badge = document.getElementById('notificationBadge');
+            let unreadCount = 0;
+            
+            if (data.notifications) {
+                unreadCount = data.notifications.filter(n => !n.is_read).length;
+            }
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.textContent = '';
+                badge.style.display = 'none';
+            }
+        }
+        
+        /**
+         * Mark single notification as read
+         */
+        function markNotificationRead(notifId) {
+            fetch(`../../api/notifications_api.php?action=mark_read&notification_id=${notifId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchNotifications();
+                    }
+                })
+                .catch(error => console.log('Error marking read:', error));
+        }
+        
+        /**
+         * Mark all notifications as read
+         */
+        function markAllNotificationsRead() {
+            fetch('../../api/notifications_api.php?action=mark_all_read', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchNotifications();
+                    showNotification('All notifications marked as read', 'success');
+                }
+            })
+            .catch(error => console.log('Error marking all read:', error));
+        }
+        
+        /**
+         * Delete notification
+         */
+        function deleteNotification(notifId) {
+            if (confirm('Delete this notification?')) {
+                fetch(`../../api/notifications_api.php?action=delete&notification_id=${notifId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            fetchNotifications();
+                        }
+                    })
+                    .catch(error => console.log('Error deleting:', error));
+            }
+        }
+        
+        /**
+         * Clear all notifications
+         */
+        function clearAllNotifications() {
+            if (confirm('Clear all notifications? This cannot be undone.')) {
+                fetch('../../api/notifications_api.php?action=clear_all', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchNotifications();
+                        showNotification('All notifications cleared', 'info');
+                    }
+                })
+                .catch(error => console.log('Error clearing:', error));
+            }
+        }
+        
+        /**
+         * Convert timestamp to "time ago" format
+         */
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            
+            return date.toLocaleDateString();
+        }
+        
+        /**
+         * Initialize notification system on page load
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize notification sound preference
+            if (typeof notificationSound !== 'undefined') {
+                const soundToggle = document.getElementById('soundNotif');
+                if (soundToggle) {
+                    soundToggle.checked = notificationSound.isSoundEnabled;
+                }
+            }
+            
+            // Fetch notifications immediately
+            fetchNotifications();
+            
+            // Poll every 30 seconds
+            notificationPollingInterval = setInterval(() => {
+                fetchNotifications();
+            }, 30000);
+        });
+        
+        /**
+         * Toggle notification sound setting
+         */
+        function toggleNotificationSound() {
+            const soundToggle = document.getElementById('soundNotif');
+            if (typeof notificationSound !== 'undefined' && notificationSound) {
+                notificationSound.setSoundPreference(soundToggle.checked);
+                showNotification(
+                    soundToggle.checked ? 'Notification sounds enabled' : 'Notification sounds disabled',
+                    'info'
+                );
+            }
+        }
+        
+        // Cleanup polling on page unload
+        window.addEventListener('beforeunload', () => {
+            if (notificationPollingInterval) {
+                clearInterval(notificationPollingInterval);
+            }
+        });
         
         // Enhanced notification system with faster animations
         function showNotification(message, type = 'info') {
@@ -2726,6 +4037,1108 @@ try {
                 }
             }
         });
+
+        // User Logs Report Functions
+        let currentUserLogs = [];
+        let currentUserLogsInfo = null;
+        let currentUserLogsDate = new Date().toISOString().split('T')[0];
+
+        // Save tab selection whenever it changes
+        document.addEventListener('shown.bs.tab', function(e) {
+            const activeTabId = e.target.id.replace('-tab', '');
+            sessionStorage.setItem('activeReportsTab', activeTabId);
+        });
+
+        function searchUserLogs() {
+            const userType = document.getElementById('userLogsType').value;
+            const userId = document.getElementById('userLogsId').value.trim();
+            const searchDate = document.getElementById('userLogsDate').value;
+
+            if (!userId) {
+                showUserLogsError('Please enter a user ID');
+                return;
+            }
+
+            currentUserLogsDate = searchDate;
+            showUserLogsLoading(true);
+            hideUserLogsError();
+
+            fetch('user_logs_report.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `action=search_user&person_type=${userType}&person_id=${encodeURIComponent(userId)}&date=${searchDate}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                showUserLogsLoading(false);
+
+                if (data.error) {
+                    showUserLogsError(data.error);
+                    hideUserLogsTable();
+                } else {
+                    currentUserLogs = data.logs;
+                    currentUserLogsInfo = data.person;
+                    currentUserLogsDate = searchDate;
+
+                    displayUserLogsInfo(data.person);
+                    displayUserLogsTable(data.logs);
+                    showUserLogsTable();
+                    hideUserLogsEmpty();
+                    
+                    // Save search data to sessionStorage for persistence on refresh
+                    try {
+                        sessionStorage.setItem('userLogsSearchData', JSON.stringify({
+                            userType: userType,
+                            userId: userId,
+                            searchDate: searchDate,
+                            userLogsInfo: data.person,
+                            userLogs: data.logs
+                        }));
+                    } catch (e) {
+                        console.log('Could not save search data');
+                    }
+                }
+            })
+            .catch(error => {
+                showUserLogsLoading(false);
+                showUserLogsError('Error searching user: ' + error.message);
+            });
+        }
+
+        function displayUserLogsInfo(person) {
+            const userId = person.StudentID || person.FacultyID || person.StaffID;
+            const userType = person.Type;
+            let typeIcon = '🎓';
+            let typeColor = '#27AE60';
+            
+            if (userType === 'Faculty') {
+                typeIcon = '👨‍🏫';
+                typeColor = '#2980B9';
+            } else if (userType === 'Staff') {
+                typeIcon = '👔';
+                typeColor = '#8B4513';
+            }
+
+            const html = `
+                <div class="col-md-6">
+                    <div style="border-left: 4px solid #972529; padding: 15px;">
+                        <p style="color: #666; font-size: 0.9rem; margin: 0; text-transform: uppercase; font-weight: 700;">Full Name</p>
+                        <p style="color: #972529; font-size: 1.3rem; font-weight: 700; margin: 5px 0 0 0;">${person.DisplayName}</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div style="border-left: 4px solid #E5C573; padding: 15px;">
+                        <p style="color: #666; font-size: 0.9rem; margin: 0; text-transform: uppercase; font-weight: 700;">User ID</p>
+                        <p style="color: #E5C573; font-size: 1.3rem; font-weight: 700; margin: 5px 0 0 0;">${userId}</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div style="border-left: 4px solid ${typeColor}; padding: 15px;">
+                        <p style="color: #666; font-size: 0.9rem; margin: 0; text-transform: uppercase; font-weight: 700;">Type</p>
+                        <p style="color: ${typeColor}; font-size: 1.1rem; font-weight: 700; margin: 5px 0 0 0;">${typeIcon} ${userType}</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div style="border-left: 4px solid #6b7280; padding: 15px;">
+                        <p style="color: #666; font-size: 0.9rem; margin: 0; text-transform: uppercase; font-weight: 700;">Department</p>
+                        <p style="color: #333; font-size: 1rem; font-weight: 600; margin: 5px 0 0 0;">${person.Department}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('userLogsInfoContent').innerHTML = html;
+            document.getElementById('userLogsInfo').classList.remove('d-none');
+        }
+
+        function displayUserLogsTable(logs) {
+            const tbody = document.getElementById('userLogsTableBody');
+            tbody.innerHTML = '';
+
+            if (logs.length === 0) {
+                hideUserLogsTable();
+                showUserLogsEmpty();
+                return;
+            }
+
+            logs.forEach((log, index) => {
+                const time = new Date(log.Timestamp).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                const isEntry = log.Type === 'Entry';
+                const badgeStyle = isEntry 
+                    ? 'background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border: none;'
+                    : 'background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #991b1b; border: none;';
+                const badgeIcon = isEntry ? '📥' : '📤';
+                const scannerLocation = log.ScannerID || 'N/A';
+
+                const row = `
+                    <tr style="border-bottom: 1px solid #e5e7eb; transition: all 0.2s;">
+                        <td style="padding: 15px; font-weight: 500; color: #333;">${time}</td>
+                        <td style="padding: 15px;">
+                            <span style="${badgeStyle} padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                ${badgeIcon} ${log.Type}
+                            </span>
+                        </td>
+                        <td style="padding: 15px; color: #666;">${scannerLocation}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function exportUserLogsExcel() {
+            console.log('Excel Export Called');
+            
+            if (!currentUserLogsInfo) {
+                alert('No user data. Please search for a user first.');
+                return;
+            }
+            
+            if (!currentUserLogs || currentUserLogs.length === 0) {
+                alert('No logs found to export');
+                return;
+            }
+
+            try {
+                const userId = currentUserLogsInfo.StudentID || currentUserLogsInfo.FacultyID || currentUserLogsInfo.StaffID;
+                
+                // Create HTML table with styles
+                let html = `
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { font-family: Calibri, Arial; margin: 0; padding: 20px; background: #f5f5f5; }
+                            .container { max-width: 900px; margin: 0 auto; }
+                            .title { 
+                                background-color: #972529; 
+                                color: white; 
+                                padding: 20px; 
+                                text-align: center; 
+                                font-size: 18px; 
+                                font-weight: bold; 
+                                border: 3px solid #7a1d20;
+                                margin-bottom: 20px;
+                            }
+                            .section-header {
+                                background-color: #E5C573;
+                                color: #333;
+                                padding: 12px 15px;
+                                font-size: 14px;
+                                font-weight: bold;
+                                border: 2px solid #D4B85A;
+                                margin-top: 15px;
+                                margin-bottom: 10px;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 20px;
+                            }
+                            .user-info-table td {
+                                padding: 12px 15px;
+                                border: 1.5px solid #972529;
+                            }
+                            .user-info-table td:first-child {
+                                background-color: #972529;
+                                color: white;
+                                font-weight: bold;
+                                width: 25%;
+                            }
+                            .user-info-table td:last-child {
+                                background-color: #FFF9E6;
+                                color: #333;
+                            }
+                            .logs-table thead th {
+                                background-color: #972529;
+                                color: white;
+                                padding: 14px;
+                                border: 2px solid #7a1d20;
+                                font-weight: bold;
+                                text-align: center;
+                                font-size: 13px;
+                            }
+                            .logs-table tbody tr:nth-child(odd) {
+                                background-color: #FFFFFF;
+                            }
+                            .logs-table tbody tr:nth-child(even) {
+                                background-color: #F9F3E6;
+                            }
+                            .logs-table tbody td {
+                                padding: 12px 15px;
+                                border: 1px solid #D9CCC4;
+                                text-align: left;
+                                color: #333;
+                            }
+                            .logs-table tbody td:nth-child(2) {
+                                text-align: center;
+                            }
+                            .entry-badge {
+                                background-color: #C8E6C9;
+                                color: #1B5E20;
+                                padding: 6px 12px;
+                                border-radius: 4px;
+                                font-weight: bold;
+                                font-size: 12px;
+                            }
+                            .exit-badge {
+                                background-color: #FFCCCC;
+                                color: #B71C1C;
+                                padding: 6px 12px;
+                                border-radius: 4px;
+                                font-weight: bold;
+                                font-size: 12px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <td colspan="3" class="title">USER ACTIVITY REPORT</td>
+                                </tr>
+                            </table>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <td colspan="3" class="section-header">USER INFORMATION</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #972529; color: white; font-weight: bold; width: 25%;">User ID</td>
+                                    <td colspan="2" style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #FFF9E6; color: #333;">${userId}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #972529; color: white; font-weight: bold;">Full Name</td>
+                                    <td colspan="2" style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #FFF9E6; color: #333;">${currentUserLogsInfo.DisplayName}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #972529; color: white; font-weight: bold;">Type</td>
+                                    <td colspan="2" style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #FFF9E6; color: #333;">${currentUserLogsInfo.Type}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #972529; color: white; font-weight: bold;">Department</td>
+                                    <td colspan="2" style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #FFF9E6; color: #333;">${currentUserLogsInfo.Department}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #972529; color: white; font-weight: bold;">Report Date</td>
+                                    <td colspan="2" style="padding: 12px 15px; border: 1.5px solid #972529; background-color: #FFF9E6; color: #333;">${currentUserLogsDate}</td>
+                                </tr>
+                            </table>
+                            
+                            <table class="logs-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <td colspan="3" class="section-header">ACTIVITY LOGS</td>
+                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Type</th>
+                                        <th>Scanner Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                // Add log rows
+                currentUserLogs.forEach(log => {
+                    const time = new Date(log.Timestamp).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    const badgeClass = log.Type === 'Entry' ? 'entry-badge' : 'exit-badge';
+                    const scannerLocation = log.ScannerID || 'N/A';
+                    
+                    html += `
+                        <tr>
+                            <td>${time}</td>
+                            <td><span class="${badgeClass}">${log.Type}</span></td>
+                            <td>${scannerLocation}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                // Convert HTML to blob and download
+                const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=UTF-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `User_Logs_${userId}_${currentUserLogsDate}.xls`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log('Excel export successful');
+                alert('Excel file exported successfully!');
+            } catch (error) {
+                console.error('Excel export error:', error);
+                alert('Error exporting to Excel: ' + error.message);
+            }
+        }
+
+        function exportUserLogsPDF() {
+            console.log('PDF Export Called');
+            console.log('CurrentUserLogsInfo:', currentUserLogsInfo);
+            console.log('CurrentUserLogs:', currentUserLogs);
+            
+            if (!currentUserLogsInfo) {
+                alert('No user data. Please search for a user first.');
+                return;
+            }
+            
+            if (!currentUserLogs || currentUserLogs.length === 0) {
+                alert('No logs found to export');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const userId = currentUserLogsInfo.StudentID || currentUserLogsInfo.FacultyID || currentUserLogsInfo.StaffID;
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                let yPosition = 20;
+
+                // Header
+                pdf.setFillColor(151, 37, 41);
+                pdf.rect(0, 0, pageWidth, 25, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(16);
+                pdf.text('User Activity Report', 15, 18);
+
+                // User Info
+                yPosition = 40;
+                pdf.setTextColor(0, 0, 0);
+                pdf.setFontSize(11);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('User Information', 15, yPosition);
+                
+                yPosition += 10;
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'normal');
+                
+                const userInfo = [
+                    `User ID: ${userId}`,
+                    `Name: ${currentUserLogsInfo.DisplayName}`,
+                    `Type: ${currentUserLogsInfo.Type}`,
+                    `Department: ${currentUserLogsInfo.Department}`,
+                    `Date: ${currentUserLogsDate}`
+                ];
+
+                userInfo.forEach(info => {
+                    pdf.text(info, 15, yPosition);
+                    yPosition += 7;
+                });
+
+                yPosition += 5;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Activity Logs', 15, yPosition);
+
+                yPosition += 10;
+                pdf.setFont(undefined, 'normal');
+
+                // Table
+                const colWidth = pageWidth / 3.5;
+                pdf.setFillColor(229, 197, 115);
+                pdf.rect(15, yPosition - 5, colWidth - 2, 7, 'F');
+                pdf.rect(15 + colWidth - 2, yPosition - 5, colWidth - 2, 7, 'F');
+                pdf.rect(15 + (colWidth - 2) * 2, yPosition - 5, colWidth - 2, 7, 'F');
+
+                pdf.setTextColor(0, 0, 0);
+                pdf.setFontSize(8);
+                pdf.text('Time', 17, yPosition);
+                pdf.text('Type', 15 + colWidth, yPosition);
+                pdf.text('Scanner', 15 + (colWidth - 2) * 2 + 2, yPosition);
+
+                yPosition += 8;
+
+                currentUserLogs.forEach((log) => {
+                    if (yPosition > 270) {
+                        pdf.addPage();
+                        yPosition = 15;
+                    }
+
+                    const time = new Date(log.Timestamp).toLocaleTimeString();
+                    pdf.text(time, 17, yPosition);
+                    pdf.text(log.Type, 15 + colWidth, yPosition);
+                    pdf.text(log.ScannerID || 'N/A', 15 + (colWidth - 2) * 2 + 2, yPosition);
+
+                    yPosition += 7;
+                });
+
+                pdf.save(`User_Logs_${userId}_${currentUserLogsDate}.pdf`);
+                console.log('PDF export successful');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                alert('Error exporting to PDF: ' + error.message);
+            }
+        }
+
+        function showUserLogsError(message) {
+            const errorDiv = document.getElementById('userLogsError');
+            document.getElementById('userLogsErrorText').textContent = message;
+            errorDiv.classList.remove('d-none');
+            hideUserLogsLoading();
+        }
+
+        function hideUserLogsError() {
+            document.getElementById('userLogsError').classList.add('d-none');
+        }
+
+        function showUserLogsLoading(show) {
+            document.getElementById('userLogsLoading').classList.toggle('d-none', !show);
+        }
+
+        function hideUserLogsLoading() {
+            document.getElementById('userLogsLoading').classList.add('d-none');
+        }
+
+        function showUserLogsTable() {
+            document.getElementById('userLogsTable').classList.remove('d-none');
+        }
+
+        function hideUserLogsTable() {
+            document.getElementById('userLogsTable').classList.add('d-none');
+        }
+
+        function showUserLogsEmpty() {
+            document.getElementById('userLogsEmpty').classList.remove('d-none');
+        }
+
+        function hideUserLogsEmpty() {
+            document.getElementById('userLogsEmpty').classList.add('d-none');
+        }
+
+        // Allow search on Enter key in user logs
+        document.getElementById('userLogsId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUserLogs();
+            }
+        });
+
+        // Visitor Analytics Functions
+        let visitorAnalyticsChart = null;
+        let visitorPurposeChart = null;
+
+        function loadVisitorAnalytics(startDate, endDate) {
+            const formData = new FormData();
+            formData.append('action', 'get_visitor_analytics');
+            formData.append('start_date', startDate);
+            formData.append('end_date', endDate);
+
+            fetch('visitor_analytics_api.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateVisitorAnalytics(data);
+                } else {
+                    console.error('Error loading visitor analytics:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateVisitorAnalytics(data) {
+            // Update stat cards
+            document.getElementById('totalVisitors').textContent = data.totalVisitors || '-';
+            document.getElementById('totalCheckIns').textContent = data.totalCheckIns || '-';
+            document.getElementById('totalCheckOuts').textContent = data.totalCheckOuts || '-';
+            document.getElementById('avgDwellTime').textContent = (data.avgDwell || 0) + ' min';
+
+            // Update charts
+            updateVisitorTrendChart(data.dailyTrend || []);
+            updateVisitorPurposeChart(data.visitorsByPurpose || []);
+
+            // Update tables
+            updateRecentVisitors(data.recentVisitors || []);
+            updateVisitorLogs(data.visitorLogs || []);
+        }
+
+        function updateVisitorTrendChart(trendData) {
+            const ctx = document.getElementById('visitorTrendChart');
+            if (!ctx) return;
+
+            const dates = trendData.map(d => d.date || d.Date);
+            const counts = trendData.map(d => d.count || d.Count);
+
+            if (visitorAnalyticsChart) {
+                visitorAnalyticsChart.destroy();
+            }
+
+            visitorAnalyticsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Visitors Registered',
+                        data: counts,
+                        borderColor: '#972529',
+                        backgroundColor: 'rgba(151, 37, 41, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#972529',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function updateVisitorPurposeChart(purposeData) {
+            const ctx = document.getElementById('visitorPurposeChart');
+            if (!ctx) return;
+
+            const labels = purposeData.map(d => (d.purpose || '').substring(0, 20));
+            const counts = purposeData.map(d => d.count);
+
+            if (visitorPurposeChart) {
+                visitorPurposeChart.destroy();
+            }
+
+            visitorPurposeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: [
+                            '#972529',
+                            '#E5C573',
+                            '#a83531',
+                            '#eed490',
+                            '#c44536',
+                            '#f5deba'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function updateRecentVisitors(visitors) {
+            const tbody = document.getElementById('recentVisitorsBody');
+            if (!tbody) return;
+
+            if (visitors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>No visitors found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = visitors.map(visitor => `
+                <tr>
+                    <td><span class="badge bg-info">${visitor.visitor_code || visitor.VisitorCode || ''}</span></td>
+                    <td><strong>${visitor.first_name} ${visitor.last_name}</strong></td>
+                    <td>${visitor.company || 'N/A'}</td>
+                    <td>${(visitor.purpose || '').substring(0, 30)}</td>
+                    <td>${visitor.contact_number || 'N/A'}</td>
+                    <td>${new Date(visitor.created_at).toLocaleDateString()} ${new Date(visitor.created_at).toLocaleTimeString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateVisitorLogs(logs) {
+            const tbody = document.getElementById('visitorLogsBody');
+            if (!tbody) return;
+
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>No logs found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.map(log => {
+                const statusHTML = log.check_out_time 
+                    ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Checked Out</span>'
+                    : '<span class="badge bg-warning"><i class="fas fa-hourglass-start me-1"></i>Checked In</span>';
+                
+                return `
+                    <tr>
+                        <td><strong>${log.visitor_code || ''}</strong></td>
+                        <td>${log.first_name} ${log.last_name || ''}</td>
+                        <td>${new Date(log.check_in_time).toLocaleString()}</td>
+                        <td>${log.check_out_time ? new Date(log.check_out_time).toLocaleString() : '--'}</td>
+                        <td>${log.dwell_time || '--'}</td>
+                        <td>${statusHTML}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function resetVisitorAnalytics() {
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            const endDate = new Date();
+
+            document.getElementById('visitorStartDate').valueAsDate = startDate;
+            document.getElementById('visitorEndDate').valueAsDate = endDate;
+
+            loadVisitorAnalytics(startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]);
+        }
+
+        // Load visitor analytics when form is submitted
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('visitorAnalyticsForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const startDate = document.getElementById('visitorStartDate').value;
+                    const endDate = document.getElementById('visitorEndDate').value;
+                    loadVisitorAnalytics(startDate, endDate);
+                });
+
+                // Load initial data
+                const startDate = document.getElementById('visitorStartDate').value;
+                const endDate = document.getElementById('visitorEndDate').value;
+                loadVisitorAnalytics(startDate, endDate);
+            }
+        });
+
+        // ============================================
+        // SETTINGS PAGE FUNCTIONS
+        // ============================================
+
+        // Load settings from localStorage on page load
+        function loadSettingsFromStorage() {
+            const theme = localStorage.getItem('adminTheme') || 'light';
+            const dateFormat = localStorage.getItem('dateFormat') || 'DD/MM/YYYY';
+            const timezone = localStorage.getItem('timezone') || 'UTC+8';
+            const pagination = localStorage.getItem('pagination') || '25';
+
+            document.getElementById('themeSelect').value = theme;
+            document.getElementById('dateFormatSelect').value = dateFormat;
+            document.getElementById('timezoneSelect').value = timezone;
+            document.getElementById('paginationSelect').value = pagination;
+
+            // Notification settings
+            document.getElementById('emailNotif').checked = localStorage.getItem('emailNotif') !== 'false';
+            document.getElementById('pushNotif').checked = localStorage.getItem('pushNotif') !== 'false';
+            document.getElementById('soundNotif').checked = localStorage.getItem('soundNotif') !== 'false';
+
+            // Report settings
+            const exportFormat = localStorage.getItem('exportFormat') || 'excel';
+            document.querySelector(`input[value="${exportFormat}"]`).checked = true;
+            document.getElementById('includeCharts').checked = localStorage.getItem('includeCharts') !== 'false';
+            document.getElementById('includeSummary').checked = localStorage.getItem('includeSummary') !== 'false';
+            document.getElementById('includeFooter').checked = localStorage.getItem('includeFooter') !== 'false';
+
+            // Security settings
+            document.getElementById('sessionTimeout').value = localStorage.getItem('sessionTimeout') || '60';
+
+            updateCurrentTime();
+            loadScannerList();
+            loadLoginHistory();
+        }
+
+        // Change theme
+        function changeTheme(theme) {
+            localStorage.setItem('adminTheme', theme);
+            if (theme === 'dark') {
+                document.body.style.backgroundColor = '#1a1a1a';
+                document.body.style.color = '#fff';
+            } else {
+                document.body.style.backgroundColor = '#fff';
+                document.body.style.color = '#000';
+            }
+            showNotification('Theme changed to ' + theme, 'success');
+        }
+
+        // Change date format
+        function changeDateFormat(format) {
+            localStorage.setItem('dateFormat', format);
+            showNotification('Date format updated', 'success');
+        }
+
+        // Change timezone
+        function changeTimezone(timezone) {
+            localStorage.setItem('timezone', timezone);
+            updateCurrentTime();
+            showNotification('Timezone updated', 'success');
+        }
+
+        // Change pagination
+        function changePagination(size) {
+            localStorage.setItem('pagination', size);
+            showNotification('Pagination size changed to ' + size, 'success');
+        }
+
+        // Update live clock
+        function updateCurrentTime() {
+            const timeDisplay = document.getElementById('currentTimeDisplay');
+            if (timeDisplay) {
+                const now = new Date();
+                timeDisplay.textContent = now.toLocaleTimeString();
+                setTimeout(updateCurrentTime, 1000);
+            }
+        }
+
+        // Load scanner list
+        function loadScannerList() {
+            const container = document.getElementById('scannerListContainer');
+            if (!container) return;
+
+            // Demo data - in production, fetch from API
+            const scanners = [
+                { id: 1, name: 'Main Gate Scanner', location: 'Gate 1', status: 'Active', scans: 1254 },
+                { id: 2, name: 'Vehicular Exit Scanner', location: 'Exit 1', status: 'Active', scans: 856 },
+                { id: 3, name: 'Main Exit Scanner', location: 'Main Entrance', status: 'Active', scans: 523 }
+            ];
+
+            displayScannerList(scanners);
+        }
+
+        // Display scanner list in table
+        function displayScannerList(scanners) {
+            const container = document.getElementById('scannerListContainer');
+            if (!container) return;
+
+            const html = `
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr style="background: #f8f9fa;">
+                            <th>Scanner Name</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Total Scans</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${scanners.map(scanner => `
+                            <tr>
+                                <td>
+                                    <i class="fas fa-camera me-2"></i>${scanner.name}
+                                </td>
+                                <td>${scanner.location}</td>
+                                <td>
+                                    <span class="badge bg-${scanner.status === 'Active' ? 'success' : 'danger'}">
+                                        ${scanner.status}
+                                    </span>
+                                </td>
+                                <td><strong>${scanner.scans}</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = html;
+
+            // Display stats
+            const stats = `
+                <div class="row g-2">
+                    <div class="col-4">
+                        <div style="background: rgba(151, 37, 41, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.85rem; color: #666;">Active</p>
+                            <p class="mb-0" style="font-size: 1.5rem; color: #972529; font-weight: bold;">3</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div style="background: rgba(229, 197, 115, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.85rem; color: #666;">Total Scans</p>
+                            <p class="mb-0" style="font-size: 1.5rem; color: #E5C573; font-weight: bold;">2.6K</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div style="background: rgba(108, 117, 125, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.85rem; color: #666;">Avg./Day</p>
+                            <p class="mb-0" style="font-size: 1.5rem; color: #6c757d; font-weight: bold;">867</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            const statsContainer = document.getElementById('scannerStats');
+            if (statsContainer) statsContainer.innerHTML = stats;
+        }
+
+        // Refresh scanner list
+        function refreshScannerList() {
+            loadScannerList();
+            showNotification('Scanner list refreshed', 'success');
+        }
+
+        // Filter scanners
+        function filterScanners() {
+            const searchText = document.getElementById('scannerSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('scannerStatusFilter').value;
+            showNotification('Filters applied: Search="' + searchText + '", Status="' + statusFilter + '"', 'info');
+        }
+
+        // Reset scanner filter
+        function resetScannerFilter() {
+            document.getElementById('scannerSearch').value = '';
+            document.getElementById('scannerStatusFilter').value = '';
+            loadScannerList();
+            showNotification('Filter reset', 'success');
+        }
+
+        // Load scanner statistics
+        function loadScannerStats() {
+            const statsContainer = document.getElementById('scannerStats');
+            if (!statsContainer) return;
+
+            const stats = `
+                <div class="row g-2">
+                    <div class="col-4">
+                        <div style="background: rgba(151, 37, 41, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.75rem; color: #666;">Active</p>
+                            <p class="mb-0" style="font-size: 1.3rem; color: #972529; font-weight: bold;">3</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div style="background: rgba(229, 197, 115, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.75rem; color: #666;">Total Scans</p>
+                            <p class="mb-0" style="font-size: 1.3rem; color: #E5C573; font-weight: bold;">2.8K</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div style="background: rgba(108, 117, 125, 0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                            <p class="mb-1" style="font-size: 0.75rem; color: #666;">Avg./Day</p>
+                            <p class="mb-0" style="font-size: 1.3rem; color: #6c757d; font-weight: bold;">850</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            statsContainer.innerHTML = stats;
+        }
+
+        // Save scanner settings with all advanced options
+        function saveScannerSettings() {
+            const settings = {
+                scannerTimeout: document.getElementById('scannerTimeout').value,
+                successDelay: document.getElementById('successDelay').value,
+                scanSuccessSound: document.getElementById('scanSuccessSound').checked,
+                doubleCheckEnabled: document.getElementById('doubleCheckEnabled').checked,
+                enableOfflineMode: document.getElementById('enableOfflineMode').checked,
+                scanFormat: document.getElementById('scanFormat').value,
+                duplicateBehavior: document.getElementById('duplicateBehavior').value,
+                failedScanAction: document.getElementById('failedScanAction').value,
+                enableAutoBackup: document.getElementById('enableAutoBackup').checked
+            };
+
+            localStorage.setItem('scannerSettings', JSON.stringify(settings));
+            showNotification('All scanner settings saved successfully!', 'success');
+        }
+
+        // Reset scanner settings to defaults
+        function resetScannerSettings() {
+            if (confirm('Are you sure you want to reset all scanner settings to defaults?')) {
+                document.getElementById('scannerTimeout').value = '30';
+                document.getElementById('successDelay').value = '2';
+                document.getElementById('scanSuccessSound').checked = true;
+                document.getElementById('doubleCheckEnabled').checked = true;
+                document.getElementById('enableOfflineMode').checked = false;
+                document.getElementById('scanFormat').value = 'barcode';
+                document.getElementById('duplicateBehavior').value = 'alert';
+                document.getElementById('failedScanAction').value = 'retry';
+                document.getElementById('enableAutoBackup').checked = true;
+
+                localStorage.removeItem('scannerSettings');
+                showNotification('Scanner settings reset to defaults', 'success');
+            }
+        }
+
+        // Test scanner connectivity
+        function testScanner() {
+            showNotification('Testing scanner connection...', 'info');
+            setTimeout(() => {
+                showNotification('Scanner test completed - All 3 devices responding normally', 'success');
+            }, 1500);
+        }
+
+        // Calibrate all scanners
+        function calibrateScanner() {
+            showNotification('Calibrating scanners... Please wait', 'info');
+            setTimeout(() => {
+                showNotification('Calibration complete! All scanners optimized for accuracy', 'success');
+            }, 2000);
+        }
+
+        // Run scanner diagnostics
+        function runDiagnostics() {
+            showNotification('Running scanner diagnostics...', 'info');
+            setTimeout(() => {
+                showNotification('Diagnostics Report: All systems healthy. Scan accuracy: 99.8%', 'success');
+            }, 2500);
+        }
+
+        // Sync scanners data
+        function syncScannersNow() {
+            showNotification('Syncing scanner data...', 'info');
+            setTimeout(() => {
+                showNotification('Sync complete! 342 new records uploaded', 'success');
+            }, 1800);
+        }
+
+        // Clear scanner cache
+        function clearScannerCache() {
+            if (confirm('Clear all scanner cache? This will free up memory but may slow down first scans.')) {
+                showNotification('Clearing scanner cache...', 'info');
+                setTimeout(() => {
+                    showNotification('Cache cleared successfully! (128 MB freed)', 'success');
+                }, 1000);
+            }
+        }
+
+        // Load login history
+        function loadLoginHistory() {
+            const container = document.getElementById('loginHistoryBody');
+            if (!container) return;
+
+            const history = [
+                { date: '2024-01-15 08:30 AM', ip: '192.168.1.100', browser: 'Chrome', status: 'Success' },
+                { date: '2024-01-14 03:45 PM', ip: '192.168.1.101', browser: 'Firefox', status: 'Success' },
+                { date: '2024-01-14 10:20 AM', ip: '192.168.1.102', browser: 'Safari', status: 'Failed' },
+                { date: '2024-01-13 06:15 PM', ip: '192.168.1.100', browser: 'Chrome', status: 'Success' }
+            ];
+
+            const html = history.map(log => `
+                <tr>
+                    <td>${log.date}</td>
+                    <td>${log.ip}</td>
+                    <td>${log.browser}</td>
+                    <td>
+                        <span class="badge bg-${log.status === 'Success' ? 'success' : 'danger'}">
+                            ${log.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        // Toggle notification sound
+        function toggleNotificationSound() {
+            const enabled = document.getElementById('soundNotif').checked;
+            localStorage.setItem('soundNotif', enabled);
+            showNotification('Notification sound ' + (enabled ? 'enabled' : 'disabled'), 'success');
+        }
+
+        // Change password
+        function changePassword() {
+            const newPassword = prompt('Enter new password:');
+            if (newPassword && newPassword.length >= 8) {
+                showNotification('Password change initiated. Please check your email for confirmation.', 'success');
+            } else {
+                showNotification('Password must be at least 8 characters', 'danger');
+            }
+        }
+
+        // Save all settings
+        function saveAllSettings() {
+            localStorage.setItem('emailNotif', document.getElementById('emailNotif').checked);
+            localStorage.setItem('pushNotif', document.getElementById('pushNotif').checked);
+            localStorage.setItem('soundNotif', document.getElementById('soundNotif').checked);
+            localStorage.setItem('includeCharts', document.getElementById('includeCharts').checked);
+            localStorage.setItem('includeSummary', document.getElementById('includeSummary').checked);
+            localStorage.setItem('includeFooter', document.getElementById('includeFooter').checked);
+            localStorage.setItem('sessionTimeout', document.getElementById('sessionTimeout').value);
+
+            const exportFormat = document.querySelector('input[name="exportFormat"]:checked').value;
+            localStorage.setItem('exportFormat', exportFormat);
+
+            showNotification('All settings saved successfully!', 'success');
+        }
+
+        // Reset settings to defaults
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to defaults?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // System maintenance functions
+        function createBackup() {
+            showNotification('Creating backup... This may take a few minutes.', 'info');
+            setTimeout(() => {
+                showNotification('Backup created successfully!', 'success');
+            }, 2000);
+        }
+
+        function viewBackups() {
+            alert('Backup management interface would open here');
+        }
+
+        function cleanupLogs() {
+            showNotification('Cleaning old logs...', 'info');
+            setTimeout(() => {
+                showNotification('Old logs cleaned successfully (234 records removed)', 'success');
+            }, 1500);
+        }
+
+        function rebuildIndexes() {
+            showNotification('Rebuilding database indexes...', 'info');
+            setTimeout(() => {
+                showNotification('Database indexes rebuilt successfully!', 'success');
+            }, 2000);
+        }
+
+        function checkDatabase() {
+            showNotification('Checking database integrity...', 'info');
+            setTimeout(() => {
+                showNotification('Database check complete - All OK!', 'success');
+            }, 1500);
+        }
+
+        function cacheStats() {
+            showNotification('Cache Stats: Memory: 24MB | Hit Rate: 87% | Items: 1,245', 'info');
+        }
+
+        // Toast notification system
+        function showNotification(message, type = 'info') {
+            const toastHtml = `
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'danger' ? 'danger' : 'info'} border-0" role="alert" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+
+            const toastDiv = document.createElement('div');
+            toastDiv.innerHTML = toastHtml;
+            document.body.appendChild(toastDiv);
+
+            const toast = new bootstrap.Toast(toastDiv.querySelector('.toast'));
+            toast.show();
+
+            setTimeout(() => toastDiv.remove(), 3000);
+        }
+
+        // Initialize settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettingsFromStorage();
+        });
     </script>
     
     <style>
@@ -2752,9 +5165,71 @@ try {
             }
         }
         
-        /* Smooth transitions for all interactive elements */
-        * {
+        /* Smooth transitions for interactive elements (excluding text selection) */
+        button, a, input, select, textarea, .btn, .form-control {
             transition-duration: 0.15s !important;
+        }
+        
+        /* No transition for nav links to prevent text coverage */
+        .nav-link {
+            transition: none !important;
+        }
+        
+        /* Prevent gold overlay on text selection */
+        ::selection {
+            background-color: rgba(229, 197, 115, 0.3);
+            color: #333;
+        }
+        
+        ::-webkit-selection {
+            background-color: rgba(229, 197, 115, 0.3);
+            color: #333;
+        }
+        
+        /* Remove selection from buttons and interactive elements */
+        button::selection,
+        .btn::selection,
+        .nav-link::selection,
+        .settings-tab-btn::selection {
+            background-color: transparent;
+            color: inherit;
+        }
+        
+        /* Settings tabs container - disable all transitions */
+        .settings-tabs,
+        .settings-tabs .nav-item,
+        .settings-tabs .nav-link,
+        .settings-tabs button {
+            transition: none !important;
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            animation: none !important;
+            -webkit-animation: none !important;
+        }
+        
+        /* Settings tab styles */
+        .settings-tab-btn {
+            border-bottom: 3px solid transparent !important;
+            padding: 12px 16px !important;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            transition: none !important;
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+        }
+        
+        .settings-tab-btn.active {
+            border-bottom-color: #972529 !important;
+            background-color: rgba(229, 197, 115, 0.1);
+            color: #972529 !important;
+            transition: none !important;
+        }
+        
+        .settings-tab-btn:hover {
+            background-color: rgba(229, 197, 115, 0.08);
+            transition: none !important;
         }
         
         /* Enhanced mobile responsiveness */

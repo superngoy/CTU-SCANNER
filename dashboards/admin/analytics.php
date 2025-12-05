@@ -23,27 +23,20 @@ function getDateRange($dateRange) {
     
     switch ($dateRange) {
         case 'today':
-            // Include yesterday, today, and tomorrow to account for timezone differences
-            $yesterday = date('Y-m-d', $now - 86400);
-            $tomorrow = date('Y-m-d', $now + 86400);
-            return [$yesterday, $tomorrow];
+            // Use exact today's date (timezone fixed globally to Asia/Manila)
+            return [$today, $today];
         case 'week':
             $startOfWeek = date('Y-m-d', strtotime('monday this week'));
-            $tomorrow = date('Y-m-d', $now + 86400);
-            return [$startOfWeek, $tomorrow];
+            return [$startOfWeek, $today];
         case 'month':
             $startOfMonth = date('Y-m-01');
-            $tomorrow = date('Y-m-d', $now + 86400);
-            return [$startOfMonth, $tomorrow];
+            return [$startOfMonth, $today];
         case 'year':
             $startOfYear = date('Y-01-01');
-            $tomorrow = date('Y-m-d', $now + 86400);
-            return [$startOfYear, $tomorrow];
+            return [$startOfYear, $today];
         default:
-            // For 'today', include timezone buffer
-            $yesterday = date('Y-m-d', $now - 86400);
-            $tomorrow = date('Y-m-d', $now + 86400);
-            return [$yesterday, $tomorrow];
+            // For 'today', use exact date
+            return [$today, $today];
     }
 }
 

@@ -40,6 +40,7 @@ if ($_POST) {
         :root {
             --primary: #972529;
             --secondary: #E5C573;
+            --white: #ffffff;
             --dark: #1a1a1a;
             --light: #f5f5f5;
             --border: #e0e0e0;
@@ -124,51 +125,58 @@ if ($_POST) {
         }
         
         .login-header {
-            background: linear-gradient(135deg, rgba(151, 37, 41, 0.8) 0%, rgba(196, 69, 54, 0.8) 100%);
-            backdrop-filter: blur(10px);
-            padding: 30px 25px;
+            background: linear-gradient(135deg, rgba(151, 37, 41, 0.85) 0%, rgba(196, 69, 54, 0.85) 100%);
+            backdrop-filter: blur(15px);
+            padding: 32px 25px;
             text-align: center;
             color: white;
             position: relative;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         
         .logo-wrapper {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         .logo-circle {
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(229, 197, 115, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 3px solid var(--secondary);
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); }
+            50% { box-shadow: 0 10px 50px rgba(229, 197, 115, 0.15); }
         }
         
         .logo-circle img {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             object-fit: cover;
         }
         
         .login-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 12px 0 4px;
-            letter-spacing: -0.3px;
+            font-size: 26px;
+            font-weight: 800;
+            margin: 14px 0 6px;
+            letter-spacing: -0.5px;
         }
         
         .login-header p {
             font-size: 13px;
-            opacity: 0.9;
+            opacity: 0.92;
             margin: 0;
-            font-weight: 300;
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
         
         .login-body {
@@ -205,13 +213,20 @@ if ($_POST) {
         }
         
         .form-group label {
-            display: block;
-            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
+            color: white;
+            margin-bottom: 8px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .form-group label i {
+            font-size: 15px;
+            color: var(--secondary);
         }
         
         .password-wrapper {
@@ -222,57 +237,60 @@ if ($_POST) {
         
         .form-group input {
             width: 100%;
-            padding: 12px 14px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
-            color: #333;
+            color: white;
+            font-weight: 500;
         }
         
         .form-group.password-field input {
-            padding-right: 40px;
+            padding-right: 42px;
         }
         
         .form-group input::placeholder {
-            color: #aaa;
+            color: rgba(255, 255, 255, 0.7);
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: rgba(229, 197, 115, 0.5);
-            box-shadow: 0 0 0 3px rgba(229, 197, 115, 0.15);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(229, 197, 115, 0.2);
+            background: rgba(255, 255, 255, 0.18);
         }
         
         .password-toggle {
             position: absolute;
-            right: 12px;
+            right: 14px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
-            color: #666;
-            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
             transition: all 0.3s ease;
-            padding: 4px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .password-toggle:hover {
-            color: var(--primary);
+            color: white;
         }
         
         .btn-login {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, rgba(151, 37, 41, 0.9) 0%, rgba(196, 69, 54, 0.9) 100%);
-            backdrop-filter: blur(10px);
+            padding: 13px;
+            background: linear-gradient(135deg, #972529 0%, #c44536 100%);
             color: white;
-            border: 2px solid rgba(229, 197, 115, 0.3);
-            border-radius: 8px;
+            border: none;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
@@ -282,19 +300,22 @@ if ($_POST) {
             justify-content: center;
             gap: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-top: 8px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            letter-spacing: 1px;
+            margin-top: 16px;
+            box-shadow: 0 8px 24px rgba(151, 37, 41, 0.25);
         }
         
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(151, 37, 41, 0.35);
-            border-color: rgba(229, 197, 115, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(151, 37, 41, 0.35);
         }
         
         .btn-login:active {
             transform: translateY(-1px);
+        }
+        
+        .btn-login i {
+            font-size: 15px;
         }
         
         .login-footer {
@@ -304,7 +325,7 @@ if ($_POST) {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
+            color: white;
         }
         
         .login-footer a {
