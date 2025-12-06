@@ -135,6 +135,57 @@ if ($action === 'get_visitor_analytics') {
             'message' => 'Error loading analytics: ' . $e->getMessage()
         ]);
     }
+} elseif ($action === 'recent_visitors') {
+    try {
+        $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+        $endDate = $_GET['end_date'] ?? date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime($startDate));
+        $endDate = date('Y-m-d', strtotime($endDate));
+        
+        $stmt = $conn->prepare("
+            SELECT id, visitor_code, first_name, middle_name, last_name, company, purpose, contact_number, created_at
+            FROM visitors
+            WHERE DATE(created_at) BETWEEN ? AND ?
+            ORDER BY created_at DESC
+            LIMIT 20
+        ");
+        $stmt->execute([$startDate, $endDate]);
+        $visitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($visitors);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+} elseif ($action === 'check_in_out') {
+    try {
+        $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+        $endDate = $_GET['end_date'] ?? date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime($startDate));
+        $endDate = date('Y-m-d', strtotime($endDate));
+        
+        $stmt = $conn->prepare("
+            SELECT 
+                v.visitor_code,
+                v.first_name,
+                v.last_name,
+                vl.check_in_time,
+                vl.check_out_time,
+                CASE 
+                    WHEN vl.check_out_time IS NOT NULL 
+                    THEN CONCAT(TIMESTAMPDIFF(HOUR, vl.check_in_time, vl.check_out_time), 'h ', MOD(TIMESTAMPDIFF(MINUTE, vl.check_in_time, vl.check_out_time), 60), 'm')
+                    ELSE '--'
+                END as dwell_time
+            FROM visitor_logs vl
+            LEFT JOIN visitors v ON vl.visitor_id = v.id
+            WHERE DATE(vl.check_in_time) BETWEEN ? AND ?
+            ORDER BY vl.check_in_time DESC
+            LIMIT 50
+        ");
+        $stmt->execute([$startDate, $endDate]);
+        $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($logs);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
 } else {
     echo json_encode([
         'success' => false,

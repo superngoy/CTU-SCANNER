@@ -574,3 +574,11 @@
 [06-Dec-2025 17:05:29 Asia/Manila] Person found: {"FacultyID":"4800016022906","FacultyFName":"Secret","FacultyMName":"S.","FacultyLName":"Secret","Gender":"Female","Birthdate":"2025-12-06","Department":"COTE","isActive":"1","image":"uploads\/faculty\/4800016022906_1765011461.jpg","created_at":"2025-12-06 16:57:12","type":"faculty"}
 [06-Dec-2025 17:05:29 Asia/Manila] Logging entry for 4800016022906 (faculty)
 [06-Dec-2025 17:05:29 Asia/Manila] Entry recorded successfully for Secret S. Secret
+[06-Dec-2025 18:56:33 Asia/Manila] Scan process - Barcode Data: 8996001414309, Scanner: SC001
+[06-Dec-2025 18:56:33 Asia/Manila] Person found: {"StaffID":"8996001414309","StaffFName":"KOPI","StaffMName":"KOPI","StaffLName":"KOPI","Gender":"Female","BirthDate":"1992-12-06","Position":"BOXING","Department":"COED","isActive":"1","image":"uploads\/staff\/8996001414309_1765004029.jpg","created_at":"2025-12-06 14:53:49","updated_at":"2025-12-06 14:53:49","type":"staff"}
+[06-Dec-2025 18:56:33 Asia/Manila] Logging entry for 8996001414309 (staff)
+[06-Dec-2025 18:56:33 Asia/Manila] Entry recorded successfully for KOPI KOPI KOPI
+[06-Dec-2025 18:58:05 Asia/Manila] Scan process - Barcode Data: 4800016022906, Scanner: SC001
+[06-Dec-2025 18:58:05 Asia/Manila] Person found: {"FacultyID":"4800016022906","FacultyFName":"Secret","FacultyMName":"S.","FacultyLName":"Secret","Gender":"Female","Birthdate":"2025-12-06","Department":"COTE","isActive":"1","image":"uploads\/faculty\/4800016022906_1765011461.jpg","created_at":"2025-12-06 16:57:12","type":"faculty"}
+[06-Dec-2025 18:58:05 Asia/Manila] Logging entry for 4800016022906 (faculty)
+[06-Dec-2025 18:58:05 Asia/Manila] Entry recorded successfully for Secret S. Secret

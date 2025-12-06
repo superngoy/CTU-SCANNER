@@ -1289,7 +1289,9 @@ class AdminDashboard {
             return;
         }
 
-        tbody.innerHTML = data.map((entry, index) => {
+        tbody.innerHTML = '';
+
+        data.forEach((entry, index) => {
             const timestamp = new Date(entry.Timestamp);
             const time = timestamp.toLocaleTimeString('en-US', {
                 hour: '2-digit',
@@ -1325,34 +1327,78 @@ class AdminDashboard {
             const fullName = entry.FullName || 'Unknown';
             const personId = entry.PersonID;
 
-            return `
-                <tr style="border-bottom: 1px solid #ecf0f1; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8f9fa';" onmouseout="this.style.backgroundColor='transparent';">
-                    <td style="padding: 12px 15px; font-weight: 600; color: #2c3e50;">
-                        ${fullName}
-                    </td>
-                    <td style="padding: 12px 15px; color: #7f8c8d;">
-                        <code style="background-color: #f8f9fa; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem;">${personId}</code>
-                    </td>
-                    <td style="padding: 12px 15px;">
-                        <span style="
-                            display: inline-block;
-                            padding: 4px 12px;
-                            background-color: ${typeBgColor};
-                            color: ${typeColor};
-                            border-radius: 20px;
-                            font-size: 0.85rem;
-                            font-weight: 600;
-                            border: 1px solid ${typeColor};
-                        ">
-                            <i class="fas ${typeIcon} me-1"></i>${personType.toLowerCase()}
-                        </span>
-                    </td>
-                    <td style="padding: 12px 15px; text-align: right; color: #7f8c8d; font-weight: 500;">
-                        <i class="fas fa-clock me-1" style="color: #f39c12;"></i>${time}
-                    </td>
-                </tr>
-            `;
-        }).join('');
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '2px solid #dee2e6';
+            tr.style.height = '65px';
+            tr.style.backgroundColor = 'white';
+            tr.style.transition = 'all 0.2s ease';
+            tr.onmouseover = function() {
+                this.style.backgroundColor = '#f0f7ff';
+                this.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05) inset';
+            };
+            tr.onmouseout = function() {
+                this.style.backgroundColor = 'white';
+                this.style.boxShadow = 'none';
+            };
+
+            // Name cell
+            const tdName = document.createElement('td');
+            tdName.style.padding = '12px 15px';
+            tdName.style.fontWeight = '600';
+            tdName.style.color = '#2c3e50';
+            tdName.style.borderRight = '1px solid #ecf0f1';
+            tdName.style.verticalAlign = 'middle';
+            tdName.style.textAlign = 'left';
+            tdName.style.width = '35%';
+            tdName.textContent = fullName;
+
+            // ID cell
+            const tdId = document.createElement('td');
+            tdId.style.padding = '12px 15px';
+            tdId.style.color = '#7f8c8d';
+            tdId.style.borderRight = '1px solid #ecf0f1';
+            tdId.style.verticalAlign = 'middle';
+            tdId.style.textAlign = 'left';
+            tdId.style.width = '25%';
+            
+            const idCode = document.createElement('code');
+            idCode.style.backgroundColor = '#f0f7ff';
+            idCode.style.padding = '6px 10px';
+            idCode.style.borderRadius = '4px';
+            idCode.style.fontSize = '0.9rem';
+            idCode.style.border = '1px solid #d4e6f1';
+            idCode.textContent = personId;
+            tdId.appendChild(idCode);
+
+            // Role cell
+            const tdRole = document.createElement('td');
+            tdRole.style.padding = '12px 15px';
+            tdRole.style.borderRight = '1px solid #ecf0f1';
+            tdRole.style.verticalAlign = 'middle';
+            tdRole.style.textAlign = 'left';
+            tdRole.style.width = '20%';
+
+            const roleBadge = document.createElement('span');
+            roleBadge.style.cssText = `display: inline-block; padding: 6px 14px; background-color: ${typeBgColor}; color: ${typeColor}; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1.5px solid ${typeColor};`;
+            roleBadge.innerHTML = `<i class="fas ${typeIcon} me-1"></i>${personType.toLowerCase()}`;
+            tdRole.appendChild(roleBadge);
+
+            // Time cell
+            const tdTime = document.createElement('td');
+            tdTime.style.padding = '12px 15px';
+            tdTime.style.textAlign = 'right';
+            tdTime.style.color = '#7f8c8d';
+            tdTime.style.fontWeight = '500';
+            tdTime.style.verticalAlign = 'middle';
+            tdTime.style.width = '20%';
+            tdTime.innerHTML = `<i class="fas fa-clock me-1" style="color: #f39c12;"></i>${time}`;
+
+            tr.appendChild(tdName);
+            tr.appendChild(tdId);
+            tr.appendChild(tdRole);
+            tr.appendChild(tdTime);
+            tbody.appendChild(tr);
+        });
     }
 
     displayRecentExits(data) {
@@ -1383,7 +1429,9 @@ class AdminDashboard {
             return;
         }
 
-        tbody.innerHTML = data.map((exit, index) => {
+        tbody.innerHTML = '';
+
+        data.forEach((exit, index) => {
             const timestamp = new Date(exit.Timestamp);
             const time = timestamp.toLocaleTimeString('en-US', {
                 hour: '2-digit',
@@ -1419,34 +1467,78 @@ class AdminDashboard {
             const fullName = exit.FullName || 'Unknown';
             const personId = exit.PersonID;
 
-            return `
-                <tr style="border-bottom: 1px solid #ecf0f1; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8f9fa';" onmouseout="this.style.backgroundColor='transparent';">
-                    <td style="padding: 12px 15px; font-weight: 600; color: #2c3e50;">
-                        ${fullName}
-                    </td>
-                    <td style="padding: 12px 15px; color: #7f8c8d;">
-                        <code style="background-color: #f8f9fa; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem;">${personId}</code>
-                    </td>
-                    <td style="padding: 12px 15px;">
-                        <span style="
-                            display: inline-block;
-                            padding: 4px 12px;
-                            background-color: ${typeBgColor};
-                            color: ${typeColor};
-                            border-radius: 20px;
-                            font-size: 0.85rem;
-                            font-weight: 600;
-                            border: 1px solid ${typeColor};
-                        ">
-                            <i class="fas ${typeIcon} me-1"></i>${personType.toLowerCase()}
-                        </span>
-                    </td>
-                    <td style="padding: 12px 15px; text-align: right; color: #7f8c8d; font-weight: 500;">
-                        <i class="fas fa-clock me-1" style="color: #f39c12;"></i>${time}
-                    </td>
-                </tr>
-            `;
-        }).join('');
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '2px solid #dee2e6';
+            tr.style.height = '65px';
+            tr.style.backgroundColor = 'white';
+            tr.style.transition = 'all 0.2s ease';
+            tr.onmouseover = function() {
+                this.style.backgroundColor = '#fff0f0';
+                this.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05) inset';
+            };
+            tr.onmouseout = function() {
+                this.style.backgroundColor = 'white';
+                this.style.boxShadow = 'none';
+            };
+
+            // Name cell
+            const tdName = document.createElement('td');
+            tdName.style.padding = '12px 15px';
+            tdName.style.fontWeight = '600';
+            tdName.style.color = '#2c3e50';
+            tdName.style.borderRight = '1px solid #ecf0f1';
+            tdName.style.verticalAlign = 'middle';
+            tdName.style.textAlign = 'left';
+            tdName.style.width = '35%';
+            tdName.textContent = fullName;
+
+            // ID cell
+            const tdId = document.createElement('td');
+            tdId.style.padding = '12px 15px';
+            tdId.style.color = '#7f8c8d';
+            tdId.style.borderRight = '1px solid #ecf0f1';
+            tdId.style.verticalAlign = 'middle';
+            tdId.style.textAlign = 'left';
+            tdId.style.width = '25%';
+            
+            const idCode = document.createElement('code');
+            idCode.style.backgroundColor = '#fff0f0';
+            idCode.style.padding = '6px 10px';
+            idCode.style.borderRadius = '4px';
+            idCode.style.fontSize = '0.9rem';
+            idCode.style.border = '1px solid #f5c2c2';
+            idCode.textContent = personId;
+            tdId.appendChild(idCode);
+
+            // Role cell
+            const tdRole = document.createElement('td');
+            tdRole.style.padding = '12px 15px';
+            tdRole.style.borderRight = '1px solid #ecf0f1';
+            tdRole.style.verticalAlign = 'middle';
+            tdRole.style.textAlign = 'left';
+            tdRole.style.width = '20%';
+
+            const roleBadge = document.createElement('span');
+            roleBadge.style.cssText = `display: inline-block; padding: 6px 14px; background-color: ${typeBgColor}; color: ${typeColor}; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1.5px solid ${typeColor};`;
+            roleBadge.innerHTML = `<i class="fas ${typeIcon} me-1"></i>${personType.toLowerCase()}`;
+            tdRole.appendChild(roleBadge);
+
+            // Time cell
+            const tdTime = document.createElement('td');
+            tdTime.style.padding = '12px 15px';
+            tdTime.style.textAlign = 'right';
+            tdTime.style.color = '#7f8c8d';
+            tdTime.style.fontWeight = '500';
+            tdTime.style.verticalAlign = 'middle';
+            tdTime.style.width = '20%';
+            tdTime.innerHTML = `<i class="fas fa-clock me-1" style="color: #f39c12;"></i>${time}`;
+
+            tr.appendChild(tdName);
+            tr.appendChild(tdId);
+            tr.appendChild(tdRole);
+            tr.appendChild(tdTime);
+            tbody.appendChild(tr);
+        });
     }
 
     // Auto-refresh functionality for real-time data

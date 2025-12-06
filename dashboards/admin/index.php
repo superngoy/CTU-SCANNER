@@ -1820,13 +1820,13 @@ try {
                                 </button>
                             </div>
                             <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-sm mb-0">
+                                <table class="table table-hover mb-0" style="margin-bottom: 0;">
                                     <thead class="table-light sticky-top">
-                                        <tr class="border-bottom-2">
-                                            <th style="width: 35%; padding: 12px 15px;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
-                                            <th style="width: 25%; padding: 12px 15px;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
-                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
-                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
+                                        <tr style="border-bottom: 3px solid #0d6efd; background-color: #f8f9fa;">
+                                            <th style="width: 35%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
+                                            <th style="width: 25%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
+                                            <th style="width: 20%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
+                                            <th style="width: 20%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
                                         </tr>
                                     </thead>
                                     <tbody id="entriesTableBody">
@@ -1851,13 +1851,13 @@ try {
                                 </button>
                             </div>
                             <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-sm mb-0">
+                                <table class="table table-hover mb-0" style="margin-bottom: 0;">
                                     <thead class="table-light sticky-top">
-                                        <tr class="border-bottom-2">
-                                            <th style="width: 35%; padding: 12px 15px;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
-                                            <th style="width: 25%; padding: 12px 15px;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
-                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
-                                            <th style="width: 20%; padding: 12px 15px;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
+                                        <tr style="border-bottom: 3px solid #dc3545; background-color: #f8f9fa;">
+                                            <th style="width: 35%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-user me-1 text-primary"></i>Name</th>
+                                            <th style="width: 25%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-id-card me-1 text-info"></i>ID</th>
+                                            <th style="width: 20%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-tag me-1 text-secondary"></i>Role</th>
+                                            <th style="width: 20%; padding: 16px 15px; font-weight: 700; color: #2c3e50;"><i class="fas fa-clock me-1 text-warning"></i>Time</th>
                                         </tr>
                                     </thead>
                                     <tbody id="exitsTableBody">
@@ -2781,22 +2781,12 @@ try {
                                 <h5 class="mb-0"><i class="fas fa-table me-2"></i>Recent Visitors</h5>
                             </div>
                             <div class="card-body p-3">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead style="background: var(--secondary-color); color: #333;">
-                                            <tr>
-                                                <th>Code</th>
-                                                <th>Name</th>
-                                                <th>Company</th>
-                                                <th>Purpose</th>
-                                                <th>Contact</th>
-                                                <th>Registered</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="recentVisitorsBody">
-                                            <tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-hourglass-start me-2"></i>Loading...</td></tr>
-                                        </tbody>
-                                    </table>
+                                <div id="recentVisitorsContainer" style="max-height: 500px; overflow-y: auto;">
+                                    <div id="recentVisitorsLoading" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2811,22 +2801,12 @@ try {
                                 <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Check-In & Check-Out Logs</h5>
                             </div>
                             <div class="card-body p-3">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-sm">
-                                        <thead style="background: var(--secondary-color); color: #333;">
-                                            <tr>
-                                                <th>Visitor Code</th>
-                                                <th>Visitor Name</th>
-                                                <th>Check-In Time</th>
-                                                <th>Check-Out Time</th>
-                                                <th>Dwell Time</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="visitorLogsBody">
-                                            <tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-hourglass-start me-2"></i>Loading...</td></tr>
-                                        </tbody>
-                                    </table>
+                                <div id="visitorLogsContainer" style="max-height: 500px; overflow-y: auto;">
+                                    <div id="visitorLogsLoading" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4699,51 +4679,117 @@ try {
         }
 
         function updateRecentVisitors(visitors) {
-            const tbody = document.getElementById('recentVisitorsBody');
-            if (!tbody) return;
+            const container = document.getElementById('recentVisitorsContainer');
+            if (!container) return;
 
-            if (visitors.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>No visitors found</td></tr>';
+            if (!visitors || visitors.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-inbox me-2"></i>No visitors found</div>';
                 return;
             }
 
-            tbody.innerHTML = visitors.map(visitor => `
-                <tr>
-                    <td><span class="badge bg-info">${visitor.visitor_code || visitor.VisitorCode || ''}</span></td>
-                    <td><strong>${visitor.first_name} ${visitor.last_name}</strong></td>
-                    <td>${visitor.company || 'N/A'}</td>
-                    <td>${(visitor.purpose || '').substring(0, 30)}</td>
-                    <td>${visitor.contact_number || 'N/A'}</td>
-                    <td>${new Date(visitor.created_at).toLocaleDateString()} ${new Date(visitor.created_at).toLocaleTimeString()}</td>
-                </tr>
-            `).join('');
+            let html = '<div style="display: grid; gap: 12px;">';
+            
+            visitors.forEach(visitor => {
+                const code = visitor.visitor_code || visitor.VisitorCode || '';
+                const name = (visitor.first_name || '') + ' ' + (visitor.last_name || '');
+                const company = visitor.company || 'N/A';
+                const purpose = (visitor.purpose || '').substring(0, 40);
+                const contact = visitor.contact_number || 'N/A';
+                const date = visitor.created_at ? new Date(visitor.created_at).toLocaleDateString() : '-';
+                const time = visitor.created_at ? new Date(visitor.created_at).toLocaleTimeString() : '-';
+
+                html += `
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #fff; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">VISITOR CODE</span>
+                                <div style="color: #972529; font-weight: 700; font-size: 1.1rem; margin-top: 4px;"><span class="badge bg-info" style="font-size: 0.9rem;">${code}</span></div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">NAME</span>
+                                <div style="color: #333; font-weight: 600; font-size: 1rem; margin-top: 4px;">${name}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">COMPANY</span>
+                                <div style="color: #666; font-size: 0.95rem; margin-top: 4px;">${company}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">PURPOSE</span>
+                                <div style="color: #666; font-size: 0.95rem; margin-top: 4px;">${purpose}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">CONTACT</span>
+                                <div style="color: #666; font-size: 0.95rem; margin-top: 4px;">${contact}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">REGISTERED</span>
+                                <div style="color: #666; font-size: 0.95rem; margin-top: 4px;">${date} ${time}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function updateVisitorLogs(logs) {
-            const tbody = document.getElementById('visitorLogsBody');
-            if (!tbody) return;
+            const container = document.getElementById('visitorLogsContainer');
+            if (!container) return;
 
-            if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>No logs found</td></tr>';
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-inbox me-2"></i>No logs found</div>';
                 return;
             }
 
-            tbody.innerHTML = logs.map(log => {
-                const statusHTML = log.check_out_time 
+            let html = '<div style="display: grid; gap: 12px;">';
+            
+            logs.forEach(log => {
+                const code = log.visitor_code || '';
+                const name = (log.first_name || '') + ' ' + (log.last_name || '');
+                const checkIn = log.check_in_time ? new Date(log.check_in_time).toLocaleString() : '-';
+                const checkOut = log.check_out_time ? new Date(log.check_out_time).toLocaleString() : '--';
+                const dwellTime = log.dwell_time || '--';
+                const isCheckedOut = log.check_out_time !== null;
+                const statusBadge = isCheckedOut 
                     ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Checked Out</span>'
                     : '<span class="badge bg-warning"><i class="fas fa-hourglass-start me-1"></i>Checked In</span>';
-                
-                return `
-                    <tr>
-                        <td><strong>${log.visitor_code || ''}</strong></td>
-                        <td>${log.first_name} ${log.last_name || ''}</td>
-                        <td>${new Date(log.check_in_time).toLocaleString()}</td>
-                        <td>${log.check_out_time ? new Date(log.check_out_time).toLocaleString() : '--'}</td>
-                        <td>${log.dwell_time || '--'}</td>
-                        <td>${statusHTML}</td>
-                    </tr>
+
+                html += `
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #fff; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; align-items: start;">
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">VISITOR CODE</span>
+                                <div style="color: #333; font-weight: 700; font-size: 1rem; margin-top: 4px;">${code}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">NAME</span>
+                                <div style="color: #333; font-weight: 600; font-size: 1rem; margin-top: 4px;">${name}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">CHECK-IN</span>
+                                <div style="color: #666; font-size: 0.9rem; margin-top: 4px;">${checkIn}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">CHECK-OUT</span>
+                                <div style="color: #666; font-size: 0.9rem; margin-top: 4px;">${checkOut}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">DWELL TIME</span>
+                                <div style="color: #666; font-size: 0.9rem; margin-top: 4px;">${dwellTime}</div>
+                            </div>
+                            <div>
+                                <span style="color: #999; font-size: 0.85rem; font-weight: 600;">STATUS</span>
+                                <div style="margin-top: 4px;">${statusBadge}</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
-            }).join('');
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function resetVisitorAnalytics() {

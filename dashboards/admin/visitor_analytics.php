@@ -80,8 +80,43 @@ try {
     $stmt->execute([$startDate, $endDate]);
     $totalCheckOuts = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
+    // Fetch recent visitors
+    $stmt = $conn->prepare("
+        SELECT id, visitor_code, first_name, middle_name, last_name, company, purpose, contact_number, created_at
+        FROM visitors
+        WHERE DATE(created_at) BETWEEN ? AND ?
+        ORDER BY created_at DESC
+        LIMIT 20
+    ");
+    $stmt->execute([$startDate, $endDate]);
+    $recentVisitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch check-in/out logs
+    $stmt = $conn->prepare("
+        SELECT 
+            v.visitor_code,
+            v.first_name,
+            v.last_name,
+            vl.check_in_time,
+            vl.check_out_time,
+            CASE 
+                WHEN vl.check_out_time IS NOT NULL 
+                THEN CONCAT(TIMESTAMPDIFF(HOUR, vl.check_in_time, vl.check_out_time), 'h ', MOD(TIMESTAMPDIFF(MINUTE, vl.check_in_time, vl.check_out_time), 60), 'm')
+                ELSE '--'
+            END as dwell_time
+        FROM visitor_logs vl
+        LEFT JOIN visitors v ON vl.visitor_id = v.id
+        WHERE DATE(vl.check_in_time) BETWEEN ? AND ?
+        ORDER BY vl.check_in_time DESC
+        LIMIT 50
+    ");
+    $stmt->execute([$startDate, $endDate]);
+    $checkInOutLogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (Exception $e) {
     error_log("Visitor analytics error: " . $e->getMessage());
+    $recentVisitors = [];
+    $checkInOutLogs = [];
 }
 ?>
 <!DOCTYPE html>
@@ -449,6 +484,16 @@ try {
                 display: flex;
             }
         }
+
+        /* Card-based Row Styling */
+        .card-body > div > div {
+            transition: all 0.2s ease !important;
+        }
+
+        .card-body > div > div:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+            transform: translateY(-2px) !important;
+        }
     </style>
 </head>
 <body>
@@ -635,48 +680,32 @@ try {
                         <h5 class="mb-0"><i class="fas fa-table me-2"></i>Recent Visitors</h5>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead style="background: var(--secondary-color); color: #333;">
-                                    <tr>
-                                        <th>Code</th>
-                                        <th>Name</th>
-                                        <th>Company</th>
-                                        <th>Purpose</th>
-                                        <th>Contact</th>
-                                        <th>Registered</th>
+                        <div style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
+                            <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%; table-layout: fixed; background-color: white;">
+                                <colgroup>
+                                    <col style="width: 15%;">
+                                    <col style="width: 25%;">
+                                    <col style="width: 20%;">
+                                    <col style="width: 20%;">
+                                    <col style="width: 15%;">
+                                    <col style="width: 5%;">
+                                </colgroup>
+                                <thead style="position: sticky; top: 0; z-index: 10; background: var(--secondary-color); color: #333;">
+                                    <tr style="border-bottom: 3px solid #972529;">
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Code</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Name</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Company</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Purpose</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Contact</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700;">Registered</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    try {
-                                        $stmt = $conn->prepare("
-                                            SELECT id, visitor_code, first_name, middle_name, last_name, company, purpose, contact_number, created_at
-                                            FROM visitors
-                                            WHERE DATE(created_at) BETWEEN ? AND ?
-                                            ORDER BY created_at DESC
-                                            LIMIT 20
-                                        ");
-                                        $stmt->execute([$startDate, $endDate]);
-                                        $visitors = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                                        foreach ($visitors as $visitor) {
-                                            $fullName = trim($visitor['first_name'] . ' ' . $visitor['middle_name'] . ' ' . $visitor['last_name']);
-                                            echo "
-                                                <tr>
-                                                    <td><span class='badge bg-info'>{$visitor['visitor_code']}</span></td>
-                                                    <td><strong>$fullName</strong></td>
-                                                    <td>" . htmlspecialchars($visitor['company'] ?? 'N/A') . "</td>
-                                                    <td>" . htmlspecialchars(substr($visitor['purpose'], 0, 30)) . "</td>
-                                                    <td>" . htmlspecialchars($visitor['contact_number']) . "</td>
-                                                    <td>" . date('M d, Y H:i', strtotime($visitor['created_at'])) . "</td>
-                                                </tr>
-                                            ";
-                                        }
-                                    } catch (Exception $e) {
-                                        echo "<tr><td colspan='6' class='text-danger'>Error loading visitors</td></tr>";
-                                    }
-                                    ?>
+                                <tbody id="recentVisitorsBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-5" style="padding: 24px !important;">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Loading recent visitors...
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -693,61 +722,36 @@ try {
                         <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Check-In & Check-Out Logs</h5>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-sm">
-                                <thead style="background: var(--secondary-color); color: #333;">
-                                    <tr>
-                                        <th>Visitor Code</th>
-                                        <th>Visitor Name</th>
-                                        <th>Check-In Time</th>
-                                        <th>Check-Out Time</th>
-                                        <th>Dwell Time</th>
-                                        <th>Status</th>
+                        <div style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
+                            <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%; table-layout: fixed; background-color: white;">
+                                <colgroup>
+                                    <col style="width: 12%;">
+                                    <col style="width: 18%;">
+                                    <col style="width: 22%;">
+                                    <col style="width: 22%;">
+                                    <col style="width: 12%;">
+                                    <col style="width: 14%;">
+                                </colgroup>
+                                <thead style="position: sticky; top: 0; z-index: 10; background: var(--secondary-color); color: #333;">
+                                    <tr style="border-bottom: 3px solid #972529;">
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Visitor Code</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Visitor Name</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Check-In Time</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Check-Out Time</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700; border-right: 1px solid #ddd;">Dwell Time</th>
+                                        <th style="padding: 16px; text-align: left; font-weight: 700;">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <?php
-                                    try {
-                                        $stmt = $conn->prepare("
-                                            SELECT 
-                                                v.visitor_code,
-                                                v.first_name,
-                                                v.last_name,
-                                                vl.check_in_time,
-                                                vl.check_out_time,
-                                                CASE 
-                                                    WHEN vl.check_out_time IS NOT NULL 
-                                                    THEN CONCAT(TIMESTAMPDIFF(HOUR, vl.check_in_time, vl.check_out_time), 'h ', MOD(TIMESTAMPDIFF(MINUTE, vl.check_in_time, vl.check_out_time), 60), 'm')
-                                                    ELSE '--'
-                                                END as dwell_time
-                                            FROM visitor_logs vl
-                                            LEFT JOIN visitors v ON vl.visitor_id = v.id
-                                            WHERE DATE(vl.check_in_time) BETWEEN ? AND ?
-                                            ORDER BY vl.check_in_time DESC
-                                            LIMIT 50
-                                        ");
-                                        $stmt->execute([$startDate, $endDate]);
-                                        $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                        
-                                        foreach ($logs as $log) {
-                                            $visitorName = htmlspecialchars(($log['first_name'] ?? '') . ' ' . ($log['last_name'] ?? ''));
-                                            $checkInTime = date('M d, Y H:i:s', strtotime($log['check_in_time']));
-                                            $checkOutTime = $log['check_out_time'] ? date('M d, Y H:i:s', strtotime($log['check_out_time'])) : '--';
-                                            $dwellTime = $log['dwell_time'];
-                                            $status = $log['check_out_time'] ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Checked Out</span>' : '<span class="badge bg-warning"><i class="fas fa-hourglass-start me-1"></i>Checked In</span>';
-                                            
-                                            echo "
-                                                <tr>
-                                                    <td><strong>" . htmlspecialchars($log['visitor_code']) . "</strong></td>
-                                                    <td>$visitorName</td>
-                                                    <td>$checkInTime</td>
-                                                    <td>$checkOutTime</td>
-                                                    <td>$dwellTime</td>
-                                                    <td>$status</td>
-                                                </tr>
-                                            ";
-                                        }
-                                    } catch (Exception $e) {
+                                <tbody id="checkInOutBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-5" style="padding: 24px !important;">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Loading check-in/out logs...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                                         echo "<tr><td colspan='6' class='text-danger'>Error loading logs: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
                                     }
                                     ?>
@@ -886,5 +890,166 @@ try {
     </script>
     </main>
     </div>
+
+<script>
+// Embed data in the page
+const recentVisitorsData = <?php echo json_encode($recentVisitors ?? []); ?>;
+const checkInOutLogsData = <?php echo json_encode($checkInOutLogs ?? []); ?>;
+
+function loadRecentVisitors() {
+    console.log('loadRecentVisitors called with embedded data:', recentVisitorsData);
+    displayRecentVisitors(recentVisitorsData);
+}
+
+function displayRecentVisitors(visitors) {
+    console.log('displayRecentVisitors called with:', visitors);
+    const tbody = document.getElementById('recentVisitorsBody');
+    if (!tbody) {
+        console.error('recentVisitorsBody element not found!');
+        return;
+    }
+
+    if (!visitors || visitors.length === 0) {
+        console.log('No visitors to display');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted py-5" style="padding: 24px !important;">
+                    <i class="fas fa-inbox me-2"></i>No recent visitors found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    console.log('Processing', visitors.length, 'visitors');
+    tbody.innerHTML = '';
+
+    visitors.forEach((visitor) => {
+        const fullName = (visitor.first_name + ' ' + (visitor.middle_name || '') + ' ' + visitor.last_name).trim();
+        const company = visitor.company || 'N/A';
+        const purpose = visitor.purpose.substring(0, 30);
+        const registered = new Date(visitor.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '2px solid #dee2e6';
+        tr.style.height = '65px';
+        tr.style.backgroundColor = 'white';
+        tr.style.transition = 'all 0.2s ease';
+        tr.onmouseover = function() {
+            this.style.backgroundColor = '#f0f7ff';
+        };
+        tr.onmouseout = function() {
+            this.style.backgroundColor = 'white';
+        };
+
+        // Build HTML for all cells
+        let cellsHTML = '';
+        
+        // Code
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; vertical-align: middle; text-align: center; width: 15%; overflow: hidden; text-overflow: ellipsis;"><span class="badge bg-info">${visitor.visitor_code}</span></td>`;
+        
+        // Name
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; font-weight: 600; color: #2c3e50; vertical-align: middle; width: 25%; overflow: hidden; text-overflow: ellipsis;">${fullName}</td>`;
+        
+        // Company
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; vertical-align: middle; width: 20%; overflow: hidden; text-overflow: ellipsis;">${company}</td>`;
+        
+        // Purpose
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; vertical-align: middle; width: 20%; overflow: hidden; text-overflow: ellipsis;">${purpose}</td>`;
+        
+        // Contact
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; vertical-align: middle; width: 15%; overflow: hidden; text-overflow: ellipsis;">${visitor.contact_number}</td>`;
+        
+        // Registered
+        cellsHTML += `<td style="padding: 12px 16px; color: #666; vertical-align: middle; font-size: 0.9rem; width: 5%; overflow: hidden; text-overflow: ellipsis;">${registered}</td>`;
+
+        tr.innerHTML = cellsHTML;
+        tbody.appendChild(tr);
+    });
+}
+
+function loadCheckInOutLogs() {
+    console.log('loadCheckInOutLogs called with embedded data:', checkInOutLogsData);
+    displayCheckInOutLogs(checkInOutLogsData);
+}
+
+function displayCheckInOutLogs(logs) {
+    const tbody = document.getElementById('checkInOutBody');
+    if (!tbody) return;
+
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted py-5" style="padding: 24px !important;">
+                    <i class="fas fa-inbox me-2"></i>No check-in/out logs found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    logs.forEach((log) => {
+        const visitorName = (log.first_name || '') + ' ' + (log.last_name || '');
+        const checkInTime = new Date(log.check_in_time).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const checkOutTime = log.check_out_time ? new Date(log.check_out_time).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--';
+        const isCheckedOut = log.check_out_time !== null;
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '2px solid #dee2e6';
+        tr.style.height = '65px';
+        tr.style.backgroundColor = 'white';
+        tr.style.transition = 'all 0.2s ease';
+        tr.onmouseover = function() {
+            this.style.backgroundColor = '#fff0f0';
+        };
+        tr.onmouseout = function() {
+            this.style.backgroundColor = 'white';
+        };
+
+        // Build HTML for all cells
+        let cellsHTML = '';
+        
+        // Visitor Code
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; font-weight: 600; vertical-align: middle; text-align: center; width: 12%; overflow: hidden; text-overflow: ellipsis;">${log.visitor_code}</td>`;
+        
+        // Visitor Name
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #333; font-weight: 500; vertical-align: middle; width: 18%; overflow: hidden; text-overflow: ellipsis;">${visitorName}</td>`;
+        
+        // Check-In Time
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; font-size: 0.9rem; vertical-align: middle; width: 22%; overflow: hidden; text-overflow: ellipsis;">${checkInTime}</td>`;
+        
+        // Check-Out Time
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; font-size: 0.9rem; vertical-align: middle; width: 22%; overflow: hidden; text-overflow: ellipsis;">${checkOutTime}</td>`;
+        
+        // Dwell Time
+        cellsHTML += `<td style="padding: 12px 16px; border-right: 1px solid #ecf0f1; color: #666; vertical-align: middle; text-align: center; width: 12%; overflow: hidden; text-overflow: ellipsis;">${log.dwell_time}</td>`;
+        
+        // Status
+        const statusBadge = isCheckedOut ? '<span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Checked Out</span>' : '<span class="badge bg-warning"><i class="fas fa-hourglass-start me-1"></i>Checked In</span>';
+        cellsHTML += `<td style="padding: 12px 16px; vertical-align: middle; text-align: center; width: 14%; overflow: hidden;">${statusBadge}</td>`;
+
+        tr.innerHTML = cellsHTML;
+        tbody.appendChild(tr);
+    });
+}
+
+// Load data on page load
+console.log('Script loaded, document.readyState:', document.readyState);
+if (document.readyState === 'loading') {
+    console.log('DOM still loading, setting up DOMContentLoaded listener');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded fired, calling load functions');
+        loadRecentVisitors();
+        loadCheckInOutLogs();
+    });
+} else {
+    // DOM is already loaded
+    console.log('DOM already loaded, calling load functions immediately');
+    loadRecentVisitors();
+    loadCheckInOutLogs();
+}
+</script>
 </body>
 </html>
