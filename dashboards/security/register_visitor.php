@@ -48,23 +48,36 @@ try {
         throw new Exception('Cannot find database connection method');
     }
 
-    // Validate required fields
-    $firstName = trim($_POST['first_name'] ?? '');
-    $middleName = trim($_POST['middle_name'] ?? '');
-    $lastName = trim($_POST['last_name'] ?? '');
-    $contactNumber = trim($_POST['contact_number'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $company = trim($_POST['company'] ?? '');
-    $purpose = trim($_POST['purpose'] ?? '');
-    $idProvidedType = trim($_POST['id_provided_type'] ?? '');
-    $idProvidedNumber = trim($_POST['id_provided_number'] ?? '');
+    // Validate required fields using safe functions
+    $firstName = getSafePOST('first_name', '', 'string');
+    $middleName = getSafePOST('middle_name', '', 'string');
+    $lastName = getSafePOST('last_name', '', 'string');
+    $contactNumber = getSafePOST('contact_number', '', 'string');
+    $email = getSafePOST('email', '', 'email');
+    $company = getSafePOST('company', '', 'string');
+    $purpose = getSafePOST('purpose', '', 'string');
+    $idProvidedType = getSafePOST('id_provided_type', '', 'string');
+    $idProvidedNumber = getSafePOST('id_provided_number', '', 'string');
 
-    if (!$firstName || !$lastName || !$contactNumber || !$purpose) {
-        send_json(['success' => false, 'message' => 'Required fields: First Name, Last Name, Contact Number, Purpose']);
+    // Validate input lengths and formats
+    if (!$firstName || strlen($firstName) > 50) {
+        send_json(['success' => false, 'message' => 'Invalid first name (max 50 characters)']);
+    }
+    
+    if (!$lastName || strlen($lastName) > 50) {
+        send_json(['success' => false, 'message' => 'Invalid last name (max 50 characters)']);
+    }
+    
+    if (!$contactNumber || !validatePhoneNumber($contactNumber)) {
+        send_json(['success' => false, 'message' => 'Invalid contact number']);
+    }
+    
+    if (!$purpose || strlen($purpose) > 255) {
+        send_json(['success' => false, 'message' => 'Invalid purpose (max 255 characters)']);
     }
 
     // Validate email if provided
-    if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if ($email && !validateEmail($email)) {
         send_json(['success' => false, 'message' => 'Invalid email format']);
     }
 
@@ -80,6 +93,7 @@ try {
         }
 
         $fileName = $visitorCode . '_' . time() . '.' . pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $fileName = sanitizeFilename($fileName);
         $uploadPath = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadPath)) {
@@ -96,6 +110,7 @@ try {
         }
 
         $fileName = $visitorCode . '_id_' . time() . '.' . pathinfo($_FILES['id_image']['name'], PATHINFO_EXTENSION);
+        $fileName = sanitizeFilename($fileName);
         $uploadPath = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['id_image']['tmp_name'], $uploadPath)) {

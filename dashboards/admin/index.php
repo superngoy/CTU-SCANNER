@@ -126,13 +126,14 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" data-assets-path="<?php echo $assets_path; ?>" data-base-path="<?php echo $base_path; ?>">
+<html lang="en" data-assets-path="<?php echo escapeOutput($assets_path, 'attr'); ?>" data-base-path="<?php echo escapeOutput($base_path, 'attr'); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTU Scanner - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
     <link href="../../assets/css/style.css" rel="stylesheet">
     <style>
         /* Find and replace the :root CSS variables */
@@ -1926,10 +1927,10 @@ try {
                                                 </label>
                                                 <div class="row">
                                                     <div class="col-6">
-                                                        <input type="date" id="startDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
+                                                        <input type="date" id="startDate" class="form-control mb-2" value="<?php echo escapeOutput(date('Y-m-d'), 'attr'); ?>" style="border-radius: 8px;">
                                                     </div>
                                                     <div class="col-6">
-                                                        <input type="date" id="endDate" class="form-control mb-2" value="<?php echo date('Y-m-d'); ?>" style="border-radius: 8px;">
+                                                        <input type="date" id="endDate" class="form-control mb-2" value="<?php echo escapeOutput(date('Y-m-d'), 'attr'); ?>" style="border-radius: 8px;">
                                                     </div>
                                                 </div>
                                                     <div class="row g-2">
@@ -1984,7 +1985,7 @@ try {
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label fw-bold" style="color: #972529;">Date</label>
-                                            <input type="date" id="userLogsDate" class="form-control" value="<?php echo date('Y-m-d'); ?>" style="border: 2px solid #E5C573; border-radius: 8px; padding: 10px; transition: all 0.3s;">
+                                            <input type="date" id="userLogsDate" class="form-control" value="<?php echo escapeOutput(date('Y-m-d'), 'attr'); ?>" style="border: 2px solid #E5C573; border-radius: 8px; padding: 10px; transition: all 0.3s;">
                                         </div>
                                         <div class="col-md-3 d-flex align-items-end">
                                             <button class="btn w-100 py-2" onclick="searchUserLogs()" style="background: linear-gradient(135deg, #972529 0%, #7a1d20 100%); color: white; border: none; border-radius: 8px; font-weight: 600; transition: all 0.3s; box-shadow: 0 4px 12px rgba(151, 37, 41, 0.3);">
@@ -2037,13 +2038,13 @@ try {
                                         </div>
                                     </div>
                                     <div class="card-body p-4">
-                                        <div class="table-responsive">
-                                            <table class="table" style="border-collapse: collapse;">
-                                                <thead>
-                                                    <tr style="border-bottom: 2px solid #E5C573;">
-                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Time</th>
-                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Type</th>
-                                                        <th style="color: #972529; font-weight: 700; padding: 12px; text-transform: uppercase; font-size: 0.85rem;">Scanner Location</th>
+                                        <div style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
+                                            <table id="userLogsTable" style="border-collapse: collapse; width: 100%; table-layout: fixed; background-color: white;">
+                                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                                    <tr style="border-bottom: 2px solid #E5C573; background-color: #f8f9fa;">
+                                                        <th style="color: #972529; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 0.85rem; text-align: left; width: 25%; border: 1px solid #ddd;">Time</th>
+                                                        <th style="color: #972529; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 0.85rem; text-align: left; width: 35%; border: 1px solid #ddd;">Type</th>
+                                                        <th style="color: #972529; font-weight: 700; padding: 16px; text-transform: uppercase; font-size: 0.85rem; text-align: left; width: 40%; border: 1px solid #ddd;">Scanner Location</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="userLogsTableBody">
@@ -2700,11 +2701,11 @@ try {
                                     <input type="hidden" name="section" value="visitor-analytics">
                                     <div class="col-md-3">
                                         <label class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" name="start_date" id="visitorStartDate" value="<?php echo date('Y-m-d', strtotime('-30 days')); ?>">
+                                        <input type="date" class="form-control" name="start_date" id="visitorStartDate" value="<?php echo escapeOutput(date('Y-m-d', strtotime('-30 days')), 'attr'); ?>">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label">End Date</label>
-                                        <input type="date" class="form-control" name="end_date" id="visitorEndDate" value="<?php echo date('Y-m-d'); ?>">
+                                        <input type="date" class="form-control" name="end_date" id="visitorEndDate" value="<?php echo escapeOutput(date('Y-m-d'), 'attr'); ?>">
                                     </div>
                                     <div class="col-md-6 d-flex align-items-end">
                                         <button type="submit" class="btn btn-primary me-2">
@@ -2841,6 +2842,7 @@ try {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../../assets/js/admin.js"></script>
+    <script src="../../assets/js/safe-admin-patch.js"></script>
     <script src="../../assets/audio/notification-sound.js"></script>
     
     <script>
@@ -3637,6 +3639,7 @@ try {
         // ============================================
         
         let notificationPollingInterval = null;
+        let previousNotificationIds = new Set();
         
         /**
          * Toggle notification dropdown visibility
@@ -3665,13 +3668,13 @@ try {
         }
         
         /**
-         * Fetch notifications from API
+         * Fetch notifications from API - Optimized for real-time delivery
          */
         function fetchNotifications() {
-            fetch('../../api/notifications_api.php?action=get_all&limit=20')
+            fetch('../../api/notifications_api.php?action=get_all&limit=20&t=' + Date.now())
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                    if (data.success && data.notifications) {
                         displayNotifications(data.notifications);
                         updateNotificationBadge(data);
                     }
@@ -3721,21 +3724,30 @@ try {
                 `;
             }).join('');
             
-            // Play sound for unread failed scan notifications
-            if (typeof notificationSound !== 'undefined' && notifications.some(n => !n.is_read && n.category === 'scan_failure')) {
-                if (notificationSound) {
+            // Play sound ONLY for NEW unread notifications
+            if (typeof notificationSound !== 'undefined' && notificationSound && notificationSound.isSoundEnabled) {
+                const currentNotificationIds = new Set(notifications.map(n => n.id));
+                const unreadNotifications = notifications.filter(n => !n.is_read);
+                
+                // Check if there are new unread notifications (ones we haven't seen before)
+                const newUnreadNotifications = unreadNotifications.filter(n => !previousNotificationIds.has(n.id));
+                
+                if (newUnreadNotifications.length > 0) {
                     // Play appropriate sound based on notification type
-                    const failedScan = notifications.find(n => !n.is_read && n.category === 'scan_failure');
-                    if (failedScan) {
-                        if (failedScan.type === 'error') {
-                            notificationSound.playErrorTone();
-                        } else if (failedScan.type === 'warning') {
-                            notificationSound.playWarningTone();
-                        } else {
-                            notificationSound.playNotificationTone();
-                        }
+                    const hasErrors = newUnreadNotifications.some(n => n.type === 'error');
+                    const hasWarnings = newUnreadNotifications.some(n => n.type === 'warning');
+                    
+                    if (hasErrors) {
+                        notificationSound.playErrorTone();
+                    } else if (hasWarnings) {
+                        notificationSound.playWarningTone();
+                    } else {
+                        notificationSound.playNotificationTone();
                     }
                 }
+                
+                // Update the set of notification IDs
+                previousNotificationIds = currentNotificationIds;
             }
         }
         
@@ -3856,10 +3868,10 @@ try {
             // Fetch notifications immediately
             fetchNotifications();
             
-            // Poll every 30 seconds
+            // Poll every 0.5 seconds for real-time updates
             notificationPollingInterval = setInterval(() => {
                 fetchNotifications();
-            }, 30000);
+            }, 500);
         });
         
         /**
@@ -4153,6 +4165,8 @@ try {
 
         function displayUserLogsTable(logs) {
             const tbody = document.getElementById('userLogsTableBody');
+            const table = document.getElementById('userLogsTable');
+            
             tbody.innerHTML = '';
 
             if (logs.length === 0) {
@@ -4160,6 +4174,12 @@ try {
                 showUserLogsEmpty();
                 return;
             }
+
+            // Force table styling
+            table.style.borderCollapse = 'collapse';
+            table.style.width = '100%';
+            table.style.tableLayout = 'fixed';
+            table.style.backgroundColor = 'white';
 
             logs.forEach((log, index) => {
                 const time = new Date(log.Timestamp).toLocaleTimeString('en-US', {
@@ -4169,23 +4189,56 @@ try {
                 });
                 const isEntry = log.Type === 'Entry';
                 const badgeStyle = isEntry 
-                    ? 'background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border: none;'
-                    : 'background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #991b1b; border: none;';
+                    ? 'background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46;'
+                    : 'background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #991b1b;';
                 const badgeIcon = isEntry ? '📥' : '📤';
                 const scannerLocation = log.ScannerID || 'N/A';
 
-                const row = `
-                    <tr style="border-bottom: 1px solid #e5e7eb; transition: all 0.2s;">
-                        <td style="padding: 15px; font-weight: 500; color: #333;">${time}</td>
-                        <td style="padding: 15px;">
-                            <span style="${badgeStyle} padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                                ${badgeIcon} ${log.Type}
-                            </span>
-                        </td>
-                        <td style="padding: 15px; color: #666;">${scannerLocation}</td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #ddd';
+                tr.style.height = '65px';
+                tr.style.backgroundColor = 'white';
+
+                // Time cell
+                const tdTime = document.createElement('td');
+                tdTime.style.padding = '16px';
+                tdTime.style.fontWeight = '500';
+                tdTime.style.color = '#333';
+                tdTime.style.textAlign = 'left';
+                tdTime.style.width = '25%';
+                tdTime.style.verticalAlign = 'middle';
+                tdTime.style.border = '1px solid #ddd';
+                tdTime.style.wordBreak = 'break-word';
+                tdTime.textContent = time;
+
+                // Type cell
+                const tdType = document.createElement('td');
+                tdType.style.padding = '16px';
+                tdType.style.textAlign = 'left';
+                tdType.style.width = '35%';
+                tdType.style.verticalAlign = 'middle';
+                tdType.style.border = '1px solid #ddd';
+
+                const badge = document.createElement('span');
+                badge.style.cssText = `${badgeStyle} padding: 8px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-block; white-space: nowrap;`;
+                badge.textContent = `${badgeIcon} ${log.Type}`;
+                tdType.appendChild(badge);
+
+                // Scanner Location cell
+                const tdLocation = document.createElement('td');
+                tdLocation.style.padding = '16px';
+                tdLocation.style.color = '#666';
+                tdLocation.style.textAlign = 'left';
+                tdLocation.style.width = '40%';
+                tdLocation.style.verticalAlign = 'middle';
+                tdLocation.style.border = '1px solid #ddd';
+                tdLocation.style.wordBreak = 'break-word';
+                tdLocation.textContent = scannerLocation;
+
+                tr.appendChild(tdTime);
+                tr.appendChild(tdType);
+                tr.appendChild(tdLocation);
+                tbody.appendChild(tr);
             });
         }
 
@@ -5297,5 +5350,6 @@ try {
             }
         }
     </style>
+    <script src="../../assets/js/safe-dom.js"></script>
 </body>
 </html>

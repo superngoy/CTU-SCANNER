@@ -9,9 +9,9 @@ class AdminDashboard {
         };
         this.autoRefreshInterval = null;
         this.autoRefreshEnabled = true;
-        this.autoRefreshRate = 15000; // 15 seconds for faster updates
+        this.autoRefreshRate = 500; // 0.5 seconds for faster updates
         this.dashboardRefreshInterval = null;
-        this.dashboardRefreshRate = 15000; // 15 seconds for dashboard
+        this.dashboardRefreshRate = 500; // 0.5 seconds for dashboard
         // Don't initialize automatically - wait for showSection to call it
     }
 

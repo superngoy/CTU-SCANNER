@@ -73,6 +73,9 @@ try {
             break;
             
         case 'entries':
+            // Only get today's entries using Manila timezone
+            $today = date('Y-m-d', time());
+            
             $stmt = $conn->prepare("
                 SELECT 
                     e.PersonID,
@@ -94,10 +97,11 @@ try {
                 LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                 LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                 LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                WHERE DATE(e.Timestamp) = ? OR (DATE(e.Timestamp) = DATE(NOW()))
                 ORDER BY e.Timestamp DESC 
                 LIMIT 20
             ");
-            $stmt->execute();
+            $stmt->execute([$today]);
             $entries = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Process entries with comprehensive debugging
@@ -136,6 +140,9 @@ try {
             break;
             
         case 'exits':
+            // Only get today's exits using Manila timezone
+            $today = date('Y-m-d', time());
+            
             $stmt = $conn->prepare("
                 SELECT 
                     e.PersonID,
@@ -157,10 +164,11 @@ try {
                 LEFT JOIN students s ON e.PersonID = s.StudentID AND e.PersonType = 'student'
                 LEFT JOIN faculty f ON e.PersonID = f.FacultyID AND e.PersonType = 'faculty'
                 LEFT JOIN staff st ON e.PersonID = st.StaffID AND e.PersonType = 'staff'
+                WHERE DATE(e.Timestamp) = ? OR (DATE(e.Timestamp) = DATE(NOW()))
                 ORDER BY e.Timestamp DESC 
                 LIMIT 20
             ");
-            $stmt->execute();
+            $stmt->execute([$today]);
             $exits = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Process exits

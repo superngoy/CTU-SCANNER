@@ -58,11 +58,6 @@
                 <img src="assets/images/logo.png" alt="CTU Logo" class="logo-inline">
                 <span>CTU Scanner System</span>
             </h1>
-            <p class="hero-subtitle">Advanced Code 39 Barcode Access Control System</p>
-            <p class="hero-description">
-                Streamlined campus access management with real-time monitoring, 
-                comprehensive analytics, and secure authentication for students, faculty, and staff.
-            </p>
         </div>
     </div>
     

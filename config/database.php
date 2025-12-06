@@ -1,4 +1,25 @@
 <?php
+// ============================================
+// SECURITY HEADERS - Must be called before any output
+// ============================================
+if (!headers_sent()) {
+    // Prevent caching of sensitive pages
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() - 3600) . ' GMT');
+    
+    // XSS Protection
+    header('X-XSS-Protection: 1; mode=block');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    
+    // Referrer Policy
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    
+    // Content-Security-Policy (allows necessary external resources)
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' cdn.jsdelivr.net cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' cdnjs.cloudflare.com; connect-src 'self'; frame-ancestors 'self';");
+}
+
 class Database {
     private $host = 'localhost';
     private $db_name = 'ctu_scanner';
@@ -31,4 +52,7 @@ class Database {
 
 // Set PHP timezone globally for all files that include this config
 date_default_timezone_set('Asia/Manila');
+
+// Include security sanitization functions
+require_once __DIR__ . '/../includes/sanitize.php';
 ?>

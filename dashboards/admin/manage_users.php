@@ -2070,6 +2070,10 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                         fetch(`manage_users_api.php?action=get_user&type=${userType}&user_id=${userId}`)
                             .then(response => response.json())
                             .then(userData => {
+                                // Fix image path for this page location and add cache-busting
+                                if (userData.imageUrl && !userData.imageUrl.startsWith('assets/')) {
+                                    userData.imageUrl = '../../../' + userData.imageUrl;
+                                }
                                 // Update local data and redisplay
                                 updateLocalUserData(userId, userData);
                                 showAlert('success', data.message);

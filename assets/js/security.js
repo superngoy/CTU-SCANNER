@@ -1,9 +1,11 @@
 class SecurityDashboard {
     constructor() {
-        this.updateInterval = 5000; // 5 seconds
+        this.updateInterval = 500; // 0.5 seconds for faster scan reception
         this.intervalId = null;
         this.retryCount = 0;
         this.maxRetries = 3;
+        this.currentDate = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Manila' });
+        this.dateCheckInterval = null;
         this.init();
     }
 
@@ -14,6 +16,7 @@ class SecurityDashboard {
         this.bindEvents();
         this.initializeCharts();
         this.loadAnalyticsData();
+        this.startDateChangeDetection();
     }
 
     loadInitialData() {
@@ -171,16 +174,18 @@ class SecurityDashboard {
         const name = `${firstName} ${lastName}`.trim();
         const avatar = this.getInitials(name);
         
-        // Format timestamp - just time
+        // Format timestamp in Manila timezone with 12-hour format
         let time = 'Unknown time';
         if (data.Timestamp || data.timestamp || data.Time) {
             const timestamp = data.Timestamp || data.timestamp || data.Time;
             try {
                 const dateObj = new Date(timestamp);
+                // Format in Manila timezone (Asia/Manila)
                 time = dateObj.toLocaleTimeString('en-US', { 
                     hour: '2-digit', 
                     minute: '2-digit',
-                    hour12: true 
+                    hour12: true,
+                    timeZone: 'Asia/Manila'
                 });
             } catch (e) {
                 console.warn('Invalid timestamp:', timestamp);
@@ -326,11 +331,41 @@ class SecurityDashboard {
         });
     }
 
+    startDateChangeDetection() {
+        // Check every minute if the date has changed
+        this.dateCheckInterval = setInterval(() => {
+            const newDate = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Manila' });
+            if (newDate !== this.currentDate) {
+                console.log(`Date changed from ${this.currentDate} to ${newDate}. Clearing entries and exits.`);
+                this.currentDate = newDate;
+                
+                // Clear the activity feeds when date changes
+                const recentEntries = document.getElementById('recentEntries');
+                const recentExits = document.getElementById('recentExits');
+                
+                if (recentEntries) {
+                    recentEntries.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2"></i><div>No recent entries</div></div>';
+                }
+                if (recentExits) {
+                    recentExits.innerHTML = '<div class="text-center text-muted py-4"><i class="fas fa-inbox fa-2x mb-2"></i><div>No recent exits</div></div>';
+                }
+                
+                // Reload data for the new day
+                this.loadInitialData();
+                this.loadAnalyticsData();
+            }
+        }, 60000); // Check every minute (60000ms)
+    }
+
     destroy() {
         console.log('Destroying dashboard...');
         if (this.intervalId) {
             clearInterval(this.intervalId);
             this.intervalId = null;
+        }
+        if (this.dateCheckInterval) {
+            clearInterval(this.dateCheckInterval);
+            this.dateCheckInterval = null;
         }
     }
 

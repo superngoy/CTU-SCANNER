@@ -18,6 +18,7 @@ require_once '../../config/database.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
     <style>
         :root {
             --primary-color: #972529;    /* Dark Red */
@@ -1118,8 +1119,18 @@ require_once '../../config/database.php';
     <!-- Notification Dropdown Panel - Outside navbar to avoid clipping -->
     <div class="notification-dropdown" id="notificationDropdown">
         <div class="notification-header">
-            <h6 class="mb-0">Failed Scan Alerts</h6>
-            <button class="btn-close btn-sm" onclick="toggleNotificationDropdown()"></button>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <h6 class="mb-0">Failed Scan Alerts</h6>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" id="soundNotif" checked onchange="toggleNotificationSound()" style="cursor: pointer;">
+                        <label class="form-check-label" for="soundNotif" style="cursor: pointer; margin-bottom: 0; font-size: 12px;">
+                            <i class="fas fa-volume-up"></i>
+                        </label>
+                    </div>
+                    <button class="btn-close btn-sm" onclick="toggleNotificationDropdown()"></button>
+                </div>
+            </div>
         </div>
         
         <div class="notification-list" id="notificationList">
@@ -1343,6 +1354,7 @@ require_once '../../config/database.php';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../assets/audio/notification-sound.js"></script>
     <script src="../../assets/js/security.js"></script>
     
     <script>
@@ -1776,6 +1788,10 @@ require_once '../../config/database.php';
             });
         }
 
+        // Track notification IDs to detect new ones
+        let previousNotificationIds = new Set();
+        let notificationPollingInterval = null;
+
         // Load visitors on page load
         document.addEventListener('DOMContentLoaded', () => {
             loadVisitors();
@@ -1790,8 +1806,8 @@ require_once '../../config/database.php';
             
             // Load notifications on page load
             fetchNotifications();
-            // Refresh notifications every 10 seconds
-            setInterval(fetchNotifications, 10000);
+            // Refresh notifications every 0.5 seconds for real-time updates
+            notificationPollingInterval = setInterval(fetchNotifications, 500);
             // Close dropdown when clicking outside
             document.addEventListener('click', closeNotificationDropdownOnClickOutside);
             
@@ -1891,18 +1907,48 @@ require_once '../../config/database.php';
         });
 
         /**
-         * Fetch notifications from API
+         * Fetch notifications from API - Optimized for real-time delivery
          */
         function fetchNotifications() {
-            fetch('../../api/notifications_security_api.php?action=get_all&limit=20')
+            // Use a simple fetch without extra overhead for speed
+            fetch('../../api/notifications_security_api.php?action=get_all&limit=20&t=' + Date.now())
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
+                    if (data.success && data.notifications) {
                         displayNotifications(data.notifications);
                         updateNotificationBadge(data);
+                        
+                        // Play notification sound only for NEW unread alerts
+                        if (typeof notificationSound !== 'undefined' && notificationSound && notificationSound.isSoundEnabled) {
+                            const currentNotificationIds = new Set(data.notifications.map(n => n.id));
+                            const unreadNotifications = data.notifications.filter(n => !n.is_read);
+                            
+                            // Check if there are new unread notifications (ones we haven't seen before)
+                            const newUnreadNotifications = unreadNotifications.filter(n => !previousNotificationIds.has(n.id));
+                            
+                            if (newUnreadNotifications.length > 0) {
+                                // Determine which tone to play based on notification type
+                                const hasErrors = newUnreadNotifications.some(n => n.type === 'error');
+                                const hasWarnings = newUnreadNotifications.some(n => n.type === 'warning');
+                                
+                                if (hasErrors) {
+                                    notificationSound.playErrorTone();
+                                } else if (hasWarnings) {
+                                    notificationSound.playWarningTone();
+                                } else {
+                                    notificationSound.playNotificationTone();
+                                }
+                            }
+                            
+                            // Update the set of notification IDs
+                            previousNotificationIds = currentNotificationIds;
+                        }
                     }
                 })
-                .catch(error => console.log('Notification fetch error:', error));
+                .catch(error => {
+                    // Silently handle errors to avoid console spam
+                    console.log('Notification fetch error:', error);
+                });
         }
 
         /**
@@ -2045,6 +2091,29 @@ require_once '../../config/database.php';
             if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
             return date.toLocaleDateString();
         }
+
+        /**
+         * Initialize notification sound on page load
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof notificationSound !== 'undefined') {
+                const soundToggle = document.getElementById('soundNotif');
+                if (soundToggle) {
+                    soundToggle.checked = notificationSound.isSoundEnabled;
+                }
+            }
+        }, { once: true });
+
+        /**
+         * Toggle notification sound
+         */
+        function toggleNotificationSound() {
+            const soundToggle = document.getElementById('soundNotif');
+            if (typeof notificationSound !== 'undefined' && notificationSound) {
+                notificationSound.setSoundPreference(soundToggle.checked);
+            }
+        }
     </script>
+    <script src="../../assets/js/safe-dom.js"></script>
 </body>
 </html>

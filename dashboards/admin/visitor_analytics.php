@@ -18,9 +18,9 @@ if (method_exists($database, 'connect')) {
     $conn = $database->connection();
 }
 
-// Get date range from request
-$startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
-$endDate = $_GET['end_date'] ?? date('Y-m-d');
+// Get date range from request - safely validate dates
+$startDate = getSafeGET('start_date', date('Y-m-d', strtotime('-30 days')), 'date');
+$endDate = getSafeGET('end_date', date('Y-m-d'), 'date');
 
 // Get visitor statistics
 try {
@@ -555,11 +555,11 @@ try {
                         <form method="GET" class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Start Date</label>
-                                <input type="date" class="form-control" name="start_date" value="<?php echo $startDate; ?>">
+                                <input type="date" class="form-control" name="start_date" value="<?php echo escapeOutput($startDate, 'attr'); ?>">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">End Date</label>
-                                <input type="date" class="form-control" name="end_date" value="<?php echo $endDate; ?>">
+                                <input type="date" class="form-control" name="end_date" value="<?php echo escapeOutput($endDate, 'attr'); ?>">
                             </div>
                             <div class="col-md-6 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary me-2">

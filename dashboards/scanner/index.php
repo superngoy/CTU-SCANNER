@@ -1347,6 +1347,7 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
         const SCAN_COOLDOWN = 500; // ms
         let audioContext = null;
         let recentScans = [];
+        let notificationTimeout = null; // Track notification timeout for resetting
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -1651,9 +1652,12 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             }
 
             overlay.classList.add('show');
-            setTimeout(() => {
+            
+            // Clear any existing notification timeout before setting a new one
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
                 overlay.classList.remove('show');
-            }, 3000);
+            }, 1300);
         }
 
         // Show error result
@@ -1670,9 +1674,12 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             document.getElementById('resultDetails').style.display = 'none';
 
             overlay.classList.add('show');
-            setTimeout(() => {
+            
+            // Clear any existing notification timeout before setting a new one
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
                 overlay.classList.remove('show');
-            }, 3000);
+            }, 1300);
         }
 
         // Audio feedback
@@ -1846,5 +1853,7 @@ $page_title = 'CTU Scanner - Code 39 Barcode Scanner';
             if (e.touches.length > 1) e.preventDefault();
         }, { passive: false });
     </script>
+    <script src="../../assets/js/safe-dom.js"></script>
 </body>
 </html>
+
