@@ -1309,7 +1309,7 @@ if (!in_array($userType, ['students', 'faculty', 'security', 'staff'])) {
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" name="time_sched" required placeholder="e.g., 6AM-6PM">
-                                <label>Time Schedule</label>
+                                <label>Time Schedule (format: 06:00AM - 06:00PM)</label>
                             </div>
                         </div>
                         <div class="col-md-4">

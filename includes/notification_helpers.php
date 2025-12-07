@@ -287,5 +287,23 @@ function notifySecurityInvalidBarcode($barcode, $location = null) {
     addSecurityNotification($title, $message, 'error', 'fa-exclamation-circle', '/dashboards/security/index.php');
 }
 
+/**
+ * Notification for security schedule end - sent to security staff
+ */
+function notifySecurityScheduleEnd($securityName, $endTime, $securityId = null) {
+    $title = "Your Shift is Ending Soon";
+    $message = "$securityName, your scheduled shift ends at $endTime. Please prepare for shift handover.";
+    addSecurityNotification($title, $message, 'warning', 'fa-clock', '/dashboards/security/index.php');
+}
+
+/**
+ * Notification for security shift complete - sent to security staff
+ */
+function notifySecurityShiftComplete($securityName, $securityId = null) {
+    $title = "Shift Complete";
+    $message = "$securityName, your shift has ended. Thank you for your service. Please log out.";
+    addSecurityNotification($title, $message, 'success', 'fa-check-circle', '/dashboards/security/index.php');
+}
+
 ?>
 

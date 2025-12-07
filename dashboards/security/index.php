@@ -2115,5 +2115,7 @@ require_once '../../config/database.php';
         }
     </script>
     <script src="../../assets/js/safe-dom.js"></script>
+    <!-- Security Shift Schedule Checker -->
+    <script src="../../assets/js/security-schedule-checker.js"></script>
 </body>
 </html>

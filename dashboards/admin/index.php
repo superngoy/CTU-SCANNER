@@ -121,8 +121,159 @@ try {
     $stmt = $scanner->conn->prepare("SELECT COUNT(*) as total FROM staff WHERE isActive = 1");
     $stmt->execute();
     $totalStaff = $stmt->fetchColumn();
+    
+    // Get security personnel with status
+    $stmt = $scanner->conn->prepare("SELECT SecurityID, SecurityFName, SecurityLName, TimeSched, image FROM security WHERE isActive = 1 ORDER BY SecurityFName ASC");
+    $stmt->execute();
+    $securityPersonnel = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     error_log("Error fetching user counts: " . $e->getMessage());
+    $securityPersonnel = [];
+}
+
+/**
+ * Calculate security personnel duty status
+ */
+function getSecurityStatus($schedule) {
+    $current_time = new DateTime();
+    $shift_info = parseScheduleInfo($schedule);
+    
+    if (!$shift_info) {
+        return [
+            'on_duty' => false,
+            'status_text' => 'Invalid Schedule',
+            'status_class' => 'status-error',
+            'minutes_until_end' => 0,
+            'shift_start' => 'N/A',
+            'shift_end' => 'N/A'
+        ];
+    }
+    
+    // Create shift times for TODAY
+    $shift_start_today = clone $current_time;
+    $shift_start_today->setTime($shift_info['start_hour'], $shift_info['start_minute'], 0);
+    
+    $shift_end_today = clone $current_time;
+    $shift_end_today->setTime($shift_info['end_hour'], $shift_info['end_minute'], 0);
+    
+    // Check if this is an overnight shift (e.g., 6PM-3AM)
+    $is_overnight = $shift_info['end_hour'] < $shift_info['start_hour'];
+    
+    if ($is_overnight) {
+        // For overnight shifts: if current hour >= start_hour, end is tomorrow
+        $current_hour = (int)$current_time->format('H');
+        if ($current_hour >= $shift_info['start_hour']) {
+            // Evening part - end time is tomorrow
+            $shift_end_today->modify('+1 day');
+        } else {
+            // Morning part - start was yesterday
+            $shift_start_today->modify('-1 day');
+        }
+    }
+    
+    // Now check if we're on duty
+    $is_on_duty = ($current_time >= $shift_start_today && $current_time < $shift_end_today);
+    
+    // Calculate minutes until end
+    $interval = $current_time->diff($shift_end_today);
+    $minutes_until_end = ($interval->invert ? -1 : 1) * ($interval->h * 60 + $interval->i);
+    
+    // Determine status
+    $status_text = 'Off Duty';
+    $status_class = 'status-off-duty';
+    
+    if ($is_on_duty) {
+        if ($minutes_until_end <= 15 && $minutes_until_end > 0) {
+            $status_text = 'On Duty - Shift Ending Soon (' . $minutes_until_end . 'm)';
+            $status_class = 'status-ending-soon';
+        } else {
+            $status_text = 'On Duty';
+            $status_class = 'status-on-duty';
+        }
+    } else if ($current_time < $shift_start_today) {
+        // Shift hasn't started yet today
+        $time_until = $shift_start_today->diff($current_time);
+        $hours_until = $time_until->h;
+        $mins_until = $time_until->i;
+        
+        if ($hours_until === 0 && $mins_until < 30) {
+            $status_text = 'Starting Soon (' . $mins_until . 'm)';
+            $status_class = 'status-starting-soon';
+        } else {
+            $status_text = 'Off Duty - Next: ' . $shift_start_today->format('H:i');
+            $status_class = 'status-off-duty';
+        }
+    } else if ($current_time >= $shift_end_today) {
+        // Shift has ended
+        $status_text = 'Shift Complete';
+        $status_class = 'status-complete';
+    }
+    
+    return [
+        'on_duty' => $is_on_duty,
+        'status_text' => $status_text,
+        'status_class' => $status_class,
+        'minutes_until_end' => $minutes_until_end,
+        'shift_start' => $shift_start_today->format('H:i'),
+        'shift_end' => $shift_end_today->format('H:i')
+    ];
+}
+
+/**
+ * Parse schedule string helper
+ */
+function parseScheduleInfo($schedule) {
+    $schedule = trim($schedule);
+    $schedule = preg_replace('/\s+/', ' ', $schedule);
+    $parts = preg_split('/[-–]/', $schedule);
+    
+    if (count($parts) !== 2) {
+        return null;
+    }
+    
+    $start_str = trim($parts[0]);
+    $end_str = trim($parts[1]);
+    
+    $start_time = parseTimeInfoString($start_str);
+    $end_time = parseTimeInfoString($end_str);
+    
+    if (!$start_time || !$end_time) {
+        return null;
+    }
+    
+    return [
+        'start_hour' => $start_time['hour'],
+        'start_minute' => $start_time['minute'],
+        'end_hour' => $end_time['hour'],
+        'end_minute' => $end_time['minute']
+    ];
+}
+
+/**
+ * Parse individual time string helper
+ */
+function parseTimeInfoString($time_str) {
+    $time_str = trim($time_str);
+    $time_str = strtoupper($time_str);
+    
+    if (preg_match('/^(\d{1,2}):?(\d{2})?\s*(AM|PM)?$/', $time_str, $matches)) {
+        $hour = (int)$matches[1];
+        $minute = isset($matches[2]) ? (int)$matches[2] : 0;
+        $period = $matches[3] ?? null;
+        
+        if ($period === 'PM' && $hour !== 12) {
+            $hour += 12;
+        } elseif ($period === 'AM' && $hour === 12) {
+            $hour = 0;
+        }
+        
+        return [
+            'hour' => $hour,
+            'minute' => $minute
+        ];
+    }
+    
+    return null;
 }
 ?>
 <!DOCTYPE html>
@@ -800,6 +951,131 @@ try {
             border-left-color: #007bff;
         }
 
+        /* Security Personnel Card Styles */
+        .security-personnel-card {
+            border-radius: 8px;
+            padding: 15px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-top: 4px solid #ccc;
+        }
+
+        .security-personnel-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .security-personnel-card.status-on-duty {
+            border-top-color: #27AE60;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(39, 174, 96, 0.02) 100%);
+        }
+
+        .security-personnel-card.status-ending-soon {
+            border-top-color: #E5C573;
+            background: linear-gradient(135deg, rgba(229, 197, 115, 0.05) 0%, rgba(229, 197, 115, 0.02) 100%);
+        }
+
+        .security-personnel-card.status-off-duty {
+            border-top-color: #95a5a6;
+            background: linear-gradient(135deg, rgba(149, 165, 166, 0.02) 0%, rgba(149, 165, 166, 0.01) 100%);
+        }
+
+        .security-personnel-card.status-starting-soon {
+            border-top-color: #3498db;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.02) 100%);
+        }
+
+        .security-personnel-card.status-complete {
+            border-top-color: #972529;
+            background: linear-gradient(135deg, rgba(151, 37, 41, 0.05) 0%, rgba(151, 37, 41, 0.02) 100%);
+        }
+
+        .security-personnel-card.status-error {
+            border-top-color: #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(231, 76, 60, 0.02) 100%);
+        }
+
+        .security-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            overflow: hidden;
+        }
+
+        .security-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .security-avatar-default {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+
+        .security-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .security-schedule {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .security-status {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .security-status.on-duty {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .security-status.ending-soon {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .security-status.off-duty {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .security-status.starting-soon {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .security-status.complete {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .security-status.error {
+            background-color: #f5c6cb;
+            color: #721c24;
+        }
+
         /* 5-Column responsive layout for analytics stats */
         .col-lg-2-4 {
             flex: 0 0 25%;
@@ -1423,6 +1699,62 @@ try {
                                         <p><i class="fas fa-sign-out-alt me-1"></i>Total Exits</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Personnel Status -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="enhanced-card fade-in-up">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-shield-alt me-2"></i>Security Personnel Status
+                            </h5>
+                            <small class="text-muted">
+                                <span id="on-duty-count"><?php echo count(array_filter($securityPersonnel, fn($p) => getSecurityStatus($p['TimeSched'])['on_duty'])); ?></span> On Duty | 
+                                <span id="off-duty-count"><?php echo count(array_filter($securityPersonnel, fn($p) => !getSecurityStatus($p['TimeSched'])['on_duty'])); ?></span> Off Duty
+                            </small>
+                        </div>
+                        <div class="card-body p-3">
+                            <div id="security-personnel-container" class="row g-3">
+                                <?php 
+                                if (empty($securityPersonnel)) {
+                                    echo '<div class="col-12 text-center text-muted py-4"><p>No security personnel available</p></div>';
+                                } else {
+                                    foreach ($securityPersonnel as $person) {
+                                        $status = getSecurityStatus($person['TimeSched']);
+                                        $initials = $person['SecurityFName'][0] . $person['SecurityLName'][0];
+                                        $imagePath = $person['image'] ? '../../uploads/security/' . $person['image'] : null;
+                                        $fullName = $person['SecurityFName'] . ' ' . $person['SecurityLName'];
+                                ?>
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <div class="security-personnel-card <?php echo escapeOutput($status['status_class'], 'attr'); ?>">
+                                        <div class="security-avatar <?php echo !$imagePath ? 'security-avatar-default' : ''; ?>">
+                                            <?php if ($imagePath): ?>
+                                                <img src="<?php echo escapeOutput($imagePath, 'attr'); ?>" alt="<?php echo escapeOutput($fullName, 'attr'); ?>" onerror="this.style.display='none'; this.parentElement.innerHTML='<?php echo escapeOutput($initials, 'attr'); ?>';">
+                                            <?php else: ?>
+                                                <?php echo escapeOutput($initials, 'html'); ?>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="security-name"><?php echo escapeOutput($fullName, 'html'); ?></div>
+                                        <div class="security-schedule">
+                                            <i class="fas fa-clock me-1"></i><?php echo escapeOutput($person['TimeSched'], 'html'); ?>
+                                        </div>
+                                        <div class="security-schedule">
+                                            <small><i class="fas fa-info-circle me-1"></i><?php echo escapeOutput($status['shift_start'], 'html'); ?> - <?php echo escapeOutput($status['shift_end'], 'html'); ?></small>
+                                        </div>
+                                        <div class="security-status <?php echo $status['on_duty'] ? 'on-duty' : ($status['status_class'] === 'status-ending-soon' ? 'ending-soon' : ($status['status_class'] === 'status-starting-soon' ? 'starting-soon' : ($status['status_class'] === 'status-complete' ? 'complete' : 'off-duty'))); ?>">
+                                            <?php echo escapeOutput($status['status_text'], 'html'); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php 
+                                    }
+                                }
+                                ?>
                             </div>
                         </div>
                     </div>

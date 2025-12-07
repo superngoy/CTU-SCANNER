@@ -582,3 +582,12 @@
 [06-Dec-2025 18:58:05 Asia/Manila] Person found: {"FacultyID":"4800016022906","FacultyFName":"Secret","FacultyMName":"S.","FacultyLName":"Secret","Gender":"Female","Birthdate":"2025-12-06","Department":"COTE","isActive":"1","image":"uploads\/faculty\/4800016022906_1765011461.jpg","created_at":"2025-12-06 16:57:12","type":"faculty"}
 [06-Dec-2025 18:58:05 Asia/Manila] Logging entry for 4800016022906 (faculty)
 [06-Dec-2025 18:58:05 Asia/Manila] Entry recorded successfully for Secret S. Secret
+[07-Dec-2025 22:38:51 Asia/Manila] Scan process - Barcode Data: 8221183, Scanner: SC001
+[07-Dec-2025 22:38:51 Asia/Manila] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"0","image":"uploads\/students\/8221183_1765008594.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[07-Dec-2025 22:38:51 Asia/Manila] Student not enrolled: 8221183
+[07-Dec-2025 23:05:26 Asia/Manila] Scan process - Barcode Data: hahaha, Scanner: SC001
+[07-Dec-2025 23:05:26 Asia/Manila] Barcode not found or user inactive: hahaha
+[07-Dec-2025 23:05:34 Asia/Manila] Scan process - Barcode Data: 8221183, Scanner: SC001
+[07-Dec-2025 23:05:34 Asia/Manila] Person found: {"StudentID":"8221183","StudentFName":"Deonan Leo","StudentMName":"D.","StudentLName":"Baslan","Gender":"Male","BirthDate":"2002-10-11","Course":"BSIT","YearLvl":"4","Section":"B","Department":"COTE","isActive":"1","IsEnroll":"1","image":"uploads\/students\/8221183_1765008594.jpg","created_at":"2025-11-15 00:04:51","type":"student"}
+[07-Dec-2025 23:05:34 Asia/Manila] Logging entry for 8221183 (student)
+[07-Dec-2025 23:05:34 Asia/Manila] Entry recorded successfully for Deonan Leo D. Baslan
